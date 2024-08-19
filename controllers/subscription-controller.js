@@ -45,8 +45,10 @@ export const buySubscriptions = async (req, res) => {
             if (result.length === 0) {
                 return res.status(500).json(failureResponse({ error: 'Subscription not Found' }, 'Failed to purchase Subscription'));
             }
-            const validTill = result[0].valid_till
-            const expiryDate = moment(validTill).format('YYYY-MM-DD HH:mm:ss');
+            
+            const validDays = result[0].valid_till;
+            const currentDate = moment();
+            const expiryDate = currentDate.add(validDays, 'days').format('YYYY-MM-DD HH:mm:ss');
 
             const insertQuery = 'INSERT INTO user_subscription (subscription_id, user_id, expiry_date, payment_id) VALUES (?, ?, ?, ?)';
             connection.query(insertQuery, [subscriptionId, userId, expiryDate, null], (err, result) => {
