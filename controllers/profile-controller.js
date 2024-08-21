@@ -142,44 +142,50 @@ export const updateUsername = async (req, res) => {
 };
 export const updateProfilePicture = async (req, res) => {
     try {
-        const userId = req.user?.userId; // Get the user ID from the request, assuming authentication middleware sets req.user
+        const userId = req.user?.userId; // Get the user ID from the request
         const { profilePictureUrl } = req.body; // Get the new profile picture URL from the request body
         const authType = req.user?.authType; // Get the authentication type
 
         if (!userId) {
-            return res.status(422).json(failureResponse({ error: 'User Id is required' }, 'Updation Failed'))
+            return res.status(422).json(failureResponse({ error: 'User Id is required' }, 'Updation Failed'));
         }
         if (!profilePictureUrl) {
-            return res.status(422).json(failureResponse({ error: 'Profile Picture Url is required' }, 'Updation Failed'))
+            return res.status(422).json(failureResponse({ error: 'Profile Picture Url is required' }, 'Updation Failed'));
         }
 
         // Determine which table to update based on the user authentication method
         let updateQuery = '';
+        let queryParams = [];
         switch (authType) {
             case 'standard':
                 updateQuery = 'UPDATE users SET profile_picture = ? WHERE id = ?';
+                queryParams = [profilePictureUrl, userId];
                 break;
             case 'google':
                 updateQuery = 'UPDATE google_login SET profile_picture = ? WHERE google_id = ?';
+                queryParams = [profilePictureUrl, userId];
                 break;
             case 'linkedin':
                 updateQuery = 'UPDATE linkedin_login SET profile_picture = ? WHERE linkedin_id = ?';
+                queryParams = [profilePictureUrl, userId];
                 break;
             case 'outlook':
                 updateQuery = 'UPDATE outlook_login SET profile_picture = ? WHERE outlook_id = ?';
+                queryParams = [profilePictureUrl, userId];
                 break;
             case 'facebook':
                 updateQuery = 'UPDATE facebook_login SET profile_picture = ? WHERE facebook_id = ?';
+                queryParams = [profilePictureUrl, userId];
                 break;
             default:
-                return res.status(400).json(failureResponse({ error: 'Invalid Authentication Type' }, 'Updation Failed'))
+                return res.status(400).json(failureResponse({ error: 'Invalid Authentication Type' }, 'Updation Failed'));
         }
 
         // Execute the update query
-        connection.query(updateQuery, [profilePictureUrl, userId], (err, results) => {
+        connection.query(updateQuery, queryParams, (err, results) => {
             if (err) {
                 console.error("Database query error:", err);
-                res.status(500).json(failureResponse({ error: 'Internal server error' }, 'Updation Failed'));
+                return res.status(500).json(failureResponse({ error: 'Internal server error' }, 'Updation Failed'));
             }
 
             // Check if the user was actually updated

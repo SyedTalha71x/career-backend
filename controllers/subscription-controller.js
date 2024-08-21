@@ -80,7 +80,6 @@ export const purchaseSubscription = async (req, res) => {
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to Checkout'));
     }
 };
-
 export const getSubscription = async (req, res) => {
     try {
         const query = 'SELECT id, name, price FROM subscriptions';
