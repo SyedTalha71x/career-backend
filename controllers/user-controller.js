@@ -1,10 +1,13 @@
 import { validateEmail, validateUsername, validatePassword } from '../Validation/validation.js';
 import { connection } from '../utils/db/db.js';
 import { hashPassword, verifyPassword, generateToken } from '../Security/security.js'
-import { OAuth2Client } from 'google-auth-library';
 import { successResponse, failureResponse } from '../Helper/helper.js';
+import { OAuth2Client } from 'google-auth-library';
+import { configDotenv } from 'dotenv';
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+configDotenv();
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_REDIRECT_URI);
 
 export const Signup = async (req, res) => {
     const { username, email, password } = req.body;
@@ -147,17 +150,43 @@ export const changePassword = async (req, res) => {
         return res.status(500).json(failureResponse({ server: 'An unexpected error occurred' }, 'An error occurred'));
     }
 };
-export const googlelogin = async (req, res) => {
-    const { token } = req.body;
+export const googleLogin = async (req, res) => {
+    const { code } = req.body;
 
-    client.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID
-    }).then(ticket => {
+
+    if (!code) {
+        return res.status(400).json(failureResponse({ code: 'Authorization code is missing' }, 'Google Login Failed'));
+    }
+
+    try {
+        // Exchange the authorization code for tokens
+        const { tokens } = await client.getToken({
+            code,
+            redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        });
+
+        if (!tokens.id_token) {
+            throw new Error('ID token not received');
+        }
+
+        const idToken = tokens.id_token;
+        console.log('ID Token:', idToken);
+
+        // Verify the ID token
+        const ticket = await client.verifyIdToken({
+            idToken,
+            audience: process.env.GOOGLE_CLIENT_ID
+        });
+
+        console.log("Verification Ticket:", ticket);
+
         const payload = ticket.getPayload();
         const { sub: googleId, email, name, picture } = payload;
+        console.log('Payload:', payload);
 
-        // Check if user exists in database
+        // Check if user exists in the database
         connection.query('SELECT * FROM google_login WHERE google_id = ?', [googleId], (error, results) => {
             if (error) {
                 console.error('Error querying database:', error);
@@ -165,12 +194,12 @@ export const googlelogin = async (req, res) => {
             }
 
             if (results.length === 0) {
-                // User doesn't exist, create new user
+                // User doesn't exist, create a new user
                 const newUser = { google_id: googleId, email, name, profile_picture: picture };
                 connection.query('INSERT INTO google_login SET ?', newUser, (error, result) => {
                     if (error) {
-                        console.error('Error querying database:', error);
-                        return res.status(500).json(failureResponse({ database: 'Server error while querying database' }, 'Google Signup Failed'));
+                        console.error('Error inserting into database:', error);
+                        return res.status(500).json(failureResponse({ database: 'Server error while inserting into database' }, 'Google Signup Failed'));
                     }
                     const userId = result.insertId;
                     const jwtToken = generateToken(userId, email, 'google');
@@ -181,14 +210,14 @@ export const googlelogin = async (req, res) => {
                 });
             } else {
                 // User exists, update information
-                const userId = results[0].google_id;
+                const userId = results[0].id; // Assuming 'id' is the primary key
                 connection.query(
                     'UPDATE google_login SET email = ?, name = ?, profile_picture = ? WHERE google_id = ?',
                     [email, name, picture, googleId],
                     (error) => {
                         if (error) {
-                            console.error('Error querying database:', error);
-                            return res.status(500).json(failureResponse({ database: 'Server error while querying database' }, 'Google Signup Failed'));
+                            console.error('Error updating database:', error);
+                            return res.status(500).json(failureResponse({ database: 'Server error while updating database' }, 'Google Signup Failed'));
                         }
                         const jwtToken = generateToken(userId, email, 'google');
                         res.json(successResponse({
@@ -199,10 +228,10 @@ export const googlelogin = async (req, res) => {
                 );
             }
         });
-    }).catch(error => {
-        console.error('Error verifying Google token:', error);
-        res.status(401).json(failureResponse({ error }, 'Invalid token'));
-    });
+    } catch (error) {
+        console.error('Error handling Google login:', error);
+        res.status(401).json(failureResponse({ error: error.message }, 'Google Login Failed'));
+    }
 };
 export const facebookLogin = async (req, res) => {
     const { accessToken } = req.body;

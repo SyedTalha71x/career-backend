@@ -9,6 +9,11 @@ import fileRoutes from './routes/file-routes.js'
 import fileUpload from "express-fileupload";
 import profileRoutes from "./routes/profile-routes.js";
 import subscriptionRoutes from './routes/subscription-routes.js'
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 configDotenv();
 
@@ -18,8 +23,8 @@ connectToDB();
 // EXPRESS SETUP WITH CORS
 const app = express();
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow requests from your frontend's origin
-    methods: 'GET,POST',
+    origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow requests from your frontend's origin
+    methods: 'GET,POST,PUT,DELETE',
     credentials: true
 }));
 
@@ -30,6 +35,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.get('/', (req, res) => {
