@@ -33,8 +33,8 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(fileUpload());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 

@@ -21,17 +21,39 @@ const __dirname = path.dirname(__filename);
 // });
 
 // const upload = multer({ storage: storage });
-
-const Multer = multer({
-    storage: multer.diskStorage({
-        destination: function (req, file, cb) {
-            cb(null, "uploads");
-        },
-        filename: function (req, file, cb) {
-            cb(null, "your file name" + "." + file.mimetype.split("/")[1]);
-        },
-    }),
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // specify the folder to save uploaded files
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`); // specify the filename format
+    },
 });
+
+// Initialize upload
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 }, // limit the file size to 5MB
+    fileFilter: function (req, file, cb) {
+        const filetypes = /jpeg|jpg|png/; // restrict file types to jpeg, jpg, and png
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = filetypes.test(file.mimetype);
+
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Only images are allowed!'));
+        }
+    },
+});
+
+
+
+
+
+
+
+
 
 
 
@@ -43,7 +65,7 @@ router.put('/update-username', authenticate, updateUsername);
 router.post('/request-for-otp', requestForOtp)
 router.post('/verify-otp', verifyOtp)
 router.post('/reset-password', resetPassword);
-router.post('/upload-image', Multer.single("image"), authenticate, handleFileUpload);
+router.post('/update-profile-picture', upload.single('file'), authenticate, handleFileUpload);
 
 
 export default router;
