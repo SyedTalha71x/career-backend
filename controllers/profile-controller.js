@@ -6,66 +6,6 @@ import { successResponse, failureResponse } from '../Helper/helper.js'
 import { hashPassword } from "../Security/security.js";
 
 
-export const handleFileUpload = (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
-    }
-
-    res.json({
-        message: 'File uploaded successfully',
-        filePath: `/uploads/${req.file.filename}`
-    });
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -388,6 +328,21 @@ export const resetPassword = async (req, res) => {
         });
     } catch (error) {
         console.error('Password reset error:', error);
+        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Reset Failed'));
+    }
+};
+export const handleFileUpload = (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        res.json({
+            message: 'File uploaded successfully',
+            filePath: `/uploads/${req.file.filename}`
+        });
+    }
+    catch (error) {
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Reset Failed'));
     }
 };
