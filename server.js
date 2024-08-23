@@ -44,7 +44,7 @@ app.use('/api', subscriptionRoutes)
 
 // SERVER ACTION
 const PORT = process.env.PORT;
-app.listen(PORT, '192.168.18.194', () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://192.168.18.194:${PORT}`);
 });
 
