@@ -4,10 +4,12 @@ import { hashPassword, verifyPassword, generateToken } from '../Security/securit
 import { successResponse, failureResponse } from '../Helper/helper.js';
 import { OAuth2Client } from 'google-auth-library';
 import { configDotenv } from 'dotenv';
+import jwt from 'jsonwebtoken'
+import axios from 'axios';
 
 configDotenv();
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_REDIRECT_URI);
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const Signup = async (req, res) => {
     const { username, email, password } = req.body;
@@ -151,88 +153,72 @@ export const changePassword = async (req, res) => {
     }
 };
 export const googleLogin = async (req, res) => {
-    const { code } = req.body;
+    const { authorizationCode } = req.body;
 
-
-    if (!code) {
-        return res.status(400).json(failureResponse({ code: 'Authorization code is missing' }, 'Google Login Failed'));
+    if (!authorizationCode) {
+        return res.status(400).json(failureResponse(null, 'Authorization code is required.'));
     }
 
     try {
-        // Exchange the authorization code for tokens
-        const { tokens } = await client.getToken({
-            code,
-            redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-            client_id: process.env.GOOGLE_CLIENT_ID,
-            client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        });
-
-        if (!tokens.id_token) {
-            throw new Error('ID token not received');
-        }
-
-        const idToken = tokens.id_token;
-        console.log('ID Token:', idToken);
-
-        // Verify the ID token
-        const ticket = await client.verifyIdToken({
-            idToken,
-            audience: process.env.GOOGLE_CLIENT_ID
-        });
-
-        console.log("Verification Ticket:", ticket);
-
-        const payload = ticket.getPayload();
-        const { sub: googleId, email, name, picture } = payload;
-        console.log('Payload:', payload);
-
-        // Check if user exists in the database
-        connection.query('SELECT * FROM google_login WHERE google_id = ?', [googleId], (error, results) => {
-            if (error) {
-                console.error('Error querying database:', error);
-                return res.status(500).json(failureResponse({ database: 'Server error while querying database' }, 'Google Signup Failed'));
+        // Exchange authorization code for access token
+        const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', null, {
+            params: {
+                code: authorizationCode,
+                client_id: process.env.GOOGLE_CLIENT_ID,
+                client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+                grant_type: 'authorization_code'
             }
+        });
 
-            if (results.length === 0) {
-                // User doesn't exist, create a new user
-                const newUser = { google_id: googleId, email, name, profile_picture: picture };
-                connection.query('INSERT INTO google_login SET ?', newUser, (error, result) => {
-                    if (error) {
-                        console.error('Error inserting into database:', error);
-                        return res.status(500).json(failureResponse({ database: 'Server error while inserting into database' }, 'Google Signup Failed'));
-                    }
-                    const userId = result.insertId;
-                    const jwtToken = generateToken(userId, email, 'google');
-                    res.json(successResponse({
-                        user: { id: userId, ...newUser },
-                        token: jwtToken
-                    }, 'Login successful'));
-                });
-            } else {
-                // User exists, update information
-                const userId = results[0].id; // Assuming 'id' is the primary key
+        const { access_token } = tokenResponse.data;
+
+        // Get user info from Google
+        const userInfoResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: {
+                Authorization: `Bearer ${access_token}`
+            }
+        });
+
+        const { id, email, name, picture } = userInfoResponse.data;
+
+        // Check if user already exists
+        connection.query('SELECT * FROM google_login WHERE google_id = ?', [id], (err, results) => {
+            if (err) return res.status(500).json(failureResponse(null, 'Database error.'));
+
+            const userData = { google_id: id, email, name, profile_picture: picture };
+
+            if (results.length > 0) {
+                // User exists, update user info if necessary
                 connection.query(
-                    'UPDATE google_login SET email = ?, name = ?, profile_picture = ? WHERE google_id = ?',
-                    [email, name, picture, googleId],
-                    (error) => {
-                        if (error) {
-                            console.error('Error updating database:', error);
-                            return res.status(500).json(failureResponse({ database: 'Server error while updating database' }, 'Google Signup Failed'));
-                        }
-                        const jwtToken = generateToken(userId, email, 'google');
-                        res.json(successResponse({
-                            user: { id: userId, email, name, profile_picture: picture },
-                            token: jwtToken
-                        }, 'Login successful'));
+                    'UPDATE google_login SET email = ?, name = ?, profile_picture = ?, updated_at = NOW() WHERE google_id = ?',
+                    [email, name, picture, id],
+                    (updateErr) => {
+                        if (updateErr) return res.status(500).json(failureResponse(null, 'Database error.'));
+                        const token = generateToken(id, email, 'google');
+                        res.json(successResponse({ user: userData, token }, 'User updated successfully.'));
+                    }
+                );
+            } else {
+                // Insert new user
+                connection.query(
+                    'INSERT INTO google_login (google_id, email, name, profile_picture, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
+                    [id, email, name, picture],
+                    (insertErr) => {
+                        if (insertErr) return res.status(500).json(failureResponse(null, 'Database error.'));
+                        const token = generateToken(id, email, 'google');
+                        res.json(successResponse({ user: userData, token }, 'User created successfully.'));
                     }
                 );
             }
         });
+
     } catch (error) {
-        console.error('Error handling Google login:', error);
-        res.status(401).json(failureResponse({ error: error.message }, 'Google Login Failed'));
+        console.error('Error during Google authentication:', error);
+        res.status(500).json(failureResponse(null, 'Google authentication failed.'));
     }
 };
+
 export const facebookLogin = async (req, res) => {
     const { accessToken } = req.body;
     try {
