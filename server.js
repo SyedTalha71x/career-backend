@@ -22,11 +22,7 @@ connectToDB();
 
 // EXPRESS SETUP WITH CORS
 const app = express();
-app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow requests from your frontend's origin
-    methods: 'GET,POST,PUT,DELETE',
-    credentials: true
-}));
+app.use(cors(*))
 
 //Validations Setup
 app.use(bodyParser.json());
