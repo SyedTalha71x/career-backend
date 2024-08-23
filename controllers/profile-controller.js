@@ -17,10 +17,16 @@ export const getProfileInfo = async (req, res) => {
         const { userId, authType } = req.user; // Extract userId and authType from the token
         console.log('User ID:', userId, 'Auth Type:', authType);
 
+        if (!userId || !authType) {
+            return res.status(400).json(failureResponse({}, 'User not authenticated'));
+        }
+
         if (authType === 'standard') {
             // Handle standard authentication
             connection.query(
-                'SELECT username, email, profile_picture FROM users WHERE id = ?', [userId], (err, results) => {
+                'SELECT username, email, profile_picture FROM users WHERE id = ?',
+                [userId],
+                (err, results) => {
                     if (err) {
                         console.error('Database query error:', err);
                         return res.status(500).json(failureResponse({}, 'Internal server error'));
@@ -28,14 +34,11 @@ export const getProfileInfo = async (req, res) => {
 
                     if (results.length > 0) {
                         const user = results[0];
-                        // Only include profile_picture if it exists
                         const response = {
                             username: user.username,
                             email: user.email,
+                            profile_picture: user.profile_picture ? `http://192.168.18.194:8001/uploads/${user.profile_picture}` : null,
                         };
-                        if (user.profile_picture) {
-                            response.profile_picture = user.profile_picture;
-                        }
                         return res.status(200).json(successResponse(response, 'User profile retrieved successfully'));
                     } else {
                         return res.status(404).json(failureResponse({}, 'User not found'));
@@ -43,33 +46,47 @@ export const getProfileInfo = async (req, res) => {
                 }
             );
         } else {
-            // Handle social logins
-            const socialLoginQueries = [
-                { table: 'google_login', fields: ['name', 'email'], idField: 'google_id' },
-                { table: 'linkedin_login', fields: ['name', 'email'], idField: 'linkedin_id' },
-                { table: 'outlook_login', fields: ['name', 'email'], idField: 'outlook_id' },
-                { table: 'facebook_login', fields: ['name', 'email'], idField: 'facebook_id' },
-            ];
+            // Handle social logins (Google, LinkedIn, Outlook, Facebook)
+            let table, idField;
 
-            // Find the correct social login table and field
-            const query = socialLoginQueries.find(query => query.table.includes(authType.toLowerCase()));
-            if (!query) {
-                return res.status(400).json(failureResponse({}, 'Invalid authentication type'));
+            switch (authType.toLowerCase()) {
+                case 'google':
+                    table = 'google_login';
+                    idField = 'google_id';
+                    break;
+                case 'linkedin':
+                    table = 'linkedin_login';
+                    idField = 'linkedin_id';
+                    break;
+                case 'outlook':
+                    table = 'outlook_login';
+                    idField = 'outlook_id';
+                    break;
+                case 'facebook':
+                    table = 'facebook_login';
+                    idField = 'facebook_id';
+                    break;
+                default:
+                    return res.status(400).json(failureResponse({}, 'Invalid authentication type'));
             }
 
-            // Query the appropriate social login table
             connection.query(
-                `SELECT ${query.fields.join(', ')} FROM ${query.table} WHERE ${query.idField} = ?`,
+                `SELECT name as username, email, profile_picture FROM ${table} WHERE ${idField} = ?`,
                 [userId],
                 (err, results) => {
                     if (err) {
-                        console.error(`Database query error for ${query.table}:`, err);
+                        console.error(`Database query error for ${table}:`, err);
                         return res.status(500).json(failureResponse({}, 'Internal server error'));
                     }
 
                     if (results.length > 0) {
                         const user = results[0];
-                        return res.status(200).json(successResponse(user, 'Social login profile retrieved successfully'));
+                        const response = {
+                            username: user.username,
+                            email: user.email,
+                            profile_picture: user.profile_picture ? `http:// 192.168.18.194:8001/uploads/${user.profile_picture}` : null,
+                        };
+                        return res.status(200).json(successResponse(response, 'Social login profile retrieved successfully'));
                     } else {
                         return res.status(404).json(failureResponse({}, 'User not found in social login table'));
                     }
@@ -124,7 +141,7 @@ export const updateUsername = async (req, res) => {
         connection.query(updateQuery, [newUsername, userId], (err, results) => {
             if (err) {
                 console.error("Database query error:", err);
-                return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Updation Failed'))
+                return res.status(500).json(failureResponse({ error: 'Database Internal Server Error' }, 'Updation Failed'))
             }
 
             // Check if the user was actually updated
@@ -388,11 +405,11 @@ export const changePasswordProfile = async (req, res) => {
                     return res.status(404).json(failureResponse({ error: 'Password update failed' }, 'Password Change Failed'));
                 }
 
-                res.status(200).json(successResponse({ message: 'Password has been updated successfully' }, 'Password Change Successful'));
+                return res.status(200).json(successResponse({ message: 'Password has been updated successfully' }, 'Password Change Successful'));
             });
         });
     } catch (error) {
         console.error('Password change error:', error);
-    };
-    return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Change Failed'));
-}
+        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Change Failed'));
+    }
+};
