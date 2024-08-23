@@ -22,7 +22,7 @@ connectToDB();
 
 // EXPRESS SETUP WITH CORS
 const app = express();
-app.use(cors(*))
+app.use(cors());
 
 //Validations Setup
 app.use(bodyParser.json());
