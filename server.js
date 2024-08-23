@@ -28,7 +28,6 @@ app.use(cors({
     credentials: true
 }));
 
-
 //Validations Setup
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -36,7 +35,6 @@ app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 // app.use(fileUpload());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 
 app.get('/', (req, res) => {
     res.send({ message: 'Hello' });
@@ -49,7 +47,6 @@ app.use('/api', profileRoutes);
 app.use('/api', subscriptionRoutes)
 
 // SERVER ACTION
-// const PORT = process.env.PORT;
 const PORT = process.env.PORT;
 app.listen(PORT, '192.168.18.194', () => {
     console.log(`Server is running on http://192.168.18.194:${PORT}`);

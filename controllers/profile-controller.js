@@ -3,8 +3,7 @@ import nodemailer from 'nodemailer'
 import otpGenerator from 'otp-generator'
 import moment from "moment";
 import { successResponse, failureResponse } from '../Helper/helper.js'
-import { hashPassword } from "../Security/security.js";
-import bcrypt from 'bcrypt'
+import { hashPassword, verifyPassword } from "../Security/security.js";
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -141,16 +140,23 @@ export const updateUsername = async (req, res) => {
         res.status(500).json(failureResponse({ message: 'Internal server error' }, 'Updation Failed'));
     }
 };
-export const updateProfilePicture = async (req, res, profilePictureUrl) => {
+export const updateProfilePicture = async (req, res) => {
     try {
+        // Check if a file is uploaded
+        if (!req.file) {
+            return res.status(400).json(failureResponse({ error: 'No file uploaded' }, 'Profile Picture Update Failed'));
+        }
+
+        const profilePictureUrl = req.file.filename;
         const userId = req.user?.userId; // Get the user ID from the request, assuming authentication middleware sets req.user
         const authType = req.user?.authType; // Get the authentication type
 
         if (!userId) {
-            return res.status(422).json({ error: 'User Id is required' });
+            return res.status(422).json(failureResponse({ error: 'User is not Authenticated' }, 'Profile Picture Update Failed'));
         }
+
         if (!profilePictureUrl) {
-            return res.status(422).json({ error: 'Profile Picture Url is required' });
+            return res.status(422).json(failureResponse({ error: 'Profile Picture Url is required' }, 'Profile Picture Update Failed'));
         }
 
         // Determine which table to update based on the user authentication method
@@ -172,26 +178,26 @@ export const updateProfilePicture = async (req, res, profilePictureUrl) => {
                 updateQuery = 'UPDATE facebook_login SET profile_picture = ? WHERE facebook_id = ?';
                 break;
             default:
-                return res.status(400).json({ error: 'Invalid Authentication Type' });
+                return res.status(400).json(failureResponse({ error: 'Invalid Authentication Type' }, 'Profile Picture Update Failed'));
         }
 
         // Execute the update query
         connection.query(updateQuery, [profilePictureUrl, userId], (err, results) => {
             if (err) {
                 console.error("Database query error:", err);
-                return res.status(500).json({ error: 'Internal server error' });
+                return res.status(500).json(failureResponse({ error: 'Internal server error' }, 'Profile Picture Update Failed'));
             }
 
             // Check if the user was actually updated
             if (results.affectedRows === 0) {
-                return res.status(404).json({ error: 'User not found or profile picture not updated' });
+                return res.status(404).json(failureResponse({ error: 'User not found or profile picture not updated' }, 'Profile Picture Update Failed'));
             }
 
-            res.status(200).json({ message: 'Profile picture updated successfully' });
+            res.status(200).json(successResponse({ filepath: profilePictureUrl }, 'Profile Picture Updated Successfully'));
         });
     } catch (error) {
         console.error("Server error:", error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json(failureResponse({ error: 'Internal server error' }, 'Profile Picture Update Failed'));
     }
 };
 export const requestForOtp = async (req, res) => {
@@ -330,33 +336,7 @@ export const resetPassword = async (req, res) => {
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Reset Failed'));
     }
 };
-export const handleFileUpload = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
-
-        const profilePictureUrl = `/uploads/${req.file.filename}`;
-        const userId = req.user?.userId; // Assuming req.user contains user info from auth middleware
-
-        if (!userId) {
-            return res.status(422).json({ error: 'User Id is required' });
-        }
-
-        // Call updateProfilePicture with the new profile picture URL
-        await updateProfilePicture(req, res, profilePictureUrl);
-
-        res.json({
-            message: 'File uploaded and profile picture updated successfully',
-            filePath: profilePictureUrl
-        });
-    }
-    catch (error) {
-        return res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
-
-export const changePassword = async (req, res) => {
+export const changePasswordProfile = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
 
@@ -388,13 +368,13 @@ export const changePassword = async (req, res) => {
             }
 
             const user = results[0];
-            const isMatch = await bcrypt.compare(currentPassword, user.password);
+            const isMatch = verifyPassword(user.password, currentPassword);
 
             if (!isMatch) {
                 return res.status(400).json(failureResponse({ error: 'Current password is incorrect' }, 'Password Change Failed'));
             }
 
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            const hashedPassword = hashPassword(newPassword);
 
             // Update the user's password
             const updatePasswordSql = 'UPDATE users SET password = ? WHERE id = ?';
@@ -413,6 +393,6 @@ export const changePassword = async (req, res) => {
         });
     } catch (error) {
         console.error('Password change error:', error);
-        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Change Failed'));
-    }
-};
+    };
+    return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Change Failed'));
+}

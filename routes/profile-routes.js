@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProfileInfo, updateUsername, changePassword, requestForOtp, verifyOtp, resetPassword, handleFileUpload } from '../controllers/profile-controller.js'
+import { getProfileInfo, updateUsername, changePasswordProfile, requestForOtp, verifyOtp, resetPassword, updateProfilePicture } from '../controllers/profile-controller.js'
 import authenticate from '../middleware/authentication.js';
 import multer from 'multer';
 import path from 'path';
@@ -16,7 +16,6 @@ const storage = multer.diskStorage({
         cb(null, `${Date.now()}-${file.originalname}`); // specify the filename format
     },
 });
-
 // Initialize upload
 const upload = multer({
     storage: storage,
@@ -34,7 +33,6 @@ const upload = multer({
     },
 });
 
-
 const router = express.Router();
 
 router.get('/show-profile', authenticate, getProfileInfo);
@@ -42,8 +40,8 @@ router.put('/update-username', authenticate, updateUsername);
 router.post('/request-for-otp', requestForOtp)
 router.post('/verify-otp', verifyOtp)
 router.post('/reset-password', resetPassword);
-router.post('/update-profile-picture', upload.single('file'), authenticate, handleFileUpload);
-router.put('/change-password', authenticate, changePassword)
+router.post('/update-profile-picture', upload.single('file'), authenticate, updateProfilePicture);
+router.put('/change-profile-password', authenticate, changePasswordProfile)
 
 
 export default router;
