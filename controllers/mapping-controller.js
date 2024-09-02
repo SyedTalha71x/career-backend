@@ -114,3 +114,54 @@ export const getPathsWithDetails = (req, res) => {
     return res.status(500).json(failureResponse({ error: "Internal Server Error" }, "Failed to retrieve paths"));
   }
 };
+export const getPathsForUser = (req, res) => {
+  try {
+    const userId = req.user?.userId; 
+
+    if (!userId) {
+      return res.status(400).json(failureResponse({ error: 'User ID is required' }, 'Failed to retrieve paths'));
+    }
+    const pathsQuery = 'SELECT * FROM path WHERE user_id = ?';
+    connection.query(pathsQuery, [userId], (err, pathsResult) => {
+      if (err) {
+        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to retrieve paths'));
+      }
+      return res.status(200).json(successResponse(pathsResult, 'Paths retrieved successfully'));
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to retrieve paths'));
+  }
+};
+export const getSkillsForUser = (req, res) => {
+  try {
+    const userId = req.user?.userId;  
+
+    if (!userId) {
+      return res.status(400).json(failureResponse({ error: 'User ID is required' }, 'Failed to retrieve skills'));
+    }
+
+    const query = `
+      SELECT skills.* FROM skills 
+      INNER JOIN steps ON skills.step_id = steps.id 
+      INNER JOIN path ON steps.path_id = path.id
+      WHERE path.user_id = ?
+    `;
+
+    connection.query(query, [userId], (err, skillsResult) => {
+      if (err) {
+        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to retrieve skills'));
+      }
+
+      return res.status(200).json(successResponse(skillsResult, 'Skills retrieved successfully'));
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to retrieve skills'));
+  }
+};
+
+
+
+
+
