@@ -483,3 +483,4 @@ export const outlookLogin = async (req, res) => {
         res.status(500).json(failureResponse(error, 'Internal server error'));
     }
 };
+

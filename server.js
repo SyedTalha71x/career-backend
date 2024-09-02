@@ -6,10 +6,11 @@ import { configDotenv } from "dotenv";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import fileRoutes from './routes/file-routes.js'
-import fileUpload from "express-fileupload";
 import profileRoutes from "./routes/profile-routes.js";
+import rolePermissionRoutes from './routes/role-permission-routes.js'
 import subscriptionRoutes from './routes/subscription-routes.js'
 import path from 'path';
+import MappingRoutes from './routes/mapping-routes.js'
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,21 +31,20 @@ app.use(cookieParser());
 app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 // app.use(fileUpload());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.get('/', (req, res) => {
-    res.send({ message: 'Hello' });
-});
 
 // ROUTES
 app.use('/api', UserRoutes);
 app.use('/api', fileRoutes);
 app.use('/api', profileRoutes);
 app.use('/api', subscriptionRoutes)
+app.use('/api', rolePermissionRoutes)
+app.use('/api', MappingRoutes)
 
 // SERVER ACTION
 const PORT = process.env.PORT;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on http://192.168.18.194:${PORT}`);
+app.listen(PORT, '0.0.0.0',() => {
+    console.log(`Server is running on http://192.168.100.36:${PORT}`);
 });
 
