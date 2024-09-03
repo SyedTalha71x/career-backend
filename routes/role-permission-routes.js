@@ -6,7 +6,6 @@ import {
   updatePermission,
   assignPermissionsToRole,
   assignRoleToUser,
-  createTab, createtabbars
 } from "../controllers/role-permission-controller.js";
 import { auth } from "../middleware/auth.js";
 
@@ -33,8 +32,5 @@ router.post(
   assignRoleToUser
 );
 
-// Testing routes
-router.get("/create-tab", auth('create-tab'), createTab);
-router.get("/create-tabbars", auth('create-tabbars'), createtabbars);
 
 export default router;
