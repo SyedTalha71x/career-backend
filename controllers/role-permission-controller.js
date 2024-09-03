@@ -434,10 +434,3 @@ export const createPermissionModule = async (req, res) => {
   }
 };
 
-// Below are Testing api to check desired permissions
-// export const createTab = (req, res) => {
-//   return res.status(200).json({ message: "Hello" });
-// };
-// export const createtabbars = (req, res) => {
-//   return res.status(200).json({ message: "Hello" });
-// };
