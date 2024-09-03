@@ -4,29 +4,39 @@ import { generateRandomColor } from '../Security/security.js';
 
 export const createPath = (req, res) => {
   try {
-    const {prompt} = req.body;
+    const { prompt } = req.body;
     const file = req.file;
     const userId = req.user?.userId;
     const color = generateRandomColor();
 
-    if((!prompt && !file) || (prompt && file)){
-      return res.status(400).json(failureResponse({error: 'You must provide either a prompt or file'}, 'Failed to create the path'))
+    // Check if either prompt or file is provided, but not both
+    if ((!prompt && !file) || (prompt && file)) {
+      return res.status(400).json(
+        failureResponse({ error: 'You must provide either a prompt or file' }, 'Failed to create the path')
+      );
     }
 
-    const filePath = file ? file.path : null
+    // Extract the filename from the file path if a file is provided
+    const fileName = file ? file.filename : null;
 
-    const sqlQuery = 'INSERT INTO path (prompt, file, color, status, user_id) VALUES (?,?,?,?,?)';
-    connection.query(sqlQuery, [prompt || null, filePath || null, color, 'pending', userId], (err, result)=>{
-      if(err){
-        return res.status(500).json(failureResponse({error: 'Internal Server Error'}, 'Failed to create the path'))
+    // SQL query to insert data into the path table
+    const sqlQuery = 'INSERT INTO path (prompt, file, color, status, user_id) VALUES (?, ?, ?, ?, ?)';
+    connection.query(sqlQuery, [prompt || null, fileName || null, color, 'pending', userId], (err, result) => {
+      if (err) {
+        return res.status(500).json(
+          failureResponse({ error: 'Internal Server Error' }, 'Failed to create the path')
+        );
       }
-      res.status(200).json(successResponse({color},'Path is created Successfully' ))
-    })
+      res.status(200).json(successResponse({ color }, 'Path is created successfully'));
+    });
   } catch (error) {
     console.error("Unexpected error:", error);
-    return res.status(500).json(failureResponse({ error: "Internal Server Error" }, "Failed to create the path"));
+    return res.status(500).json(
+      failureResponse({ error: "Internal Server Error" }, "Failed to create the path")
+    );
   }
 };
+
 export const getPathsWithDetails = (req, res) => {
   try {
     const userId = req.user?.userId;

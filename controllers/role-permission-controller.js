@@ -100,29 +100,61 @@ export const updateRole = async (req, res) => {
 };
 export const createPermission = async (req, res) => {
   try {
-    const { permission } = req.body;
+    const { permissions, slugs, permission_module_id } = req.body;
 
-    if (!permission) {
+    if (!permissions || !Array.isArray(permissions) || permissions.length === 0) {
       return res
         .status(400)
         .json(
           failureResponse(
-            { error: "Permission name is required" },
+            { error: "Permissions array is required and cannot be empty" },
             "Bad Request"
           )
         );
     }
 
-    const sqlQry = "INSERT INTO permissions (name) VALUES (?)";
+    if (!slugs || !Array.isArray(slugs) || slugs.length === 0 || slugs.length !== permissions.length) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Slugs array must match the length of permissions array" },
+            "Bad Request"
+          )
+        );
+    }
 
-    connection.query(sqlQry, [permission], (err, results) => {
+    if (typeof permission_module_id !== 'number' || permission_module_id <= 0) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Valid permission_module_id is required" },
+            "Bad Request"
+          )
+        );
+    }
+
+    const sqlQry = `
+      INSERT INTO permissions (name, slug, permission_module_id)
+      VALUES ?
+    `;
+
+    // Map permissions and slugs to the format required by the query
+    const values = permissions.map((permission, index) => [
+      permission,
+      slugs[index],
+      permission_module_id
+    ]);
+
+    connection.query(sqlQry, [values], (err, results) => {
       if (err) {
         console.log("Database Error--------------", err);
         return res
           .status(500)
           .json(
             failureResponse(
-              { error: "Failed to create permission" },
+              { error: "Failed to create permissions" },
               "Internal Server Error"
             )
           );
@@ -131,8 +163,8 @@ export const createPermission = async (req, res) => {
         .status(201)
         .json(
           successResponse(
-            { id: results.insertId },
-            "Permission created successfully"
+            { affectedRows: results.affectedRows },
+            "Permissions created successfully"
           )
         );
     });
@@ -210,32 +242,44 @@ export const assignPermissionsToRole = async (req, res) => {
   try {
     const { roleId, permissionIds } = req.body; // roleId is the ID of the role, permissionIds is an array of permission IDs
 
-    if (!roleId || !Array.isArray(permissionIds) || permissionIds.length === 0) {
-      return res.status(400).json(
-        failureResponse(
-          { error: "Role ID and permission IDs are required" },
-          "Bad Request"
-        )
-      );
+    if (
+      !roleId ||
+      !Array.isArray(permissionIds) ||
+      permissionIds.length === 0
+    ) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Role ID and permission IDs are required" },
+            "Bad Request"
+          )
+        );
     }
 
     // Query to check if the role exists
     const roleCheckQuery = "SELECT id FROM roles WHERE id = ?";
     connection.query(roleCheckQuery, [roleId], (err, roleResults) => {
       if (err || !roleResults.length) {
-        return res.status(404).json(
-          failureResponse(
-            { error: "Role not found" },
-            "The specified role does not exist"
-          )
-        );
+        return res
+          .status(404)
+          .json(
+            failureResponse(
+              { error: "Role not found" },
+              "The specified role does not exist"
+            )
+          );
       }
 
       // Prepare data for inserting into role_to_permission table
-      const values = permissionIds.map((permissionId) => [roleId, permissionId]);
+      const values = permissionIds.map((permissionId) => [
+        roleId,
+        permissionId,
+      ]);
 
       // Insert multiple records into role_to_permission table
-      const assignQuery = "INSERT INTO role_to_permission (role_id, permission_id) VALUES ?";
+      const assignQuery =
+        "INSERT INTO role_to_permission (role_id, permission_id) VALUES ?";
 
       connection.query(assignQuery, [values], (err, results) => {
         if (err) {
@@ -252,7 +296,9 @@ export const assignPermissionsToRole = async (req, res) => {
 
         return res
           .status(200)
-          .json(successResponse(null, "Permissions assigned to role successfully"));
+          .json(
+            successResponse(null, "Permissions assigned to role successfully")
+          );
       });
     });
   } catch (error) {
@@ -272,36 +318,42 @@ export const assignRoleToUser = async (req, res) => {
     const { userId, roleId } = req.body; // userId is the ID of the user, roleId is the ID of the role
 
     if (!userId || !roleId) {
-      return res.status(400).json(
-        failureResponse(
-          { error: "User ID and Role ID are required" },
-          "Bad Request"
-        )
-      );
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "User ID and Role ID are required" },
+            "Bad Request"
+          )
+        );
     }
 
     // Query to check if the user exists
     const userCheckQuery = "SELECT id FROM users WHERE id = ?";
     connection.query(userCheckQuery, [userId], (err, userResults) => {
       if (err || !userResults.length) {
-        return res.status(404).json(
-          failureResponse(
-            { error: "User not found" },
-            "The specified user does not exist"
-          )
-        );
+        return res
+          .status(404)
+          .json(
+            failureResponse(
+              { error: "User not found" },
+              "The specified user does not exist"
+            )
+          );
       }
 
       // Query to check if the role exists
       const roleCheckQuery = "SELECT id FROM roles WHERE id = ?";
       connection.query(roleCheckQuery, [roleId], (err, roleResults) => {
         if (err || !roleResults.length) {
-          return res.status(404).json(
-            failureResponse(
-              { error: "Role not found" },
-              "The specified role does not exist"
-            )
-          );
+          return res
+            .status(404)
+            .json(
+              failureResponse(
+                { error: "Role not found" },
+                "The specified role does not exist"
+              )
+            );
         }
 
         // Update the user's role
@@ -337,8 +389,52 @@ export const assignRoleToUser = async (req, res) => {
       );
   }
 };
+export const createPermissionModule = async (req, res) => {
+  try {
+    const { moduleName } = req.body;
 
-// Below are Testing api to check desired permissions 
+    if (!moduleName) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Module Name is required" },
+            "Failed to create the module"
+          )
+        );
+    }
+
+    const sqlQuery = "INSERT INTO permission_module (module_name) VALUES (?)";
+    connection.query(sqlQuery, [moduleName], (err, results) => {
+      if (err) {
+        console.log(err);
+        return res
+          .status(500)
+          .json(
+            failureResponse(
+              { error: "Database query error " },
+              "Failed to create the module"
+            )
+          );
+      }
+      return res
+        .status(200)
+        .json(successResponse({ moduleName }, "Module created successfully"));
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json(
+        failureResponse(
+          { error: "Internal Server Error" },
+          "Failed to create the permission module"
+        )
+      );
+  }
+};
+
+// Below are Testing api to check desired permissions
 // export const createTab = (req, res) => {
 //   return res.status(200).json({ message: "Hello" });
 // };
