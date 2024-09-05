@@ -39,8 +39,18 @@ export const GET_PATHS_WITH_TOTAL_SKILLS_COUNT = `
    from path as p where p.user_id = 30;
 `;
 
-
 export const GET_ALL_SKILLS = `SELECT skills.* FROM skills 
       INNER JOIN steps ON skills.step_id = steps.id 
       INNER JOIN path ON steps.path_id = path.id
-      WHERE path.user_id = ?`
+      WHERE path.user_id = ?`;
+
+export const GET_EACH_SKILLS_WITH_ITS_STEP = `
+       SELECT steps.*, skills.id AS skill_id, skills.title AS skill_title, 
+       skills.sort AS skill_sort, 
+       skills.status AS skill_status
+       FROM steps
+       LEFT JOIN skills ON steps.id = skills.step_id
+       INNER JOIN path ON steps.path_id = path.id
+       WHERE steps.id = ? AND path.user_id = ? AND path.id = ?;
+
+`;

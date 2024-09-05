@@ -1,5 +1,5 @@
 import express from "express";
-import { createPath, getPathsWithDetails, getPathsForUser, getSkillsForUser } from "../controllers/mapping-controller.js";
+import { createPath, getPathsWithDetails, getPathsForUser, getSkillsForUser , geteachskillsforpath} from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";
 import path from 'path'
@@ -40,5 +40,6 @@ router.post("/create-path", upload.single("file"), authenticate, createPath);
 router.get("/get-details-with-path", authenticate, getPathsWithDetails)
 router.get("/get-paths-for-user", authenticate, getPathsForUser)
 router.get("/get-skills-for-user", authenticate, getSkillsForUser)
+router.post("/get-each-skills-with-steps", authenticate, geteachskillsforpath)
 
 export default router;

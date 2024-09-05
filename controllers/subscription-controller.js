@@ -167,4 +167,33 @@ export const confirmSubscription = async (req, res) => {
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to confirm Subscription'));
     }
 };
+export const checkUserSubscription = async (req, res) => {
+    const userId = req.user?.userId; 
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const query = `
+    SELECT us.expiry_date
+    FROM user_subscription us
+    WHERE us.user_id = ? AND us.expiry_date > NOW()
+    LIMIT 1;
+  `;
+
+  connection.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error executing query', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    // If no result is returned, it means the subscription has expired or doesn't exist
+    if (results.length === 0) {
+      return res.json({ Subscription_Status: false });
+    }
+
+    // If we get a result, the subscription is still active
+    res.json({ Subscription_Status: true });
+  });
+};
 

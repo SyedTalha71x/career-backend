@@ -7,11 +7,6 @@ const authenticate = (req, res, next) => {
     const authHeader = req.header('Authorization');
     const token = authHeader?.replace('Bearer ', '');
 
-    // Log detailed request information
-    console.log("Request Headers:", req.headers);
-    console.log("Authorization Header:", authHeader);
-    console.log("Raw Token:", token);
-
     if (!token) {
         return res.status(401).json({ message: 'Access denied' });
     }
@@ -20,10 +15,6 @@ const authenticate = (req, res, next) => {
         // Verify token using jsonwebtoken
         const decoded = jwt.verify(token, SECRET_KEY);
 
-        // Log the decoded payload
-        console.log("Decoded Token Payload:", decoded);
-
-        // Attach user information to request object
         req.user = decoded;
         next();
     } catch (err) {

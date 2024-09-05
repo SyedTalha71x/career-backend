@@ -31,9 +31,7 @@ export function generateToken(userId, email, authType, roleId = null) {
 
   // Generate token with secret key and expiration from environment variables
   try {
-    const token = jwt.sign(payload, SECRET_KEY, {
-      expiresIn: TOKEN_EXPIRATION || "1h", // Default to 1 hour if not set
-    });
+    const token = jwt.sign(payload, SECRET_KEY)
     return token;
   } catch (error) {
     console.error("Error generating token:", error);
