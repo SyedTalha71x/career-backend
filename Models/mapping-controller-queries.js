@@ -25,7 +25,7 @@ export const GET_ALL_PATH_DETAILS_WITH_SKILL_AND_STEPS = `SELECT p.id, p.color, 
                 ORDER BY s.sort ASC
             ) AS steps
         FROM path AS p
-        WHERE p.user_id = 30
+        WHERE p.user_id = ?
         AND p.status = 'analyzed'
 `;
 
@@ -36,7 +36,7 @@ export const GET_PATHS_WITH_TOTAL_SKILLS_COUNT = `
      inner join skills as sk on sk.step_id = s.id
      where s.path_id = p.id
    ) as total_skill_count
-   from path as p where p.user_id = 30;
+   from path as p where p.user_id = ?;
 `;
 
 export const GET_ALL_SKILLS = `SELECT skills.* FROM skills 

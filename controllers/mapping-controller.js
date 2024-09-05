@@ -138,7 +138,7 @@ export const getPathsForUser = (req, res) => {
       [userId],
       (err, result) => {
         if (err) {
-          console.error("Unexpected error:", error);
+          console.error("Unexpected error:", err);
           return res
             .status(500)
             .json(
