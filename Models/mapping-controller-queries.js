@@ -26,7 +26,6 @@ export const GET_ALL_PATH_DETAILS_WITH_SKILL_AND_STEPS = `SELECT p.id, p.color, 
             ) AS steps
         FROM path AS p
         WHERE p.user_id = ?
-        AND p.status = 'analyzed'
 `;
 
 export const GET_PATHS_WITH_TOTAL_SKILLS_COUNT = `
