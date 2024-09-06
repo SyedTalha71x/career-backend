@@ -54,3 +54,35 @@ export const GET_EACH_SKILLS_WITH_ITS_STEP = `
        WHERE steps.id = ? AND path.user_id = ? AND path.id = ?;
 
 `;
+
+export const GET_SINGLE_PATH_DETAILS = `SELECT p.id, p.color, p.status,
+            (
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', s.id,
+                        'title', s.title,
+                        'description', s.description,
+                        'status', s.status,
+                        'skills', (
+                            SELECT JSON_ARRAYAGG(
+                                JSON_OBJECT(
+                                    'id', sk.id,
+                                    'title', sk.title,
+                                    'status', sk.status
+                                )
+                            )
+                            FROM skills AS sk
+                            WHERE sk.step_id = s.id
+                            ORDER BY sk.sort ASC
+                        )
+                    )
+                )
+                FROM steps AS s
+                WHERE s.path_id = p.id
+                ORDER BY s.sort ASC
+            ) AS steps
+        FROM path AS p
+        WHERE p.user_id = ?
+        AND p.id = ?
+`;
+

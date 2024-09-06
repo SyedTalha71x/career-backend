@@ -1,5 +1,5 @@
 import express from "express";
-import { createPath, getPathsWithDetails, getPathsForUser, getSkillsForUser , geteachskillsforpath} from "../controllers/mapping-controller.js";
+import { createPath, getPathsWithDetails, getPathsForUser, getSkillsForUser , geteachskillsforpath, changeSkillStatus, getSinglePath} from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";
 import path from 'path'
@@ -41,5 +41,7 @@ router.get("/get-details-with-path", authenticate, getPathsWithDetails)
 router.get("/get-paths-for-user", authenticate, getPathsForUser)
 router.get("/get-skills-for-user", authenticate, getSkillsForUser)
 router.post("/get-each-skills-with-steps", authenticate, geteachskillsforpath)
+router.get("/check-status-of-skills/:id", authenticate, changeSkillStatus)
+router.get("/get-single-path/:id", authenticate, getSinglePath)
 
 export default router;

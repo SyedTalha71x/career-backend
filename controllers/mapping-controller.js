@@ -6,6 +6,7 @@ import {
   GET_PATHS_WITH_TOTAL_SKILLS_COUNT,
   GET_ALL_SKILLS,
   GET_EACH_SKILLS_WITH_ITS_STEP,
+  GET_SINGLE_PATH_DETAILS
 } from "../Models/mapping-controller-queries.js";
 
 export const createPath = (req, res) => {
@@ -263,55 +264,60 @@ export const geteachskillsforpath = (req, res) => {
 
       const pathId = pathResult[0].path_id;
 
+      connection.query(
+        GET_EACH_SKILLS_WITH_ITS_STEP,
+        [stepId, userId, pathId],
+        (err, result) => {
+          if (err) {
+            return res
+              .status(500)
+              .json(
+                failureResponse(
+                  { error: "Internal Server Error" },
+                  "Failed to retrieve step and skills"
+                )
+              );
+          }
 
-      connection.query(GET_EACH_SKILLS_WITH_ITS_STEP, [stepId, userId, pathId], (err, result) => {
-        if (err) {
-          return res
-            .status(500)
+          console.log("SQL Query Result:", result);
+
+          if (!result || result.length === 0) {
+            return res
+              .status(404)
+              .json(
+                failureResponse(
+                  { error: "No data found for the given step ID" },
+                  "Failed to retrieve step and skills"
+                )
+              );
+          }
+
+          const stepData = {
+            id: result[0].id,
+            title: result[0].title,
+            description: result[0].description,
+          };
+
+          const skills = result
+            .filter((row) => row.skill_id) // Only include rows with valid skills
+            .map((row) => ({
+              id: row.skill_id,
+              title: row.skill_title,
+              sort: row.skill_sort,
+              status: row.skill_status,
+            }));
+
+          console.log("Mapped Skills:", skills);
+          res
+            .status(200)
             .json(
-              failureResponse(
-                { error: "Internal Server Error" },
-                "Failed to retrieve step and skills"
+              successResponse(
+                { step: stepData, skills: skills },
+                "Skills and step details retrieved successfully"
               )
             );
         }
-      
-        console.log("SQL Query Result:", result);
-      
-        if (!result || result.length === 0) {
-          return res
-            .status(404)
-            .json(
-              failureResponse(
-                { error: "No data found for the given step ID" },
-                "Failed to retrieve step and skills"
-              )
-            );
-        }
-      
-        const stepData = {
-          id: result[0].id,
-          title: result[0].title,
-          description: result[0].description,
-        };
-      
-        const skills = result
-          .filter((row) => row.skill_id) // Only include rows with valid skills
-          .map((row) => ({
-            id: row.skill_id,
-            title: row.skill_title,
-            sort: row.skill_sort,
-            status: row.skill_status,
-          }));
-
-        console.log("Mapped Skills:", skills);
-        res.status(200).json(
-          successResponse(
-            { step: stepData, skills: skills },
-            "Skills and step details retrieved successfully"
-          )
-        );
-      });
+      );
     });
   } catch (error) {
     console.log(error);
@@ -325,4 +331,181 @@ export const geteachskillsforpath = (req, res) => {
       );
   }
 };
+export const changeSkillStatus = (req, res) => {
+  try {
+    const skillId = req.params.id;
+    const userId = req.user?.userId;
 
+    if (!userId) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "User ID is required" },
+            "Failed to change the status"
+          )
+        );
+    }
+    if (!skillId) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Skill Id is required" },
+            "Failed to change the status"
+          )
+        );
+    }
+
+    const getSkillStatusQuery = `
+    SELECT s.status, p.user_id 
+    FROM skills s
+    JOIN steps st ON s.step_id = st.id
+    JOIN path p ON st.path_id = p.id
+    WHERE s.id = ? AND p.user_id = ?
+  `;
+
+    connection.query(getSkillStatusQuery, [skillId, userId], (err, result) => {
+      if (err) {
+        console.log(err);
+        return res
+          .status(500)
+          .json(
+            failureResponse(
+              { error: "Internal Server Error" },
+              "Skill Status changing Failed"
+            )
+          );
+      }
+      if (result.length === 0) {
+        return res
+          .status(404)
+          .json(
+            failureResponse(
+              { error: "No skill found for the provided ID and user" },
+              "Failed to change skill status"
+            )
+          );
+      }
+
+      const currentStatus = result[0].status;
+      const ToggleStatus =
+        currentStatus === "pending" ? "completed" : "pending";
+
+        const updateStatusQuery = `
+        UPDATE skills s
+        JOIN steps st ON s.step_id = st.id
+        JOIN path p ON st.path_id = p.id
+        SET s.status = ?
+        WHERE s.id = ? AND p.user_id = ?
+      `;
+
+      connection.query(
+        updateStatusQuery,
+        [ToggleStatus, skillId, userId],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+            return res
+              .status(500)
+              .json(
+                failureResponse(
+                  { error: "Internal Server Error" },
+                  "Skill Status changing Failed"
+                )
+              );
+          }
+          if (result.affectedRows === 0) {
+            return res
+              .status(400)
+              .json(
+                failureResponse(
+                  { error: "No rows affected" },
+                  "Failed to change the status"
+                )
+              );
+          }
+
+          return res
+            .status(200)
+            .json(
+              successResponse(
+                { newStatus: ToggleStatus },
+                "Status has been updated "
+              )
+            );
+        }
+      );
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json(
+        failureResponse(
+          { error: "Internal Server Error" },
+          "Skill Status changing Failed"
+        )
+      );
+  }
+};
+export const getSinglePath = (req,res) =>{
+  try{
+      const userId = req.user?.userId;
+      const pathId = req.params.id;
+
+      if (!userId) {
+        return res
+          .status(400)
+          .json(
+            failureResponse(
+              { error: "User ID is required" },
+              "Failed to get details"
+            )
+          );
+      }
+      if (!pathId) {
+        return res
+          .status(400)
+          .json(
+            failureResponse(
+              { error: "Path ID is required" },
+              "Failed to get details"
+            )
+          );
+      }
+
+      connection.query(GET_SINGLE_PATH_DETAILS, [userId, pathId], (err, result)=>{
+        if(err){
+          return res
+          .status(500)
+          .json(
+            failureResponse(
+              { error: "Internal Server Error" },
+              "Failed to get the data"
+            )
+          );
+        }
+        const formatResult = result.map(item =>{
+          return{
+            ...item,
+            steps : JSON.parse(item.steps)
+          }
+        })
+        return res.status(200).json(successResponse({formatResult}, 'Path retrived Successfully'))
+      })
+
+
+  }
+  catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json(
+        failureResponse(
+          { error: "Internal Server Error" },
+          "Failed to get the data"
+        )
+      );
+  }
+}
