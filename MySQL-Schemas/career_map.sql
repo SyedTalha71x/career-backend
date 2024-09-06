@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.37, for Linux (x86_64)
 --
--- Host: localhost    Database: Authentication
+-- Host: localhost    Database: career_map
 -- ------------------------------------------------------
 -- Server version	8.0.37-0ubuntu0.23.10.2
 
@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS `facebook_login`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `facebook_login` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `facebook_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -53,10 +53,10 @@ DROP TABLE IF EXISTS `google_login`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `google_login` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `google_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` text COLLATE utf8mb4_unicode_ci,
+  `google_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -84,9 +84,9 @@ DROP TABLE IF EXISTS `instagram_login`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `instagram_login` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `instagram_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `instagram_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -112,10 +112,10 @@ DROP TABLE IF EXISTS `linkedin_login`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `linkedin_login` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `linkedin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `linkedin_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -141,10 +141,10 @@ DROP TABLE IF EXISTS `outlook_login`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `outlook_login` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `outlook_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `outlook_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -173,7 +173,7 @@ CREATE TABLE `path` (
   `prompt` longtext,
   `file` varchar(255) DEFAULT NULL,
   `color` varchar(7) DEFAULT NULL,
-  `status` enum('pending','analyzed') DEFAULT 'pending',
+  `status` enum('pending','analyzing','analyzed') DEFAULT 'pending',
   `user_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
@@ -326,7 +326,7 @@ CREATE TABLE `skills` (
 
 LOCK TABLES `skills` WRITE;
 /*!40000 ALTER TABLE `skills` DISABLE KEYS */;
-INSERT INTO `skills` VALUES (51,'Kickoff Meeting',1,11,'pending'),(52,'Stakeholder Engagement',2,11,'pending'),(53,'Scope Definition',3,11,'pending'),(54,'Timeline Planning',4,11,'pending'),(55,'Resource Allocation',5,11,'pending'),(56,'Competitive Analysis',1,12,'pending'),(57,'User Research',2,12,'pending'),(58,'Market Trends',3,12,'pending'),(59,'Data Analysis',4,12,'pending'),(60,'Requirement Gathering',5,12,'pending'),(61,'Wireframe Design',1,13,'pending'),(62,'Layout Design',2,13,'pending'),(63,'Interactive Elements',3,13,'pending'),(64,'Usability Testing',4,13,'pending'),(65,'Design Approval',5,13,'pending'),(66,'Prototype Development',1,14,'pending'),(67,'Prototype Testing',2,14,'pending'),(68,'Feedback Collection',3,14,'pending'),(69,'Prototype Iteration',4,14,'pending'),(70,'Final Prototype Review',5,14,'pending'),(71,'Beta Testing Setup',1,15,'pending'),(72,'Bug Reporting',2,15,'pending'),(73,'User Feedback',3,15,'pending'),(74,'Issue Resolution',4,15,'pending'),(75,'Test Results Analysis',5,15,'pending'),(76,'Launch Planning',1,16,'pending'),(77,'Marketing Strategy',2,16,'pending'),(78,'Launch Event',3,16,'pending'),(79,'Go-Live Checklist',4,16,'pending'),(80,'Launch Execution',5,16,'pending'),(81,'User Training Sessions',1,17,'pending'),(82,'Training Materials',2,17,'pending'),(83,'Stakeholder Training',3,17,'pending'),(84,'Training Feedback',4,17,'pending'),(85,'Knowledge Transfer',5,17,'pending'),(86,'Support Desk Setup',1,18,'pending'),(87,'Issue Tracking',2,18,'pending'),(88,'User Assistance',3,18,'pending'),(89,'Patch Management',4,18,'pending'),(90,'Post-Launch Review',5,18,'pending'),(91,'Closure Meeting',1,19,'pending'),(92,'Final Deliverables',2,19,'pending'),(93,'Contract Finalization',3,19,'pending'),(94,'Documentation Handoff',4,19,'pending'),(95,'Project Archive',5,19,'pending'),(96,'Performance Review',1,20,'pending'),(97,'Project Evaluation',2,20,'pending'),(98,'Success Metrics',3,20,'pending'),(99,'Lessons Learned',4,20,'pending'),(100,'Future Recommendations',5,20,'pending');
+INSERT INTO `skills` VALUES (51,'Kickoff Meeting',1,11,'completed'),(52,'Stakeholder Engagement',2,11,'pending'),(53,'Scope Definition',3,11,'pending'),(54,'Timeline Planning',4,11,'pending'),(55,'Resource Allocation',5,11,'pending'),(56,'Competitive Analysis',1,12,'pending'),(57,'User Research',2,12,'pending'),(58,'Market Trends',3,12,'pending'),(59,'Data Analysis',4,12,'pending'),(60,'Requirement Gathering',5,12,'pending'),(61,'Wireframe Design',1,13,'pending'),(62,'Layout Design',2,13,'pending'),(63,'Interactive Elements',3,13,'pending'),(64,'Usability Testing',4,13,'pending'),(65,'Design Approval',5,13,'pending'),(66,'Prototype Development',1,14,'pending'),(67,'Prototype Testing',2,14,'pending'),(68,'Feedback Collection',3,14,'pending'),(69,'Prototype Iteration',4,14,'pending'),(70,'Final Prototype Review',5,14,'pending'),(71,'Beta Testing Setup',1,15,'pending'),(72,'Bug Reporting',2,15,'pending'),(73,'User Feedback',3,15,'pending'),(74,'Issue Resolution',4,15,'pending'),(75,'Test Results Analysis',5,15,'pending'),(76,'Launch Planning',1,16,'pending'),(77,'Marketing Strategy',2,16,'pending'),(78,'Launch Event',3,16,'pending'),(79,'Go-Live Checklist',4,16,'pending'),(80,'Launch Execution',5,16,'pending'),(81,'User Training Sessions',1,17,'pending'),(82,'Training Materials',2,17,'pending'),(83,'Stakeholder Training',3,17,'pending'),(84,'Training Feedback',4,17,'pending'),(85,'Knowledge Transfer',5,17,'pending'),(86,'Support Desk Setup',1,18,'pending'),(87,'Issue Tracking',2,18,'pending'),(88,'User Assistance',3,18,'pending'),(89,'Patch Management',4,18,'pending'),(90,'Post-Launch Review',5,18,'pending'),(91,'Closure Meeting',1,19,'pending'),(92,'Final Deliverables',2,19,'pending'),(93,'Contract Finalization',3,19,'pending'),(94,'Documentation Handoff',4,19,'pending'),(95,'Project Archive',5,19,'pending'),(96,'Performance Review',1,20,'pending'),(97,'Project Evaluation',2,20,'pending'),(98,'Success Metrics',3,20,'pending'),(99,'Lessons Learned',4,20,'pending'),(100,'Future Recommendations',5,20,'pending');
 /*!40000 ALTER TABLE `skills` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -369,7 +369,7 @@ DROP TABLE IF EXISTS `subscriptions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subscriptions` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `valid_till` int DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -398,7 +398,7 @@ CREATE TABLE `user_subscription` (
   `subscription_id` int NOT NULL,
   `user_id` int NOT NULL,
   `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -428,11 +428,11 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `otp` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `otp` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL,
   `role_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -462,4 +462,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-03 12:37:02
+-- Dump completed on 2024-09-06 11:42:39
