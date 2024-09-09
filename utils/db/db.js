@@ -1,21 +1,30 @@
 import mysql from 'mysql';
-import { configDotenv } from 'dotenv';
+import { config as configDotenv } from 'dotenv';
 configDotenv();
 
-let connection;
+let pool;
 
 function connectToDB() {
-    connection = mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    });
-    connection.connect((err) => {
-        if (err) throw err;
-        console.log("Database Connected...");
-    });
-    return connection;
+    if (!pool) {
+        pool = mysql.createPool({
+            connectionLimit: 10,
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PASSWORD,
+            database: process.env.MYSQL_DATABASE
+        });
+
+        pool.on('connection', (connection) => {
+            console.log('Database connection established with ID:', connection.threadId);
+        });
+
+        pool.on('error', (err) => {
+            console.error('Database error:', err);
+        });
+
+        console.log('Database connection pool created.');
+    }
+    return pool;
 }
 
-export { connectToDB, connection };
+export { connectToDB };

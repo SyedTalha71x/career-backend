@@ -1,9 +1,11 @@
-import { connection } from "../utils/db/db.js";
+import { connectToDB } from "../utils/db/db.js";
 import nodemailer from 'nodemailer'
 import otpGenerator from 'otp-generator'
 import moment from "moment";
 import { successResponse, failureResponse } from '../Helper/helper.js'
 import { hashPassword, verifyPassword } from "../Security/security.js";
+
+const pool = connectToDB();
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -23,7 +25,7 @@ export const getProfileInfo = async (req, res) => {
 
         if (authType === 'standard') {
             // Handle standard authentication
-            connection.query(
+            pool.query(
                 'SELECT username, email, profile_picture FROM users WHERE id = ?',
                 [userId],
                 (err, results) => {
@@ -70,7 +72,7 @@ export const getProfileInfo = async (req, res) => {
                     return res.status(400).json(failureResponse({}, 'Invalid authentication type'));
             }
 
-            connection.query(
+            pool.query(
                 `SELECT name as username, email, profile_picture FROM ${table} WHERE ${idField} = ?`,
                 [userId],
                 (err, results) => {
@@ -138,7 +140,7 @@ export const updateUsername = async (req, res) => {
                 return res.status(400).json(failureResponse({ error: 'Invalid Authentication Type' }, 'Updation Failed'))
         }
         // Execute the update query
-        connection.query(updateQuery, [newUsername, userId], (err, results) => {
+        pool.query(updateQuery, [newUsername, userId], (err, results) => {
             if (err) {
                 console.error("Database query error:", err);
                 return res.status(500).json(failureResponse({ error: 'Database Internal Server Error' }, 'Updation Failed'))
@@ -199,7 +201,7 @@ export const updateProfilePicture = async (req, res) => {
         }
 
         // Execute the update query
-        connection.query(updateQuery, [profilePictureUrl, userId], (err, results) => {
+        pool.query(updateQuery, [profilePictureUrl, userId], (err, results) => {
             if (err) {
                 console.error("Database query error:", err);
                 return res.status(500).json(failureResponse({ error: 'Internal server error' }, 'Profile Picture Update Failed'));
@@ -223,7 +225,7 @@ export const requestForOtp = async (req, res) => {
 
         // Check if the email exists in the database
         const checkUserSql = 'SELECT * FROM users WHERE email = ?';
-        connection.query(checkUserSql, [email], (err, results) => {
+        pool.query(checkUserSql, [email], (err, results) => {
             if (err) {
                 console.error('Database query error:', err);
                 return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'OTP Verification failed'));
@@ -239,7 +241,7 @@ export const requestForOtp = async (req, res) => {
 
             // Update user record with the OTP and expiration time
             const updateOtpSql = 'UPDATE users SET otp = ?, otp_expiration = ? WHERE email = ?';
-            connection.query(updateOtpSql, [otp, expiration, email], (err, result) => {
+            pool.query(updateOtpSql, [otp, expiration, email], (err, result) => {
                 if (err) {
                     console.error('Database update error:', err);
                     return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'OTP Verification failed'));
@@ -282,7 +284,7 @@ export const verifyOtp = (req, res) => {
         }
 
         const sql = 'SELECT email, otp_expiration FROM users WHERE otp = ?';
-        connection.query(sql, [otp], (err, results) => {
+        pool.query(sql, [otp], (err, results) => {
             if (err) {
                 console.error('Database query error:', err);
                 return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'OTP Verification Failed'));
@@ -322,7 +324,7 @@ export const resetPassword = async (req, res) => {
 
         // Fetch the user from the database
         const fetchUserSql = 'SELECT * FROM users WHERE email = ?';
-        connection.query(fetchUserSql, [email], async (err, results) => {
+        pool.query(fetchUserSql, [email], async (err, results) => {
             if (err) {
                 console.error('Database query error:', err);
                 return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Reset Failed'));
@@ -335,7 +337,7 @@ export const resetPassword = async (req, res) => {
             const hashedPassword = hashPassword(newPassword);
             // Update the user's password and clear the OTP and OTP expiration
             const updatePasswordSql = 'UPDATE users SET password = ?, otp = NULL, otp_expiration = NULL WHERE email = ?';
-            connection.query(updatePasswordSql, [hashedPassword, email], (err, result) => {
+            pool.query(updatePasswordSql, [hashedPassword, email], (err, result) => {
                 if (err) {
                     console.error('Database update error:', err);
                     return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Reset Failed'));
@@ -374,7 +376,7 @@ export const changePasswordProfile = async (req, res) => {
 
         // Fetch the user from the database
         const fetchUserSql = 'SELECT password FROM users WHERE id = ?';
-        connection.query(fetchUserSql, [userId], async (err, results) => {
+        pool.query(fetchUserSql, [userId], async (err, results) => {
             if (err) {
                 console.error('Database query error:', err);
                 return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Change Failed'));
@@ -395,7 +397,7 @@ export const changePasswordProfile = async (req, res) => {
 
             // Update the user's password
             const updatePasswordSql = 'UPDATE users SET password = ? WHERE id = ?';
-            connection.query(updatePasswordSql, [hashedPassword, userId], (err, result) => {
+            pool.query(updatePasswordSql, [hashedPassword, userId], (err, result) => {
                 if (err) {
                     console.error('Database update error:', err);
                     return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Password Change Failed'));

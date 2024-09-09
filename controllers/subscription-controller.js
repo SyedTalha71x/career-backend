@@ -1,15 +1,18 @@
 import { successResponse, failureResponse } from '../Helper/helper.js'
-import { connection } from '../utils/db/db.js'
+import { connectToDB } from '../utils/db/db.js'
 import moment from 'moment';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
+const pool = connectToDB();
+
+
 export const createSubscriptions = async (req, res) => {
     try {
         const { name, price, valid_till } = req.body;
         const sqlQuery = 'INSERT into subscriptions (name, price, valid_till) VALUES (?,?,?)';
-        connection.query(sqlQuery, [name, price, valid_till], (err, result) => {
+        pool.query(sqlQuery, [name, price, valid_till], (err, result) => {
             if (err) {
                 console.error('Database query error:', err);
                 return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Subscription Creation Failed'));
@@ -44,7 +47,7 @@ export const purchaseSubscription = async (req, res) => {
         // Get subscription details from the database
         const subscription = await new Promise((resolve, reject) => {
             const query = 'SELECT name, price, valid_till FROM subscriptions WHERE id = ?';
-            connection.query(query, [subscriptionId], (err, result) => {
+            pool.query(query, [subscriptionId], (err, result) => {
                 if (err) return reject(err);
                 if (result.length === 0) return reject(new Error('Subscription not found'));
                 resolve(result[0]);
@@ -83,7 +86,7 @@ export const purchaseSubscription = async (req, res) => {
 export const getSubscription = async (req, res) => {
     try {
         const query = 'SELECT id, name, price FROM subscriptions';
-        connection.query(query, (err, results) => {
+        pool.query(query, (err, results) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to Checkout'));
@@ -129,7 +132,7 @@ export const confirmSubscription = async (req, res) => {
         const getSubscription = () => {
             return new Promise((resolve, reject) => {
                 const getSubscriptionQuery = 'SELECT valid_till FROM subscriptions WHERE id = ?';
-                connection.query(getSubscriptionQuery, [subscriptionId], (err, result) => {
+                pool.query(getSubscriptionQuery, [subscriptionId], (err, result) => {
                     if (err) return reject(err);
                     if (result.length === 0) return reject(new Error('Subscription not found'));
                     resolve(result[0]);
@@ -147,7 +150,7 @@ export const confirmSubscription = async (req, res) => {
                     INSERT INTO user_subscription (subscription_id, user_id, expiry_date, payment_id, created_at, updated_at)
                     VALUES (?, ?, ?, ?, NOW(), NOW())
                 `;
-                connection.query(
+                pool.query(
                     insertUserSubscriptionQuery,
                     [subscriptionId, req.user.userId, expiryDate, paymentIntentId],
                     (err, result) => {
@@ -181,7 +184,7 @@ export const checkUserSubscription = async (req, res) => {
     LIMIT 1;
   `;
 
-  connection.query(query, [userId], (error, results) => {
+  pool.query(query, [userId], (error, results) => {
     if (error) {
       console.error('Error executing query', error);
       return res.status(500).json({ error: 'Internal server error' });

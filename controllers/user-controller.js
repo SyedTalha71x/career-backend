@@ -1,5 +1,5 @@
 import { validateEmail, validateUsername, validatePassword } from '../Validation/validation.js';
-import { connection } from '../utils/db/db.js';
+import { connectToDB } from '../utils/db/db.js';
 import { hashPassword, verifyPassword, generateToken } from '../Security/security.js'
 import { successResponse, failureResponse } from '../Helper/helper.js';
 import { OAuth2Client } from 'google-auth-library';
@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import axios from 'axios';
 
 configDotenv();
+const pool = connectToDB();
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -26,7 +27,7 @@ export const Signup = async (req, res) => {
     }
 
     try {
-        connection.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email], (err, results) => {
+        pool.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email], (err, results) => {
             if (err) {
                 console.error('Error querying database:', err);
                 return res.status(500).json(failureResponse({ database: 'Server error while querying database' }, 'Signup Failed'));
@@ -36,7 +37,7 @@ export const Signup = async (req, res) => {
             }
 
             const hashedPassword = hashPassword(password);
-            connection.query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword], (err, result) => {
+            pool.query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword], (err, result) => {
                 if (err) {
                     console.error('Error inserting into database:', err);
                     return res.status(500).json(failureResponse({ database: 'Server error while inserting into database' }, 'Signup Failed'));
@@ -66,7 +67,7 @@ export const Login = async (req, res) => {
         //     return res.status(422).json(failureResponse({ message }, 'Login Failed'));
         // }
 
-        await connection.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
+        await pool.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
             if (err) {
                 message = 'Email and Password is not Correct';
                 return res.status(502).json(failureResponse({ email: message }, 'Login Failed'));
@@ -99,7 +100,7 @@ export const checkEmail = async (req, res) => {
             return res.status(422).json(failureResponse({ email: 'Invalid email format' }, 'Validation Failed'));
         }
 
-        await connection.query('SELECT id FROM users WHERE email = ?', [email], (err, result) => {
+        await pool.query('SELECT id FROM users WHERE email = ?', [email], (err, result) => {
             if (err) {
                 console.error('Database Query Error:', err);
                 return res.status(500).json(failureResponse({ database: 'Server error while querying database' }, 'Server error'));
@@ -135,7 +136,7 @@ export const changePassword = async (req, res) => {
         const hashedPassword = hashPassword(newPassword);
         const userId = req.user.userId;
 
-        connection.query(
+        pool.query(
             'UPDATE users SET password = ? WHERE id = ?',
             [hashedPassword, userId],
             (err, results) => {
@@ -183,14 +184,14 @@ export const googleLogin = async (req, res) => {
         const { id, email, name, picture } = userInfoResponse.data;
 
         // Check if user already exists
-        connection.query('SELECT * FROM google_login WHERE google_id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM google_login WHERE google_id = ?', [id], (err, results) => {
             if (err) return res.status(500).json(failureResponse(null, 'Database error.'));
 
             const userData = { google_id: id, email, name, profile_picture: picture };
 
             if (results.length > 0) {
                 // User exists, update user info if necessary
-                connection.query(
+                pool.query(
                     'UPDATE google_login SET email = ?, name = ?, profile_picture = ?, updated_at = NOW() WHERE google_id = ?',
                     [email, name, picture, id],
                     (updateErr) => {
@@ -201,7 +202,7 @@ export const googleLogin = async (req, res) => {
                 );
             } else {
                 // Insert new user
-                connection.query(
+                pool.query(
                     'INSERT INTO google_login (google_id, email, name, profile_picture, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
                     [id, email, name, picture],
                     (insertErr) => {
@@ -234,7 +235,7 @@ export const facebookLogin = async (req, res) => {
         const { id: facebookId, email, name, picture } = profile;
 
         // Check if user exists in database
-        connection.query('SELECT * FROM facebook_login WHERE facebook_id = ?', [facebookId], (error, results) => {
+        pool.query('SELECT * FROM facebook_login WHERE facebook_id = ?', [facebookId], (error, results) => {
             if (error) {
                 console.error('Database query error:', error);
                 return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -243,7 +244,7 @@ export const facebookLogin = async (req, res) => {
             if (results.length === 0) {
                 // User doesn't exist, create new user
                 const newUser = { facebook_id: facebookId, email, name, profile_picture: picture.data.url };
-                connection.query('INSERT INTO facebook_login SET ?', newUser, (error, result) => {
+                pool.query('INSERT INTO facebook_login SET ?', newUser, (error, result) => {
                     if (error) {
                         console.error('Error creating new user:', error);
                         return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -257,7 +258,7 @@ export const facebookLogin = async (req, res) => {
             } else {
                 // User exists, update information
                 const userId = results[0].id;
-                connection.query(
+                pool.query(
                     'UPDATE facebook_login SET email = ?, name = ?, profile_picture = ? WHERE id = ?',
                     [email, name, picture.data.url, userId],
                     (error) => {
@@ -295,7 +296,7 @@ export const instagramLogin = async (req, res) => {
         const { id: instagramId, username: name, profile_picture_url: profilePicture } = profile;
 
         // Check if user exists in the database
-        connection.query('SELECT * FROM instagram_login WHERE instagram_id = ?', [instagramId], (error, results) => {
+        pool.query('SELECT * FROM instagram_login WHERE instagram_id = ?', [instagramId], (error, results) => {
             if (error) {
                 console.error('Database query error:', error);
                 return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -304,7 +305,7 @@ export const instagramLogin = async (req, res) => {
             if (results.length === 0) {
                 // User doesn't exist, create new user
                 const newUser = { instagram_id: instagramId, name, profile_picture: profilePicture };
-                connection.query('INSERT INTO instagram_login SET ?', newUser, (error, result) => {
+                pool.query('INSERT INTO instagram_login SET ?', newUser, (error, result) => {
                     if (error) {
                         console.error('Error creating new user:', error);
                         return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -318,7 +319,7 @@ export const instagramLogin = async (req, res) => {
             } else {
                 // User exists, update information
                 const userId = results[0].id;
-                connection.query(
+                pool.query(
                     'UPDATE instagram_login SET name = ?, profile_picture = ? WHERE id = ?',
                     [name, profilePicture, userId],
                     (error) => {
@@ -368,7 +369,7 @@ export const linkedinLogin = async (req, res) => {
         const profilePictureUrl = profilePicture['displayImage~'].elements[0].identifiers[0].identifier;
 
         // Check if user exists in database
-        connection.query('SELECT * FROM linkedin_login WHERE linkedin_id = ?', [linkedinId], (error, results) => {
+        pool.query('SELECT * FROM linkedin_login WHERE linkedin_id = ?', [linkedinId], (error, results) => {
             if (error) {
                 console.error('Database query error:', error);
                 return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -377,7 +378,7 @@ export const linkedinLogin = async (req, res) => {
             if (results.length === 0) {
                 // User doesn't exist, create new user
                 const newUser = { linkedin_id: linkedinId, name, profile_picture: profilePictureUrl };
-                connection.query('INSERT INTO linkedin_login SET ?', newUser, (error, result) => {
+                pool.query('INSERT INTO linkedin_login SET ?', newUser, (error, result) => {
                     if (error) {
                         console.error('Error creating new user:', error);
                         return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -391,7 +392,7 @@ export const linkedinLogin = async (req, res) => {
             } else {
                 // User exists, update information
                 const userId = results[0].id;
-                connection.query(
+                pool.query(
                     'UPDATE linkedin_login SET name = ?, profile_picture = ? WHERE id = ?',
                     [name, profilePictureUrl, userId],
                     (error) => {
@@ -438,7 +439,7 @@ export const outlookLogin = async (req, res) => {
         const profilePictureUrl = photo ? photo['@odata.mediaReadLink'] : null;
 
         // Check if user exists in database
-        connection.query('SELECT * FROM outlook_login WHERE outlook_id = ?', [outlookId], (error, results) => {
+        pool.query('SELECT * FROM outlook_login WHERE outlook_id = ?', [outlookId], (error, results) => {
             if (error) {
                 console.error('Database query error:', error);
                 return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -447,7 +448,7 @@ export const outlookLogin = async (req, res) => {
             if (results.length === 0) {
                 // User doesn't exist, create new user
                 const newUser = { outlook_id: outlookId, name: displayName, email: mail, profile_picture: profilePictureUrl };
-                connection.query('INSERT INTO outlook_login SET ?', newUser, (error, result) => {
+                pool.query('INSERT INTO outlook_login SET ?', newUser, (error, result) => {
                     if (error) {
                         console.error('Error creating new user:', error);
                         return res.status(500).json(failureResponse(error, 'Internal server error'));
@@ -461,7 +462,7 @@ export const outlookLogin = async (req, res) => {
             } else {
                 // User exists, update information
                 const userId = results[0].id;
-                connection.query(
+                pool.query(
                     'UPDATE outlook_login SET name = ?, email = ?, profile_picture = ? WHERE id = ?',
                     [displayName, mail, profilePictureUrl, userId],
                     (error) => {

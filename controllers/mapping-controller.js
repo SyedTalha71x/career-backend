@@ -1,4 +1,4 @@
-import { connection } from "../utils/db/db.js";
+import { connectToDB } from "../utils/db/db.js";
 import { successResponse, failureResponse } from "../Helper/helper.js";
 import { generateRandomColor } from "../Security/security.js";
 import {
@@ -9,6 +9,7 @@ import {
   GET_SINGLE_PATH_DETAILS
 } from "../Models/mapping-controller-queries.js";
 
+const pool = connectToDB();
 export const createPath = (req, res) => {
   try {
     const { prompt } = req.body;
@@ -34,7 +35,7 @@ export const createPath = (req, res) => {
     // SQL query to insert data into the path table
     const sqlQuery =
       "INSERT INTO path (prompt, file, color, status, user_id) VALUES (?, ?, ?, ?, ?)";
-    connection.query(
+    pool.query(
       sqlQuery,
       [prompt || null, fileName || null, color, "pending", userId],
       (err, result) => {
@@ -80,7 +81,7 @@ export const getPathsWithDetails = (req, res) => {
         );
     }
 
-    connection.query(
+    pool.query(
       GET_ALL_PATH_DETAILS_WITH_SKILL_AND_STEPS,
       [userId],
       (err, results) => {
@@ -134,7 +135,7 @@ export const getPathsForUser = (req, res) => {
         );
     }
 
-    connection.query(
+    pool.query(
       GET_PATHS_WITH_TOTAL_SKILLS_COUNT,
       [userId],
       (err, result) => {
@@ -181,7 +182,7 @@ export const getSkillsForUser = (req, res) => {
         );
     }
 
-    connection.query(GET_ALL_SKILLS, [userId], (err, skillsResult) => {
+    pool.query(GET_ALL_SKILLS, [userId], (err, skillsResult) => {
       if (err) {
         return res
           .status(500)
@@ -239,7 +240,7 @@ export const geteachskillsforpath = (req, res) => {
     // Step 1: Query to get path_id based on stepId
     const getPathIdQuery = `SELECT path_id FROM steps WHERE id = ?`;
 
-    connection.query(getPathIdQuery, [stepId], (err, pathResult) => {
+    pool.query(getPathIdQuery, [stepId], (err, pathResult) => {
       if (err) {
         return res
           .status(500)
@@ -264,7 +265,7 @@ export const geteachskillsforpath = (req, res) => {
 
       const pathId = pathResult[0].path_id;
 
-      connection.query(
+      pool.query(
         GET_EACH_SKILLS_WITH_ITS_STEP,
         [stepId, userId, pathId],
         (err, result) => {
@@ -365,7 +366,7 @@ export const changeSkillStatus = (req, res) => {
     WHERE s.id = ? AND p.user_id = ?
   `;
 
-    connection.query(getSkillStatusQuery, [skillId, userId], (err, result) => {
+    pool.query(getSkillStatusQuery, [skillId, userId], (err, result) => {
       if (err) {
         console.log(err);
         return res
@@ -400,7 +401,7 @@ export const changeSkillStatus = (req, res) => {
         WHERE s.id = ? AND p.user_id = ?
       `;
 
-      connection.query(
+      pool.query(
         updateStatusQuery,
         [ToggleStatus, skillId, userId],
         (err, result) => {
@@ -475,7 +476,7 @@ export const getSinglePath = (req,res) =>{
           );
       }
 
-      connection.query(GET_SINGLE_PATH_DETAILS, [userId, pathId], (err, result)=>{
+      pool.query(GET_SINGLE_PATH_DETAILS, [userId, pathId], (err, result)=>{
         if(err){
           return res
           .status(500)

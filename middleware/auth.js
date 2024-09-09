@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { connection } from '../utils/db/db.js';
+import { connectToDB } from '../utils/db/db.js';
 
+const pool = connectToDB();
 export const auth = (requiredPermission = null) => {
   return async (req, res, next) => {
     try {
@@ -33,7 +34,7 @@ export const auth = (requiredPermission = null) => {
         WHERE u.id = ? GROUP BY u.id
       `;
 
-      connection.query(userQuery, [verifiedToken.userId], (err, results) => {
+      pool.query(userQuery, [verifiedToken.userId], (err, results) => {
         if (err) {
           console.error('Database query error:', err);
           return res.status(500).json({ status: false, message: 'Internal Server Error' });

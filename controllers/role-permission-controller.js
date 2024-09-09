@@ -1,5 +1,7 @@
-import { connection } from "../utils/db/db.js";
+import { connectToDB } from "../utils/db/db.js";
 import { successResponse, failureResponse } from "../Helper/helper.js";
+
+const pool = connectToDB();
 
 export const createRole = async (req, res) => {
   try {
@@ -15,7 +17,7 @@ export const createRole = async (req, res) => {
 
     const sqlQry = "INSERT INTO roles (name) VALUES (?)";
 
-    connection.query(sqlQry, [name], (err, results) => {
+    pool.query(sqlQry, [name], (err, results) => {
       if (err) {
         console.log("Database Error--------------", err);
         return res
@@ -60,7 +62,7 @@ export const updateRole = async (req, res) => {
 
     const sqlQry = "UPDATE roles SET name = ? WHERE id = ?";
 
-    connection.query(sqlQry, [name, id], (err, results) => {
+    pool.query(sqlQry, [name, id], (err, results) => {
       if (err) {
         console.log("Database Error--------------", err);
         return res
@@ -147,7 +149,7 @@ export const createPermission = async (req, res) => {
       permission_module_id
     ]);
 
-    connection.query(sqlQry, [values], (err, results) => {
+    pool.query(sqlQry, [values], (err, results) => {
       if (err) {
         console.log("Database Error--------------", err);
         return res
@@ -198,7 +200,7 @@ export const updatePermission = async (req, res) => {
 
     const sqlQry = "UPDATE permissions SET name = ? WHERE id = ?";
 
-    connection.query(sqlQry, [permission, id], (err, results) => {
+    pool.query(sqlQry, [permission, id], (err, results) => {
       if (err) {
         console.log("Database Error--------------", err);
         return res
@@ -259,7 +261,7 @@ export const assignPermissionsToRole = async (req, res) => {
 
     // Query to check if the role exists
     const roleCheckQuery = "SELECT id FROM roles WHERE id = ?";
-    connection.query(roleCheckQuery, [roleId], (err, roleResults) => {
+    pool.query(roleCheckQuery, [roleId], (err, roleResults) => {
       if (err || !roleResults.length) {
         return res
           .status(404)
@@ -281,7 +283,7 @@ export const assignPermissionsToRole = async (req, res) => {
       const assignQuery =
         "INSERT INTO role_to_permission (role_id, permission_id) VALUES ?";
 
-      connection.query(assignQuery, [values], (err, results) => {
+      pool.query(assignQuery, [values], (err, results) => {
         if (err) {
           console.log("Error assigning permissions to role", err);
           return res
@@ -330,7 +332,7 @@ export const assignRoleToUser = async (req, res) => {
 
     // Query to check if the user exists
     const userCheckQuery = "SELECT id FROM users WHERE id = ?";
-    connection.query(userCheckQuery, [userId], (err, userResults) => {
+    pool.query(userCheckQuery, [userId], (err, userResults) => {
       if (err || !userResults.length) {
         return res
           .status(404)
@@ -344,7 +346,7 @@ export const assignRoleToUser = async (req, res) => {
 
       // Query to check if the role exists
       const roleCheckQuery = "SELECT id FROM roles WHERE id = ?";
-      connection.query(roleCheckQuery, [roleId], (err, roleResults) => {
+      pool.query(roleCheckQuery, [roleId], (err, roleResults) => {
         if (err || !roleResults.length) {
           return res
             .status(404)
@@ -358,7 +360,7 @@ export const assignRoleToUser = async (req, res) => {
 
         // Update the user's role
         const updateQuery = "UPDATE users SET role_id = ? WHERE id = ?";
-        connection.query(updateQuery, [roleId, userId], (err, results) => {
+        pool.query(updateQuery, [roleId, userId], (err, results) => {
           if (err) {
             console.log("Error updating user role", err);
             return res
@@ -405,7 +407,7 @@ export const createPermissionModule = async (req, res) => {
     }
 
     const sqlQuery = "INSERT INTO permission_module (module_name) VALUES (?)";
-    connection.query(sqlQuery, [moduleName], (err, results) => {
+    pool.query(sqlQuery, [moduleName], (err, results) => {
       if (err) {
         console.log(err);
         return res
