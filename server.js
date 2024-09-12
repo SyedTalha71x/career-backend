@@ -12,6 +12,7 @@ import subscriptionRoutes from './routes/subscription-routes.js';
 import path from 'path';
 import MappingRoutes from './routes/mapping-routes.js';
 import { fileURLToPath } from 'url';
+import { networkInterfaces } from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,7 +45,19 @@ app.use('/api', MappingRoutes);
 // SERVER ACTION
 const PORT = process.env.PORT || 3000; // Default to port 3000 if not specified
 app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.18.194:${PORT}`);
+    function getServerIp() {
+        const networkInterf = networkInterfaces();
+        for (const interfaceName in networkInterf) {
+            const interf = networkInterf[interfaceName];
+            for (const alias of interf) {
+                if (alias.family === 'IPv4' && !alias.internal) {
+                    return alias.address;
+                }
+            }
+        }
+        return 'Unknown IP';
+    }
+    console.log(`Server is running on http://${getServerIp()}:${PORT}`);
 });
 
 
