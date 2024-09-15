@@ -124,40 +124,43 @@ export const getPathsWithDetails = async (req, res) => {
     const skillsResult = await query(skillsQuery, [stepsResult.map(step => step.id)]);
 
     // Function to find branches by step_id
-    const findBranchByStepId = (branches, step_id) => {
-      return branches.find(branch => branch.step_id === step_id);
-    };
-
-    // Recursive function to process steps
-    const processSteps = async (branch, branches, steps) => {
-      const processedSteps = [];
-
-      for (const step of steps) {
-        if (step.branch_id === branch.id) {
-          // Fetch skills for the step
-          const stepSkills = skillsResult.filter(skill => skill.step_id === step.id);
-          const stepWithSkills = {
-            title: step.title,
-            description: step.description,
-            skills: stepSkills.map(skill => ({ title: skill.title })),
-          };
-
-          const subBranch = findBranchByStepId(branches, step.id);
-          if (subBranch) {
-            // Process the sub-branch
-            const processedSubBranch = await processSteps(subBranch, branches, steps);
-            processedSteps.push({
-              ...stepWithSkills,
-              ...processedSubBranch,
-            });
+    const findBranchByStepId = (branches, step_id = null) => {
+      const branchArr = [];
+      for (const value of branches) {
+        if (value.step_id === step_id) {
+          if (step_id === null) {
+            return value;
           } else {
-            processedSteps.push(stepWithSkills);
+            branchArr.push(value);
           }
         }
       }
+      return branchArr;
+    };
 
-      const { color } = branch;
-      return { color, steps: processedSteps };
+    // Recursive function to process steps
+    const processSteps = (branch, branches, steps) => {
+      const processedSteps = [];
+
+      for (const value of steps) {
+        if (value.branch_id === branch.id) {
+          const searchedBranch = findBranchByStepId(branches, value.id);
+          if (Array.isArray(searchedBranch) && searchedBranch.length > 0) {
+            const processedBranch = [];
+            for (const sb of searchedBranch) {
+              const subProcessedBranch = processSteps(sb, branches, steps);
+              processedBranch.push(subProcessedBranch);
+            }
+            if (processedBranch.length > 0) {
+              value.branch = processedBranch;
+            }
+          }
+          processedSteps.push(value);
+        }
+      }
+
+      branch.steps = processedSteps;
+      return branch;
     };
 
     // Process branches with steps and skills for each path
@@ -165,16 +168,13 @@ export const getPathsWithDetails = async (req, res) => {
       pathsResult.map(async (path) => {
         const branchesForPath = branchesResult.filter(branch => branch.path_id === path.id);
         const stepsForPath = stepsResult.filter(step => step.path_id === path.id);
-
-        // Process branches and steps only if there are branches
-        const branchesWithStepsAndSkills = branchesForPath.length > 0 ? await Promise.all(
-          branchesForPath.map(async (branch) => processSteps(branch, branchesForPath, stepsForPath))
-        ) : [];
+        const startingBranch = findBranchByStepId(branchesForPath);
+        const branch = processSteps(startingBranch, branchesForPath, stepsForPath)
 
         return {
           id: path.id,
           Status: path.status,
-          ...(branchesWithStepsAndSkills.length > 0 && { branches: branchesWithStepsAndSkills }),
+          branch
         };
       })
     );
@@ -461,7 +461,7 @@ export const changeSkillStatus = (req, res) => {
       const ToggleStatus =
         currentStatus === "pending" ? "completed" : "pending";
 
-        const updateStatusQuery = `
+      const updateStatusQuery = `
         UPDATE skills s
         JOIN steps st ON s.step_id = st.id
         JOIN path p ON st.path_id = p.id
