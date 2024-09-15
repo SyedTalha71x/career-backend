@@ -1,0 +1,318 @@
+{
+    "roadmap": {
+        "branches": [
+            {
+                "color": "black",
+                "steps": [
+                    {
+                        "title": "DevOps Engineer",
+                        "description": "Managing and automating cloud infrastructure",
+                        "skills": [
+                            {
+                                "title": "Cloud Management"
+                            },
+                            {
+                                "title": "Infrastructure Automation"
+                            },
+                            {
+                                "title": "Linux/Windows System Administration"
+                            },
+                            {
+                                "title": "Scripting (Python, Shell)"
+                            },
+                            {
+                                "title": "Continuous Integration/Continuous Deployment"
+                            }
+                        ],
+                        "subBranches": [
+                            {
+                                "color": "green",
+                                "steps": [
+                                    {
+                                        "title": "Security Analyst",
+                                        "description": "Analyzing and improving system security",
+                                        "skills": [
+                                            {
+                                                "title": "Intrusion Detection"
+                                            },
+                                            {
+                                                "title": "Incident Response"
+                                            },
+                                            {
+                                                "title": "Security Assessment and Testing"
+                                            },
+                                            {
+                                                "title": "Security Systems Management"
+                                            },
+                                            {
+                                                "title": "Cybersecurity Knowledge"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "title": "Security Architect",
+                                        "description": "Designing secure network and system infrastructure",
+                                        "skills": [
+                                            {
+                                                "title": "Security Architecture Design"
+                                            },
+                                            {
+                                                "title": "Network and Security Infrastructure"
+                                            },
+                                            {
+                                                "title": "Risk Assessment"
+                                            },
+                                            {
+                                                "title": "Security Policy Development"
+                                            },
+                                            {
+                                                "title": "Data and Network Encryption"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "color": "purple",
+                                "steps": [
+                                    {
+                                        "title": "Team Lead DevOps",
+                                        "description": "Leading a team of DevOps engineers",
+                                        "skills": [
+                                            {
+                                                "title": "Leadership"
+                                            },
+                                            {
+                                                "title": "Project Management"
+                                            },
+                                            {
+                                                "title": "Teamwork and Collaboration"
+                                            },
+                                            {
+                                                "title": "Conflict Resolution"
+                                            },
+                                            {
+                                                "title": "Strategic Planning"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "title": "Information Technology Manager",
+                                        "description": "Managing IT services and teams",
+                                        "skills": [
+                                            {
+                                                "title": "IT Service Management"
+                                            },
+                                            {
+                                                "title": "Strategic Planning"
+                                            },
+                                            {
+                                                "title": "Budgeting"
+                                            },
+                                            {
+                                                "title": "Vendor Management"
+                                            },
+                                            {
+                                                "title": "Resource Allocation"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "color": "blue",
+                                "steps": [
+                                    {
+                                        "title": "Senior DevOps Engineer",
+                                        "description": "Handling complex DevOps projects and responsibilities",
+                                        "skills": [
+                                            {
+                                                "title": "Advanced Cloud Management"
+                                            },
+                                            {
+                                                "title": "Advanced Infrastructure Automation"
+                                            },
+                                            {
+                                                "title": "Performance Tuning"
+                                            },
+                                            {
+                                                "title": "Advanced System Administration"
+                                            },
+                                            {
+                                                "title": "Complex Problem Solving"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "title": "Cloud Solutions Architect",
+                                        "description": "Designing and implementing cloud solutions",
+                                        "skills": [
+                                            {
+                                                "title": "Cloud Architecture"
+                                            },
+                                            {
+                                                "title": "Cloud Migration"
+                                            },
+                                            {
+                                                "title": "Cloud Security"
+                                            },
+                                            {
+                                                "title": "Cloud Service Management"
+                                            },
+                                            {
+                                                "title": "Cloud Cost Optimization"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "color": "green",
+                "steps": [
+                    {
+                        "title": "Security Analyst",
+                        "description": "Analyzing and improving system security",
+                        "skills": [
+                            {
+                                "title": "Intrusion Detection"
+                            },
+                            {
+                                "title": "Incident Response"
+                            },
+                            {
+                                "title": "Security Assessment and Testing"
+                            },
+                            {
+                                "title": "Security Systems Management"
+                            },
+                            {
+                                "title": "Cybersecurity Knowledge"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Security Architect",
+                        "description": "Designing secure network and system infrastructure",
+                        "skills": [
+                            {
+                                "title": "Security Architecture Design"
+                            },
+                            {
+                                "title": "Network and Security Infrastructure"
+                            },
+                            {
+                                "title": "Risk Assessment"
+                            },
+                            {
+                                "title": "Security Policy Development"
+                            },
+                            {
+                                "title": "Data and Network Encryption"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "color": "purple",
+                "steps": [
+                    {
+                        "title": "Team Lead DevOps",
+                        "description": "Leading a team of DevOps engineers",
+                        "skills": [
+                            {
+                                "title": "Leadership"
+                            },
+                            {
+                                "title": "Project Management"
+                            },
+                            {
+                                "title": "Teamwork and Collaboration"
+                            },
+                            {
+                                "title": "Conflict Resolution"
+                            },
+                            {
+                                "title": "Strategic Planning"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Information Technology Manager",
+                        "description": "Managing IT services and teams",
+                        "skills": [
+                            {
+                                "title": "IT Service Management"
+                            },
+                            {
+                                "title": "Strategic Planning"
+                            },
+                            {
+                                "title": "Budgeting"
+                            },
+                            {
+                                "title": "Vendor Management"
+                            },
+                            {
+                                "title": "Resource Allocation"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "color": "blue",
+                "steps": [
+                    {
+                        "title": "Senior DevOps Engineer",
+                        "description": "Handling complex DevOps projects and responsibilities",
+                        "skills": [
+                            {
+                                "title": "Advanced Cloud Management"
+                            },
+                            {
+                                "title": "Advanced Infrastructure Automation"
+                            },
+                            {
+                                "title": "Performance Tuning"
+                            },
+                            {
+                                "title": "Advanced System Administration"
+                            },
+                            {
+                                "title": "Complex Problem Solving"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Cloud Solutions Architect",
+                        "description": "Designing and implementing cloud solutions",
+                        "skills": [
+                            {
+                                "title": "Cloud Architecture"
+                            },
+                            {
+                                "title": "Cloud Migration"
+                            },
+                            {
+                                "title": "Cloud Security"
+                            },
+                            {
+                                "title": "Cloud Service Management"
+                            },
+                            {
+                                "title": "Cloud Cost Optimization"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "pathColor": "blue"
+    },
+    "message": "Branches with steps and skills retrieved successfully"
+}

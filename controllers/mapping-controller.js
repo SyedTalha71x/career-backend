@@ -10,12 +10,20 @@ import {
 } from "../Models/mapping-controller-queries.js";
 
 const pool = connectToDB();
+
+const query = (sql, params) => new Promise((resolve, reject) => {
+  pool.query(sql, params, (error, results) => {
+    if (error) {
+      return reject(error);
+    }
+    resolve(results);
+  });
+});
 export const createPath = (req, res) => {
   try {
     const { prompt } = req.body;
     const file = req.file;
     const userId = req.user?.userId;
-    const color = generateRandomColor();
 
     // Check if either prompt or file is provided, but not both
     if ((!prompt && !file) || (prompt && file)) {
@@ -34,10 +42,10 @@ export const createPath = (req, res) => {
 
     // SQL query to insert data into the path table
     const sqlQuery =
-      "INSERT INTO path (prompt, file, color, status, user_id) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO path (prompt, file, status, user_id) VALUES (?, ?, ?, ?, ?)";
     pool.query(
       sqlQuery,
-      [prompt || null, fileName || null, color, "pending", userId],
+      [prompt || null, fileName || null, "pending", userId],
       (err, result) => {
         if (err) {
           return res
@@ -51,7 +59,7 @@ export const createPath = (req, res) => {
         }
         res
           .status(200)
-          .json(successResponse({ color }, "Path is created successfully"));
+          .json(successResponse({}, "Path is created successfully"));
       }
     );
   } catch (error) {
@@ -66,58 +74,118 @@ export const createPath = (req, res) => {
       );
   }
 };
-export const getPathsWithDetails = (req, res) => {
+export const getPathsWithDetails = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
     if (!userId) {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "User ID is required" },
-            "Failed to retrieve paths"
-          )
-        );
+      return res.status(400).json({
+        status: false,
+        message: "User ID is missing from the request.",
+      });
     }
 
-    pool.query(
-      GET_ALL_PATH_DETAILS_WITH_SKILL_AND_STEPS,
-      [userId],
-      (err, results) => {
-        if (err) {
-          return res
-            .status(500)
-            .json(
-              failureResponse(
-                { error: "Internal Server Error" },
-                "Failed to retrieve paths"
-              )
-            );
-        }
+    // Fetch all paths for the user
+    const pathsQuery = `
+      SELECT id, color, status 
+      FROM path 
+      WHERE user_id = ?
+    `;
+    const pathsResult = await query(pathsQuery, [userId]);
 
-        // Format and send the response
-        const parsedResults = results.map((result) => {
-          return {
-            ...result,
-            steps: JSON.parse(result.steps),
+    if (pathsResult.length === 0) {
+      return res.status(404).json({ status: false, message: "No paths found for this user." });
+    }
+
+    // Collect all path IDs
+    const pathIds = pathsResult.map(path => path.id);
+
+    // Fetch branches and steps for all paths
+    const branchesQuery = `
+      SELECT id, color, step_id, path_id 
+      FROM branch 
+      WHERE path_id IN (?)
+    `;
+    const branchesResult = await query(branchesQuery, [pathIds]);
+
+    const stepsQuery = `
+      SELECT id, title, description, branch_id, path_id 
+      FROM steps 
+      WHERE path_id IN (?)
+    `;
+    const stepsResult = await query(stepsQuery, [pathIds]);
+
+    // Fetch skills for each step
+    const skillsQuery = `
+      SELECT title, step_id 
+      FROM skills 
+      WHERE step_id IN (?)
+    `;
+    const skillsResult = await query(skillsQuery, [stepsResult.map(step => step.id)]);
+
+    // Function to find branches by step_id
+    const findBranchByStepId = (branches, step_id) => {
+      return branches.find(branch => branch.step_id === step_id);
+    };
+
+    // Recursive function to process steps
+    const processSteps = async (branch, branches, steps) => {
+      const processedSteps = [];
+
+      for (const step of steps) {
+        if (step.branch_id === branch.id) {
+          // Fetch skills for the step
+          const stepSkills = skillsResult.filter(skill => skill.step_id === step.id);
+          const stepWithSkills = {
+            title: step.title,
+            description: step.description,
+            skills: stepSkills.map(skill => ({ title: skill.title })),
           };
-        });
-        res
-          .status(200)
-          .json(successResponse(parsedResults, "Paths retrieved successfully"));
+
+          const subBranch = findBranchByStepId(branches, step.id);
+          if (subBranch) {
+            // Process the sub-branch
+            const processedSubBranch = await processSteps(subBranch, branches, steps);
+            processedSteps.push({
+              ...stepWithSkills,
+              ...processedSubBranch,
+            });
+          } else {
+            processedSteps.push(stepWithSkills);
+          }
+        }
       }
+
+      const { color } = branch;
+      return { color, steps: processedSteps };
+    };
+
+    // Process branches with steps and skills for each path
+    const pathsWithDetails = await Promise.all(
+      pathsResult.map(async (path) => {
+        const branchesForPath = branchesResult.filter(branch => branch.path_id === path.id);
+        const stepsForPath = stepsResult.filter(step => step.path_id === path.id);
+
+        // Process branches and steps only if there are branches
+        const branchesWithStepsAndSkills = branchesForPath.length > 0 ? await Promise.all(
+          branchesForPath.map(async (branch) => processSteps(branch, branchesForPath, stepsForPath))
+        ) : [];
+
+        return {
+          id: path.id,
+          Status: path.status,
+          ...(branchesWithStepsAndSkills.length > 0 && { branches: branchesWithStepsAndSkills }),
+        };
+      })
     );
+
+    return res.json({
+      data: pathsWithDetails,
+      message: "Paths with branches, steps, and skills retrieved successfully",
+    });
   } catch (error) {
-    console.error("Unexpected error:", error);
-    return res
-      .status(500)
-      .json(
-        failureResponse(
-          { error: "Internal Server Error" },
-          "Failed to retrieve paths"
-        )
-      );
+    console.error("Error fetching path details:", error);
+    return res.status(500).json({ status: false, message: "Internal server error" });
   }
 };
 export const getPathsForUser = (req, res) => {
@@ -450,63 +518,113 @@ export const changeSkillStatus = (req, res) => {
       );
   }
 };
-export const getSinglePath = (req,res) =>{
-  try{
-      const userId = req.user?.userId;
-      const pathId = req.params.id;
+export const getSinglePath = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const pathId = req.params.id;
 
-      if (!userId) {
-        return res
-          .status(400)
-          .json(
-            failureResponse(
-              { error: "User ID is required" },
-              "Failed to get details"
-            )
-          );
-      }
-      if (!pathId) {
-        return res
-          .status(400)
-          .json(
-            failureResponse(
-              { error: "Path ID is required" },
-              "Failed to get details"
-            )
-          );
-      }
-
-      pool.query(GET_SINGLE_PATH_DETAILS, [userId, pathId], (err, result)=>{
-        if(err){
-          return res
-          .status(500)
-          .json(
-            failureResponse(
-              { error: "Internal Server Error" },
-              "Failed to get the data"
-            )
-          );
-        }
-        const formatResult = result.map(item =>{
-          return{
-            ...item,
-            steps : JSON.parse(item.steps)
-          }
-        })
-        return res.status(200).json(successResponse({formatResult}, 'Path retrived Successfully'))
-      })
-
-
-  }
-  catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json(
-        failureResponse(
-          { error: "Internal Server Error" },
-          "Failed to get the data"
-        )
+    if (!userId) {
+      return res.status(400).json(
+        failureResponse({ error: 'User ID is required' }, 'Failed to get details')
       );
+    }
+    if (!pathId) {
+      return res.status(400).json(
+        failureResponse({ error: 'Path ID is required' }, 'Failed to get details')
+      );
+    }
+
+    // Fetch the main path
+    const pathQuery = 'SELECT id, color, status FROM path WHERE user_id = ? AND id = ?';
+    const pathResult = await query(pathQuery, [userId, pathId]);
+
+    if (pathResult.length === 0) {
+      return res.status(404).json({ status: false, message: 'Path not found' });
+    }
+
+    const path = pathResult[0];
+
+    // Fetch branches and steps for the path
+    const branchesQuery = 'SELECT id, color, step_id FROM branch WHERE path_id = ?';
+    const branchesResult = await query(branchesQuery, [pathId]);
+
+    const stepsQuery = 'SELECT id, title, description, branch_id FROM steps WHERE path_id = ?';
+    const stepsResult = await query(stepsQuery, [pathId]);
+
+    const stepIds = stepsResult.map(step => step.id);
+
+    // Fetch skills only if there are steps
+    let skillsResult = [];
+    if (stepIds.length > 0) {
+      const skillsQuery = 'SELECT title, step_id FROM skills WHERE step_id IN (?)';
+      skillsResult = await query(skillsQuery, [stepIds]);
+    }
+
+    // Function to find branches by step_id
+    const findBranchByStepId = (branches, step_id) => {
+      return branches.find(branch => branch.step_id === step_id);
+    };
+
+    // Recursive function to process steps
+    const processSteps = async (branch, branches, steps) => {
+      const processedSteps = [];
+
+      for (const step of steps) {
+        if (step.branch_id === branch.id) {
+          // Fetch skills for the step
+          const stepSkills = skillsResult.filter(skill => skill.step_id === step.id);
+          const stepWithSkills = {
+            title: step.title,
+            description: step.description,
+            skills: stepSkills.map(skill => ({ title: skill.title })),
+          };
+
+          const subBranch = findBranchByStepId(branches, step.id);
+          if (subBranch) {
+            // Process the sub-branch
+            const processedSubBranch = await processSteps(subBranch, branches, steps);
+            processedSteps.push({
+              ...stepWithSkills,
+              ...processedSubBranch,
+            });
+          } else {
+            processedSteps.push(stepWithSkills);
+          }
+        }
+      }
+
+      // Include only color in the branch object, remove id
+      const { color } = branch;
+      return { color, steps: processedSteps };
+    };
+
+    // Convert branches to an object with branch details but no IDs
+    const branchesObject = {};
+    for (const branch of branchesResult) {
+      const processedBranch = await processSteps(branch, branchesResult, stepsResult);
+      branchesObject[branch.id] = processedBranch; // Use ID as key
+    }
+
+    // Final structured response
+    const result = {
+      id: path.id,
+      status: path.status,
+      branches: Object.values(branchesObject),
+    };
+
+    return res.status(200).json(successResponse(result, 'Path retrieved successfully'));
+  } catch (error) {
+    console.error('Error fetching path details:', error);
+    return res.status(500).json(
+      failureResponse({ error: 'Internal Server Error' }, 'Failed to get the data')
+    );
   }
-}
+};
+
+
+
+
+
+
+
+
