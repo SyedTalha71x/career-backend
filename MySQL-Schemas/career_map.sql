@@ -28,8 +28,11 @@ CREATE TABLE `branch` (
   `color` varchar(255) NOT NULL,
   `path_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `path_id` (`step_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `path_id` (`step_id`),
+  KEY `fk_branch_path_id` (`path_id`),
+  CONSTRAINT `fk_branch_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_branch_step_id` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +41,6 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (18,NULL,'black',3),(19,507,'green',3),(20,507,'purple',3),(21,507,'blue',3);
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -205,7 +207,7 @@ CREATE TABLE `path` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,7 +216,6 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,NULL,'Abdul Basit Arif Resume (1).pdf','blue','analyzed',2),(2,'I am a javascript developer',NULL,'#bb861e','analyzed',30),(3,'𝐉𝐨𝐢𝐧 𝐎𝐮𝐫 𝐓𝐞𝐚𝐦! Tassaract Corp Pvt Ltd 𝐢𝐬 𝐇𝐢𝐫𝐢𝐧𝐠 𝐚 𝐆𝐫𝐚𝐩𝐡𝐢𝐜 𝐃𝐞𝐬𝐢𝐠𝐧𝐞𝐫\n                                    Are you a creative thinker with a passion for design? Tassaract Corp Pvt Ltd is looking for a talented Graphic Designer to elevate our brand with creative and impactful designs! \n                                    Position: Graphic Designer\n                                    Experience Required: Minimum 1 year\n                                    Job Type: Hybrid\n                                    Location: Gulshan-e-Iqbal, Karachi\n\n                                    𝗞𝗲𝘆 𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗶𝗯𝗶𝗹𝗶𝘁𝗶𝗲𝘀:\n                                    •Design eye-catching visuals for both digital and print media\n                                    •Collaborate with the team to create engaging content for various platforms\n                                    •Develop creative concepts that align with our brand identity\n                                    •Ensure all designs are consistent with the latest design trends\n                                    •Provide input on design strategies and improve existing designs\n\n                                    𝗥𝗲𝗾𝘂𝗶𝗿𝗲𝗺𝗲𝗻𝘁𝘀:\n                                    •Strong portfolio showcasing your design skills across different mediums\n                                    •Proficiency in Adobe Creative Suite (Photoshop, Illustrator, InDesign)\n                                    •Experience with UI/UX design is a plus\n                                    •Familiarity with web design tools such as Figma or Sketch\n                                    •Excellent communication and collaboration skills\n                                    •1 year of experience in graphic design\n\n                                    𝗛𝗼𝘄 𝘁𝗼 𝗔𝗽𝗽𝗹𝘆:\n                                    If you\'re passionate about design and ready to make an impact, we want to hear from you! Please send your resume and portfolio to 𝗰𝗮𝗿𝗲𝗲𝗿𝘀@𝘁𝗮𝘀𝘀𝗮𝗿𝗮𝗰𝘁.𝗰𝗼𝗺\n\n                                    Based on this info write the skills which are required for this role',NULL,'blue','analyzed',30);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -344,7 +345,7 @@ CREATE TABLE `skills` (
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2549 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -353,35 +354,7 @@ CREATE TABLE `skills` (
 
 LOCK TABLES `skills` WRITE;
 /*!40000 ALTER TABLE `skills` DISABLE KEYS */;
-INSERT INTO `skills` VALUES (2514,'Cloud Management',1,507,'pending'),(2515,'Infrastructure Automation',2,507,'pending'),(2516,'Linux/Windows System Administration',3,507,'pending'),(2517,'Scripting (Python, Shell)',4,507,'pending'),(2518,'Continuous Integration/Continuous Deployment',5,507,'pending'),(2519,'Intrusion Detection',1,508,'pending'),(2520,'Incident Response',2,508,'pending'),(2521,'Security Assessment and Testing',3,508,'pending'),(2522,'Security Systems Management',4,508,'pending'),(2523,'Cybersecurity Knowledge',5,508,'pending'),(2524,'Security Architecture Design',1,509,'pending'),(2525,'Network and Security Infrastructure',2,509,'pending'),(2526,'Risk Assessment',3,509,'pending'),(2527,'Security Policy Development',4,509,'pending'),(2528,'Data and Network Encryption',5,509,'pending'),(2529,'Leadership',1,510,'pending'),(2530,'Project Management',2,510,'pending'),(2531,'Teamwork and Collaboration',3,510,'pending'),(2532,'Conflict Resolution',4,510,'pending'),(2533,'Strategic Planning',5,510,'pending'),(2534,'IT Service Management',1,511,'pending'),(2535,'Strategic Planning',2,511,'pending'),(2536,'Budgeting',3,511,'pending'),(2537,'Vendor Management',4,511,'pending'),(2538,'Resource Allocation',5,511,'pending'),(2539,'Advanced Cloud Management',1,512,'pending'),(2540,'Advanced Infrastructure Automation',2,512,'pending'),(2541,'Performance Tuning',3,512,'pending'),(2542,'Advanced System Administration',4,512,'pending'),(2543,'Complex Problem Solving',5,512,'pending'),(2544,'Cloud Architecture',1,513,'pending'),(2545,'Cloud Migration',2,513,'pending'),(2546,'Cloud Security',3,513,'pending'),(2547,'Cloud Service Management',4,513,'pending'),(2548,'Cloud Cost Optimization',5,513,'pending');
 /*!40000 ALTER TABLE `skills` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `skills2`
---
-
-DROP TABLE IF EXISTS `skills2`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `skills2` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `step_id` bigint DEFAULT NULL,
-  `skills` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `step_id` (`step_id`),
-  CONSTRAINT `skills2_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps2` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=442 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `skills2`
---
-
-LOCK TABLES `skills2` WRITE;
-/*!40000 ALTER TABLE `skills2` DISABLE KEYS */;
-INSERT INTO `skills2` VALUES (291,69,'Basic design skills'),(292,69,'Adobe Creative Suite'),(293,69,'Creativity'),(294,69,'Communication'),(295,69,'Collaboration'),(296,70,'UI/UX design basics'),(297,70,'Figma'),(298,70,'Sketch'),(299,70,'User research'),(300,70,'Wireframing'),(301,72,'Self-management'),(302,72,'Client communication'),(303,72,'Flexibility'),(304,72,'Adobe Creative Suite'),(305,72,'Creativity'),(306,73,'Client relationship management'),(307,73,'Advanced design skills'),(308,73,'Time management'),(309,73,'Marketing'),(310,73,'Negotiation'),(311,74,'Advanced design skills'),(312,74,'Adobe Creative Suite'),(313,74,'UI/UX design'),(314,74,'Team collaboration'),(315,74,'Creativity'),(316,75,'Organizational skills'),(317,75,'Basic design skills'),(318,75,'Adobe Creative Suite'),(319,75,'Communication'),(320,75,'Attention to detail'),(321,76,'Communication'),(322,76,'Patience'),(323,76,'Teaching'),(324,76,'Design skills'),(325,76,'Adobe Creative Suite'),(326,78,'Digital design'),(327,78,'Adobe Creative Suite'),(328,78,'Creativity'),(329,78,'UI/UX design'),(330,78,'Web design tools'),(331,79,'Leadership'),(332,79,'Advanced digital design'),(333,79,'Project management'),(334,79,'UI/UX design'),(335,79,'Web design tools'),(336,80,'Advanced design skills'),(337,80,'Adobe Creative Suite'),(338,80,'UI/UX design'),(339,80,'Team collaboration'),(340,80,'Creativity'),(341,81,'Problem Solving'),(342,81,'Coding'),(343,81,'Algorithm Development'),(344,81,'Data Structures'),(345,81,'Software Design'),(346,82,'Teamwork'),(347,82,'Real-world Coding'),(348,82,'Project Management'),(349,82,'Software Development Lifecycle'),(350,83,'HTML'),(351,83,'CSS'),(352,83,'JavaScript'),(353,83,'Reactjs'),(354,83,'Nodejs'),(355,83,'Expressjs'),(356,83,'MongoDB'),(357,84,'Leadership'),(358,84,'Communication'),(359,84,'Mentoring'),(360,84,'Teaching'),(361,84,'Advanced Software Development'),(362,85,'React Native'),(363,85,'HTML'),(364,85,'CSS'),(365,85,'JavaScript'),(366,85,'Mobile UI/UX'),(367,86,'Security Protocols'),(368,86,'Cryptography'),(369,86,'Network Security'),(370,86,'Secure Coding'),(371,86,'Penetration Testing'),(372,88,'HTML'),(373,88,'CSS'),(374,88,'JavaScript'),(375,88,'Reactjs'),(376,88,'UI/UX Design'),(377,89,'Leadership'),(378,89,'Time Management'),(379,89,'Project Management'),(380,89,'Advanced Frontend Development'),(381,89,'Team Coordination'),(382,90,'Advanced Mobile Development'),(383,90,'Team Leadership'),(384,90,'Strategic Planning'),(385,90,'Project Management'),(386,90,'Problem Solving'),(387,91,'HTML'),(388,91,'CSS'),(389,91,'JavaScript'),(390,91,'React'),(391,91,'Git'),(392,92,'Illustrator'),(393,92,'Photoshop'),(394,92,'Sketch'),(395,92,'InVision'),(396,92,'Figma'),(397,94,'Angular'),(398,94,'Vue'),(399,94,'Webpack'),(400,94,'Redux'),(401,94,'Jest'),(402,95,'Design Patterns'),(403,95,'Performance Tuning'),(404,95,'Refactoring'),(405,95,'TypeScript'),(406,95,'Progressive Web Apps'),(407,96,'Leadership'),(408,96,'Project Management'),(409,96,'Agile'),(410,96,'Scrum'),(411,96,'Code Reviews'),(412,97,'Strategic Planning'),(413,97,'Business Acumen'),(414,97,'Resource Allocation'),(415,97,'Risk Management'),(416,97,'Negotiation'),(417,98,'HTML'),(418,98,'CSS'),(419,98,'JavaScript'),(420,98,'Node.js'),(421,98,'Express.js'),(422,99,'CI/CD'),(423,99,'AWS'),(424,99,'Docker'),(425,99,'Kubernetes'),(426,99,'Jenkins'),(427,101,'MongoDB'),(428,101,'GraphQL'),(429,101,'React'),(430,101,'Redux'),(431,101,'Webpack'),(432,102,'Leadership'),(433,102,'Project Management'),(434,102,'Agile'),(435,102,'Scrum'),(436,102,'Code Reviews'),(437,103,'Strategic Planning'),(438,103,'Business Acumen'),(439,103,'Resource Allocation'),(440,103,'Risk Management'),(441,103,'Negotiation');
-/*!40000 ALTER TABLE `skills2` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -401,9 +374,11 @@ CREATE TABLE `steps` (
   `branch_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`path_id`),
+  KEY `fk_steps_branch_id` (`branch_id`),
   CONSTRAINT `fk_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`),
+  CONSTRAINT `fk_steps_branch_id` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`id`) ON DELETE CASCADE,
   CONSTRAINT `steps_ibfk_1` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=514 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -412,41 +387,7 @@ CREATE TABLE `steps` (
 
 LOCK TABLES `steps` WRITE;
 /*!40000 ALTER TABLE `steps` DISABLE KEYS */;
-INSERT INTO `steps` VALUES (507,'DevOps Engineer','Managing and automating cloud infrastructure',1,3,'pending',18),(508,'Security Analyst','Analyzing and improving system security',1,3,'pending',19),(509,'Security Architect','Designing secure network and system infrastructure',2,3,'pending',19),(510,'Team Lead DevOps','Leading a team of DevOps engineers',1,3,'pending',20),(511,'Information Technology Manager','Managing IT services and teams',2,3,'pending',20),(512,'Senior DevOps Engineer','Handling complex DevOps projects and responsibilities',1,3,'pending',21),(513,'Cloud Solutions Architect','Designing and implementing cloud solutions',2,3,'pending',21);
 /*!40000 ALTER TABLE `steps` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `steps2`
---
-
-DROP TABLE IF EXISTS `steps2`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `steps2` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `path_id` bigint DEFAULT NULL,
-  `branch_no` int DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `is_optional` tinyint(1) DEFAULT NULL,
-  `is_sub_branch` tinyint(1) DEFAULT NULL,
-  `is_goal` tinyint(1) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `path_id` (`path_id`),
-  CONSTRAINT `steps2_ibfk_1` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `steps2`
---
-
-LOCK TABLES `steps2` WRITE;
-/*!40000 ALTER TABLE `steps2` DISABLE KEYS */;
-INSERT INTO `steps2` VALUES (69,3,1,'Junior Graphic Designer','Start your career as a junior graphic designer, focusing on improving your skills and gaining practical experience.',0,0,0,'2024-09-09 16:00:25'),(70,3,1,'UI/UX Design Intern','Gain experience with UI/UX design to enhance your skill set and broaden your career opportunities.',1,0,0,'2024-09-09 16:00:25'),(71,3,1,'Unknown Title','No description',0,0,0,'2024-09-09 16:00:25'),(72,3,1,'Freelance Graphic Designer','Take on freelance projects to explore different industries, improve your portfolio, and gain versatility in your design skills.',0,1,0,'2024-09-09 16:00:25'),(73,3,1,'Established Freelance Graphic Designer','Become a well-known freelance designer with a strong portfolio and a wide range of clients.',0,1,1,'2024-09-09 16:00:25'),(74,3,1,'Graphic Designer at Tassaract Corp Pvt Ltd','Join Tassaract Corp Pvt Ltd as a graphic designer, creating impactful designs and contributing to the company\'s brand identity.',0,0,1,'2024-09-09 16:00:25'),(75,3,2,'Design Assistant','Start as a design assistant to get a basic understanding of the industry and the process of design development.',0,0,0,'2024-09-09 16:00:25'),(76,3,2,'Design Educator','Share your knowledge and passion for design by teaching others, either one-on-one or in a classroom setting.',1,0,0,'2024-09-09 16:00:25'),(77,3,2,'Unknown Title','No description',0,0,0,'2024-09-09 16:00:25'),(78,3,2,'Digital Media Designer','Specialize in digital media design, creating visuals for digital platforms such as websites, apps, and social media.',0,1,0,'2024-09-09 16:00:25'),(79,3,2,'Senior Digital Media Designer','Become a senior designer, leading projects and guiding junior designers.',0,1,1,'2024-09-09 16:00:25'),(80,3,2,'Graphic Designer at Tassaract Corp Pvt Ltd','Join Tassaract Corp Pvt Ltd as a graphic designer, creating impactful designs and contributing to the company\'s brand identity.',0,0,1,'2024-09-09 16:00:25'),(81,1,1,'Software Engineering BS','Complete a Bachelor\'s degree in Software Engineering from a reputable university to gain foundational knowledge in software development.',0,0,0,'2024-09-09 16:02:42'),(82,1,1,'Internship','Gain practical experience in software development by doing internships and project work.',0,0,0,'2024-09-09 16:02:42'),(83,1,1,'Full Stack Developer (MERN)','Work as a Full Stack Developer focusing on MERN stack to build complex, user-centric applications.',0,0,0,'2024-09-09 16:02:42'),(84,1,1,'Lead Trainer (Model Application and API Development)','Become a Lead Trainer to share knowledge and skills, and help guide future software developers.',0,0,1,'2024-09-09 16:02:42'),(85,1,2,'Mobile Application Developer','Become a mobile application developer focusing on React Native to create various applications.',0,0,0,'2024-09-09 16:02:42'),(86,1,2,'Specialization in Cyber Security','Acquire specialization in Cyber Security to enhance secure coding practices and handle application security.',1,0,0,'2024-09-09 16:02:42'),(87,1,2,'Unknown Title','No description',0,0,0,'2024-09-09 16:02:42'),(88,1,2,'Frontend Developer','Work as a Frontend developer to create engaging, user-friendly interfaces for web and mobile applications.',0,1,0,'2024-09-09 16:02:42'),(89,1,2,'Frontend Team Lead','Become a team lead to manage a team of frontend developers, maintaining the quality and timely delivery of projects.',0,1,1,'2024-09-09 16:02:42'),(90,1,2,'Senior Mobile Application Developer','Become a senior mobile developer to handle more complex projects and lead mobile development teams.',0,0,1,'2024-09-09 16:02:42'),(91,2,1,'Junior Frontend Developer','Working with a team to design, develop, and maintain user interfaces.',0,0,0,'2024-09-09 16:05:50'),(92,2,1,'UX/UI Designer','Designing user interfaces and enhancing user experience for applications.',1,0,0,'2024-09-09 16:05:50'),(93,2,1,'Unknown Title','No description',0,0,0,'2024-09-09 16:05:50'),(94,2,1,'Senior Frontend Developer','Leading frontend development and managing junior frontend developers.',0,1,0,'2024-09-09 16:05:50'),(95,2,1,'Frontend Architect','Designing and implementing frontend architecture of applications.',1,1,0,'2024-09-09 16:05:50'),(96,2,1,'Frontend Team Lead','Leading a team of frontend developers and architects to accomplish project goals.',0,1,1,'2024-09-09 16:05:50'),(97,2,1,'CTO','Overseeing the technological needs of the company and developing policies and goals.',0,0,1,'2024-09-09 16:05:50'),(98,2,2,'Junior Full Stack Developer','Working with both frontend and backend programming languages to build software applications.',0,0,0,'2024-09-09 16:05:50'),(99,2,2,'DevOps Engineer','Working with developers and the IT staff to oversee code releases and deployments.',1,0,0,'2024-09-09 16:05:50'),(100,2,2,'Unknown Title','No description',0,0,0,'2024-09-09 16:05:50'),(101,2,2,'Senior Full Stack Developer','Leading software development and managing junior full stack developers.',0,1,0,'2024-09-09 16:05:50'),(102,2,2,'Full Stack Team Lead','Managing a team of full stack developers to accomplish project goals.',0,1,1,'2024-09-09 16:05:50'),(103,2,2,'CTO','Overseeing the technological needs of the company and developing policies and goals.',0,0,1,'2024-09-09 16:05:50');
-/*!40000 ALTER TABLE `steps2` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -551,4 +492,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-15 11:32:50
+-- Dump completed on 2024-09-16  6:39:29
