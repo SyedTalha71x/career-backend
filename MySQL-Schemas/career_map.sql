@@ -1,13 +1,14 @@
--- MySQL dump 10.13  Distrib 8.0.37, for Linux (x86_64)
+/*!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19  Distrib 10.6.18-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: career_map_2
+-- Host: localhost    Database: career_map
 -- ------------------------------------------------------
--- Server version	8.0.37-0ubuntu0.23.10.2
+-- Server version	10.6.18-MariaDB-0ubuntu0.22.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,18 +22,18 @@
 
 DROP TABLE IF EXISTS `branch`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `branch` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `step_id` bigint DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `step_id` bigint(20) DEFAULT NULL,
   `color` varchar(255) NOT NULL,
-  `path_id` bigint DEFAULT NULL,
+  `path_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`step_id`),
   KEY `fk_branch_path_id` (`path_id`),
   CONSTRAINT `fk_branch_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_branch_step_id` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,6 +42,7 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
+INSERT INTO `branch` VALUES (1,NULL,'black',1),(2,1,'green',1),(3,1,'purple',1),(4,1,'blue',1),(5,NULL,'black',2),(6,8,'green',2),(7,8,'purple',2),(8,8,'blue',2),(9,NULL,'black',3),(10,13,'green',3),(11,13,'purple',3),(12,13,'blue',3);
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -50,15 +52,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `facebook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `facebook_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `facebook_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `facebook_id` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `facebook_id` (`facebook_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -79,15 +81,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `google_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `google_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `google_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `google_id` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `profile_picture` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`),
   UNIQUE KEY `email` (`email`)
@@ -110,14 +112,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `instagram_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `instagram_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `instagram_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `instagram_id` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `instagram_id` (`instagram_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -138,15 +140,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `linkedin_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `linkedin_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `linkedin_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `linkedin_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `linkedin_id` (`linkedin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -167,15 +169,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `outlook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `outlook_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `outlook_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `outlook_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `outlook_id` (`outlook_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -196,18 +198,18 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `path`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `path` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `prompt` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `color` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('pending','analyzing','analyzed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `user_id` int DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `prompt` longtext DEFAULT NULL,
+  `file` varchar(255) DEFAULT NULL,
+  `color` varchar(7) DEFAULT NULL,
+  `status` enum('pending','analyzing','analyzed') DEFAULT 'pending',
+  `user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,6 +218,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
+INSERT INTO `path` VALUES (1,'I am a javascript intern',NULL,NULL,'analyzed',28),(2,'how can I be devops engineer?',NULL,NULL,'analyzed',28),(3,'i am a javascript inter now and want to be a cheif technical officer',NULL,NULL,'analyzed',28);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -225,10 +228,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_module`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permission_module` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `module_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `module_name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -248,13 +251,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permissions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `permission_module_id` bigint DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `permission_module_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_permission_module` (`permission_module_id`),
   CONSTRAINT `fk_permission_module` FOREIGN KEY (`permission_module_id`) REFERENCES `permission_module` (`id`)
@@ -277,13 +280,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `role_to_permission`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `role_to_permission` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `role_id` int NOT NULL,
-  `permission_id` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   KEY `permission_id` (`permission_id`),
@@ -308,12 +311,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roles` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -335,17 +338,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skills`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `skills` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
   `sort` tinyint(1) NOT NULL,
-  `step_id` bigint DEFAULT NULL,
-  `status` enum('pending','completed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `step_id` bigint(20) DEFAULT NULL,
+  `status` enum('pending','completed') DEFAULT 'pending',
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -354,6 +357,7 @@ CREATE TABLE `skills` (
 
 LOCK TABLES `skills` WRITE;
 /*!40000 ALTER TABLE `skills` DISABLE KEYS */;
+INSERT INTO `skills` VALUES (1,'Javascript',1,1,'pending'),(2,'HTML/CSS',2,1,'pending'),(3,'React.js',3,1,'pending'),(4,'Node.js',4,1,'pending'),(5,'Git and Github',5,1,'pending'),(6,'Responsive Design',1,2,'pending'),(7,'Bootstrap',2,2,'pending'),(8,'Vue.js',3,2,'pending'),(9,'Angular.js',4,2,'pending'),(10,'UX/UI Design',5,2,'pending'),(11,'Project Management',1,3,'pending'),(12,'Team Leadership',2,3,'pending'),(13,'Performance Optimization',3,3,'pending'),(14,'Testing and Debugging',4,3,'pending'),(15,'Code Review and Mentoring',5,3,'pending'),(16,'Effective Communication',1,4,'pending'),(17,'Conflict Resolution',2,4,'pending'),(18,'Team Building',3,4,'pending'),(19,'Strategic Planning',4,4,'pending'),(20,'Project Management',5,4,'pending'),(21,'Resource Allocation',1,5,'pending'),(22,'Risk Management',2,5,'pending'),(23,'Budget Management',3,5,'pending'),(24,'Vendor Management',4,5,'pending'),(25,'Cross-Functional Collaboration',5,5,'pending'),(26,'Node.js',1,6,'pending'),(27,'Express.js',2,6,'pending'),(28,'Database Management',3,6,'pending'),(29,'API Development',4,6,'pending'),(30,'Authentication and Authorization',5,6,'pending'),(31,'Front-End Development',1,7,'pending'),(32,'Back-End Development',2,7,'pending'),(33,'Database Management',3,7,'pending'),(34,'API Development',4,7,'pending'),(35,'Unit Testing',5,7,'pending'),(36,'Programming Languages (Python, Java)',1,8,'pending'),(37,'Understanding of Data Structures and Algorithms',2,8,'pending'),(38,'Basic understanding of DevOps practices',3,8,'pending'),(39,'Problem-solving skills',4,8,'pending'),(40,'Understanding of software development methodologies (Agile, Scrum)',5,8,'pending'),(41,'Proficiency in multiple programming languages',1,9,'pending'),(42,'Understanding of different language architectures',2,9,'pending'),(43,'Adaptability to new programming environments',3,9,'pending'),(44,'Problem-solving in different language contexts',4,9,'pending'),(45,'Understanding of language-specific libraries and frameworks',5,9,'pending'),(46,'Leadership skills',1,10,'pending'),(47,'Project management skills',2,10,'pending'),(48,'Understanding of software development lifecycle',3,10,'pending'),(49,'Ability to manage and resolve conflicts',4,10,'pending'),(50,'Understanding of budgeting and resource allocation',5,10,'pending'),(51,'Deep understanding of Continuous Integration and Continuous Delivery (CI/CD)',1,11,'pending'),(52,'Knowledge of containerization and orchestration tools (Docker, Kubernetes)',2,11,'pending'),(53,'Proficiency in using configuration management tools (Ansible, Chef)',3,11,'pending'),(54,'Understanding of infrastructure as code',4,11,'pending'),(55,'Experience with cloud platforms (AWS, Azure, Google Cloud)',5,11,'pending'),(56,'Expertise in CI/CD pipelines',1,12,'pending'),(57,'Proficiency in using DevOps tools',2,12,'pending'),(58,'Understanding of system monitoring tools (Prometheus, Grafana)',3,12,'pending'),(59,'Ability to automate and streamline operations and processes',4,12,'pending'),(60,'Strong problem-solving skills',5,12,'pending'),(61,'JavaScript',1,13,'pending'),(62,'HTML/CSS',2,13,'pending'),(63,'Debugging',3,13,'pending'),(64,'Teamwork',4,13,'pending'),(65,'Problem-Solving',5,13,'pending'),(66,'Back-End Development',1,14,'pending'),(67,'Database Management',2,14,'pending'),(68,'API Development',3,14,'pending'),(69,'Integration',4,14,'pending'),(70,'Security Compliance',5,14,'pending'),(71,'Leadership',1,15,'pending'),(72,'Project Management',2,15,'pending'),(73,'Team Building',3,15,'pending'),(74,'Software Architecture Design',4,15,'pending'),(75,'Code Review',5,15,'pending'),(76,'Advanced JavaScript',1,16,'pending'),(77,'React.js',2,16,'pending'),(78,'Node.js',3,16,'pending'),(79,'Performance Testing',4,16,'pending'),(80,'Code Optimization',5,16,'pending'),(81,'Strategic Planning',1,17,'pending'),(82,'Business Acumen',2,17,'pending'),(83,'Team Leadership',3,17,'pending'),(84,'Technology Trend Awareness',4,17,'pending'),(85,'Budgeting',5,17,'pending');
 /*!40000 ALTER TABLE `skills` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -363,22 +367,22 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `steps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `steps` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `sort` tinyint NOT NULL,
-  `path_id` bigint DEFAULT NULL,
-  `status` enum('pending','completed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `branch_id` bigint NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `sort` tinyint(4) NOT NULL,
+  `path_id` bigint(20) DEFAULT NULL,
+  `status` enum('pending','completed') DEFAULT 'pending',
+  `branch_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`path_id`),
   KEY `fk_steps_branch_id` (`branch_id`),
   CONSTRAINT `fk_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`),
   CONSTRAINT `fk_steps_branch_id` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`id`) ON DELETE CASCADE,
   CONSTRAINT `steps_ibfk_1` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -387,6 +391,7 @@ CREATE TABLE `steps` (
 
 LOCK TABLES `steps` WRITE;
 /*!40000 ALTER TABLE `steps` DISABLE KEYS */;
+INSERT INTO `steps` VALUES (1,'Javascript Intern','An entry-level software developer position specializing in Javascript.',1,1,'pending',1),(2,'Front-End Developer','A software developer who specializes in designing user interfaces.',1,1,'pending',2),(3,'Senior Front-End Developer','An experienced developer who oversees front-end development projects.',2,1,'pending',2),(4,'Team Lead','A mid-level management position responsible for overseeing a team of developers.',1,1,'pending',3),(5,'Development Manager','',2,1,'pending',3),(6,'Back-End Developer','A software developer who specializes in server-side development.',1,1,'pending',4),(7,'Full Stack Developer','A software developer who is proficient in both front-end and back-end development.',2,1,'pending',4),(8,'Start as a Software Developer','This is the initial step where you gain basic knowledge and skills.',1,2,'pending',5),(9,'Gain Expertise in Different Programming Languages','This step involves going beyond your comfort zone and learning new programming languages.',1,2,'pending',6),(10,'Transition into a Project Manager Role','This step involves taking on more responsibilities including team and project management.',1,2,'pending',7),(11,'Deep Diving into DevOps Practices','This step involves gaining a deep understanding of DevOps practices and tools.',1,2,'pending',8),(12,'Become a DevOps Engineer','This is the final step where you become a fully-fledged DevOps Engineer.',2,2,'pending',5),(13,'JavaScript Intern','You are currently in an entry-level position where you are gaining hands-on experience with JavaScript programming.',1,3,'pending',9),(14,'Full-Stack Developer','You are responsible for handling both the front end and back end of a software application.',1,3,'pending',10),(15,'Tech Lead','You lead a technical team to deliver high-quality software products.',1,3,'pending',11),(16,'Senior JavaScript Developer','You are an expert JavaScript programmer responsible for creating and implementing an array of Web-based products using JavaScript.',1,3,'pending',12),(17,'Chief Technical Officer','As the CTO, you are responsible for making all executive decisions with regards to the technological interests of a company.',2,3,'pending',9);
 /*!40000 ALTER TABLE `steps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -396,12 +401,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `subscriptions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `subscriptions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `valid_till` int DEFAULT NULL,
+  `valid_till` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -422,15 +427,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_subscription` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `subscription_id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subscription_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `payment_id` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `subscription_id` (`subscription_id`),
   KEY `user_id` (`user_id`),
@@ -455,16 +460,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `otp` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `otp` varchar(6) DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL,
-  `role_id` int DEFAULT NULL,
+  `role_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
@@ -492,4 +497,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-16  6:39:29
+-- Dump completed on 2024-09-16 11:06:41
