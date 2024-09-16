@@ -98,7 +98,7 @@ export const getPathsWithDetails = async (req, res) => {
       return res
         .status(404)
         .json(
-          failureResponse({ status: false }, "No paths found for this user.")
+          failureResponse({ status: 404 }, "No paths found for this user.")
         );
     }
 
@@ -563,7 +563,7 @@ export const getSinglePath = async (req, res) => {
             { error: "Path ID is required" },
             "Failed to get details"
           )
-        );
+        );  
     }
 
     // Fetch the main path
@@ -575,7 +575,7 @@ export const getSinglePath = async (req, res) => {
       return res
         .status(404)
         .json(
-          failureResponse({ status: false }, "No paths found for this user.")
+          failureResponse({ status: 404 }, "No paths found for this user.")
         );
     }
 
@@ -601,72 +601,70 @@ export const getSinglePath = async (req, res) => {
     }
 
     // Function to find branches by step_id
-    const findBranchByStepId = (branches, step_id) => {
-      return branches.find((branch) => branch.step_id === step_id);
-    };
-
-    // Recursive function to process steps
-    const processSteps = async (branch, branches, steps) => {
-      const processedSteps = [];
-
-      for (const step of steps) {
-        if (step.branch_id === branch.id) {
-          // Fetch skills for the step
-          const stepSkills = skillsResult.filter(
-            (skill) => skill.step_id === step.id
-          );
-          const stepWithSkills = {
-            title: step.title,
-            description: step.description,
-            skills: stepSkills.map((skill) => ({ title: skill.title })),
-          };
-
-          const subBranch = findBranchByStepId(branches, step.id);
-          if (subBranch) {
-            // Process the sub-branch
-            const processedSubBranch = await processSteps(
-              subBranch,
-              branches,
-              steps
-            );
-            processedSteps.push({
-              ...stepWithSkills,
-              ...processedSubBranch,
-            });
+    const findBranchByStepId = (branches, step_id = null) => {
+      const branchArr = [];
+      for (const value of branches) {
+        if (value.step_id === step_id) {
+          if (step_id === null) {
+            return value;
           } else {
-            processedSteps.push(stepWithSkills);
+            branchArr.push(value);
           }
         }
       }
+      return branchArr;
+    };
 
-      // Include only color in the branch object, remove id
-      const { color } = branch;
-      return { color, steps: processedSteps };
+    // Recursive function to process steps
+    const processSteps = (branch, branches, steps) => {
+      const processedSteps = [];
+
+      for (const value of steps) {
+        if (value.branch_id === branch.id) {
+          const searchedBranch = findBranchByStepId(branches, value.id);
+          if (Array.isArray(searchedBranch) && searchedBranch.length > 0) {
+            const processedBranch = [];
+            for (const sb of searchedBranch) {
+              const subProcessedBranch = processSteps(sb, branches, steps);
+              processedBranch.push(subProcessedBranch);
+            }
+            if (processedBranch.length > 0) {
+              value.branches = processedBranch;
+            }
+          }
+          processedSteps.push(value);
+        }
+      }
+
+      branch.steps = processedSteps;
+      return branch;
     };
 
     // Convert branches to an object with branch details but no IDs
-    const branchesObject = {};
-    for (const branch of branchesResult) {
-      const processedBranch = await processSteps(
-        branch,
+    const startingBranch = findBranchByStepId(branchesResult);
+    if (!Array.isArray(startingBranch)) {
+      console.log(true);
+      console.log(startingBranch, branchesResult, stepsResult);
+      
+      const branch = processSteps(
+        startingBranch,
         branchesResult,
         stepsResult
       );
-      branchesObject[branch.id] = processedBranch;
+      return res.json( {
+        id: path.id,
+        Status: path.status,
+        branch:branch,
+      });
+    } else {
+      console.log(false)
+      return res.json( {
+        id: path.id,
+        Status: path.status,
+        branch:{},
+      });
     }
-
-    const result = {
-      id: path.id,
-      status: path.status,
-      branch:
-        Object.keys(branchesObject).length > 0
-          ? Object.values(branchesObject)
-          : {},
-    };
-
-    return res
-      .status(200)
-      .json(successResponse(result, "Path retrieved successfully"));
+    console.log('outer')
   } catch (error) {
     console.error("Error fetching path details:", error);
     return res
