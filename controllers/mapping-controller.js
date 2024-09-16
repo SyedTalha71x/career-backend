@@ -43,7 +43,7 @@ export const createPath = (req, res) => {
 
     // SQL query to insert data into the path table
     const sqlQuery =
-      "INSERT INTO path (prompt, file, status, user_id) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO path (prompt, file, status, user_id) VALUES (?, ?, ?, ?)";
     pool.query(
       sqlQuery,
       [prompt || null, fileName || null, "pending", userId],
@@ -88,7 +88,7 @@ export const getPathsWithDetails = async (req, res) => {
 
     // Fetch all paths for the user
     const pathsQuery = `
-      SELECT id, color, status 
+      SELECT id, status 
       FROM path 
       WHERE user_id = ? AND status = 'analyzed'
     `;
@@ -97,7 +97,9 @@ export const getPathsWithDetails = async (req, res) => {
     if (pathsResult.length === 0) {
       return res
         .status(404)
-        .json({ status: false, message: "No paths found for this user." });
+        .json(
+          failureResponse({ status: false }, "No paths found for this user.")
+        );
     }
 
     // Collect all path IDs
@@ -120,8 +122,8 @@ export const getPathsWithDetails = async (req, res) => {
 
     // Fetch skills for each step
     // const skillsQuery = `
-    //   SELECT title, step_id 
-    //   FROM skills 
+    //   SELECT title, step_id
+    //   FROM skills
     //   WHERE step_id IN (?)
     // `;
     // const skillsResult = await query(skillsQuery, [
@@ -566,11 +568,15 @@ export const getSinglePath = async (req, res) => {
 
     // Fetch the main path
     const pathQuery =
-      "SELECT id, color, status FROM path WHERE user_id = ? AND id = ? AND status = 'analyzed'";
+      "SELECT id, status FROM path WHERE user_id = ? AND id = ? AND status = 'analyzed'";
     const pathResult = await query(pathQuery, [userId, pathId]);
 
     if (pathResult.length === 0) {
-      return res.status(404).json({ status: false, message: "Path not found" });
+      return res
+        .status(404)
+        .json(
+          failureResponse({ status: false }, "No paths found for this user.")
+        );
     }
 
     const path = pathResult[0];
@@ -652,7 +658,10 @@ export const getSinglePath = async (req, res) => {
     const result = {
       id: path.id,
       status: path.status,
-      branch: Object.keys(branchesObject).length > 0 ? Object.values(branchesObject) : {},
+      branch:
+        Object.keys(branchesObject).length > 0
+          ? Object.values(branchesObject)
+          : {},
     };
 
     return res
