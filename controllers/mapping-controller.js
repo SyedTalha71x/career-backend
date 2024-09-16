@@ -614,31 +614,46 @@ export const getSinglePath = async (req, res) => {
       }
       return branchArr;
     };
-
     // Recursive function to process steps
     const processSteps = (branch, branches, steps) => {
       const processedSteps = [];
-
+    
       for (const value of steps) {
         if (value.branch_id === branch.id) {
+          // Fetch skills for the current step
+          const stepSkills = skillsResult.filter(
+            (skill) => skill.step_id === value.id
+          );
+          const stepWithSkills = {
+            id: value.id, // Include step ID if needed
+            title: value.title,
+            description: value.description,
+            skills: stepSkills.map((skill) => ({ title: skill.title })),
+          };
+    
+          // Find sub-branches for the current step
           const searchedBranch = findBranchByStepId(branches, value.id);
-          if (Array.isArray(searchedBranch) && searchedBranch.length > 0) {
+          if (searchedBranch) {
+            // Process each sub-branch
             const processedBranch = [];
             for (const sb of searchedBranch) {
               const subProcessedBranch = processSteps(sb, branches, steps);
               processedBranch.push(subProcessedBranch);
             }
             if (processedBranch.length > 0) {
-              value.branches = processedBranch;
+              // Add branches to the step
+              stepWithSkills.branches = processedBranch;
             }
           }
-          processedSteps.push(value);
+          processedSteps.push(stepWithSkills);
         }
       }
-
+    
+      // Attach processed steps to the branch
       branch.steps = processedSteps;
       return branch;
     };
+    
 
     // Convert branches to an object with branch details but no IDs
     const startingBranch = findBranchByStepId(branchesResult);
@@ -649,7 +664,7 @@ export const getSinglePath = async (req, res) => {
       const branch = processSteps(
         startingBranch,
         branchesResult,
-        stepsResult
+        stepsResult,
       );
       return res.json( {
         id: path.id,
