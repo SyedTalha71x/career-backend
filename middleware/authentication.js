@@ -22,7 +22,7 @@ const authenticate = (req, res, next) => {
     } catch (err) {
      
         if (err.name === 'JsonWebTokenError') {
-            return res.status(400).json({ message: 'Invalid token.' });
+            return res.status(401).json({ message: 'Invalid token.' });
         }
         if (err.name === 'TokenExpiredError') {
             return res.status(401).json({ message: 'Token expired.' });
