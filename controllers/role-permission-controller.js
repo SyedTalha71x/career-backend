@@ -100,88 +100,6 @@ export const updateRole = async (req, res) => {
       );
   }
 };
-export const createPermission = async (req, res) => {
-  try {
-    const { permissions, slugs, permission_module_id } = req.body;
-
-    if (!permissions || !Array.isArray(permissions) || permissions.length === 0) {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "Permissions array is required and cannot be empty" },
-            "Bad Request"
-          )
-        );
-    }
-
-    if (!slugs || !Array.isArray(slugs) || slugs.length === 0 || slugs.length !== permissions.length) {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "Slugs array must match the length of permissions array" },
-            "Bad Request"
-          )
-        );
-    }
-
-    if (typeof permission_module_id !== 'number' || permission_module_id <= 0) {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "Valid permission_module_id is required" },
-            "Bad Request"
-          )
-        );
-    }
-
-    const sqlQry = `
-      INSERT INTO permissions (name, slug, permission_module_id)
-      VALUES ?
-    `;
-
-    // Map permissions and slugs to the format required by the query
-    const values = permissions.map((permission, index) => [
-      permission,
-      slugs[index],
-      permission_module_id
-    ]);
-
-    pool.query(sqlQry, [values], (err, results) => {
-      if (err) {
-        console.log("Database Error--------------", err);
-        return res
-          .status(500)
-          .json(
-            failureResponse(
-              { error: "Failed to create permissions" },
-              "Internal Server Error"
-            )
-          );
-      }
-      return res
-        .status(201)
-        .json(
-          successResponse(
-            { affectedRows: results.affectedRows },
-            "Permissions created successfully"
-          )
-        );
-    });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json(
-        failureResponse(
-          { error: "Internal Server Error" },
-          "Internal Server Error"
-        )
-      );
-  }
-};
 export const updatePermission = async (req, res) => {
   try {
     const { id } = req.params;
@@ -281,7 +199,7 @@ export const assignPermissionsToRole = async (req, res) => {
 
       // Insert multiple records into role_to_permission table
       const assignQuery =
-        "INSERT INTO role_to_permission (role_id, permission_id) VALUES ?";
+        "INSERT INTO permission_to_role (role_id, permission_id) VALUES ?";
 
       pool.query(assignQuery, [values], (err, results) => {
         if (err) {
@@ -315,22 +233,21 @@ export const assignPermissionsToRole = async (req, res) => {
       );
   }
 };
-export const assignRoleToUser = async (req, res) => {
+export const assignRolesToUser = async (req, res) => {
   try {
-    const { userId, roleId } = req.body; // userId is the ID of the user, roleId is the ID of the role
+    const { userId, roleIds } = req.body;
 
-    if (!userId || !roleId) {
+    if (!userId || !Array.isArray(roleIds) || roleIds.length === 0) {
       return res
         .status(400)
         .json(
           failureResponse(
-            { error: "User ID and Role ID are required" },
+            { error: "User ID and an array of Role IDs are required" },
             "Bad Request"
           )
         );
     }
 
-    // Query to check if the user exists
     const userCheckQuery = "SELECT id FROM users WHERE id = ?";
     pool.query(userCheckQuery, [userId], (err, userResults) => {
       if (err || !userResults.length) {
@@ -344,30 +261,30 @@ export const assignRoleToUser = async (req, res) => {
           );
       }
 
-      // Query to check if the role exists
-      const roleCheckQuery = "SELECT id FROM roles WHERE id = ?";
-      pool.query(roleCheckQuery, [roleId], (err, roleResults) => {
-        if (err || !roleResults.length) {
+      const roleCheckQuery = "SELECT id FROM roles WHERE id IN (?)";
+      pool.query(roleCheckQuery, [roleIds], (err, roleResults) => {
+        if (err || roleResults.length !== roleIds.length) {
           return res
             .status(404)
             .json(
               failureResponse(
-                { error: "Role not found" },
-                "The specified role does not exist"
+                { error: "One or more roles not found" },
+                "One or more specified roles do not exist"
               )
             );
         }
 
-        // Update the user's role
-        const updateQuery = "UPDATE users SET role_id = ? WHERE id = ?";
-        pool.query(updateQuery, [roleId, userId], (err, results) => {
+        const insertQuery = `INSERT INTO role_to_users (user_id, role_id) VALUES ?`;
+        const values = roleIds.map((roleId) => [userId, roleId]);
+
+        pool.query(insertQuery, [values], (err, results) => {
           if (err) {
-            console.log("Error updating user role", err);
+            console.log("Error assigning user roles", err);
             return res
               .status(500)
               .json(
                 failureResponse(
-                  { error: "Failed to update user role" },
+                  { error: "Failed to assign roles to user" },
                   "Internal Server Error"
                 )
               );
@@ -375,7 +292,7 @@ export const assignRoleToUser = async (req, res) => {
 
           return res
             .status(200)
-            .json(successResponse(null, "User role updated successfully"));
+            .json(successResponse(null, "User roles assigned successfully"));
         });
       });
     });
@@ -391,9 +308,9 @@ export const assignRoleToUser = async (req, res) => {
       );
   }
 };
-export const createPermissionModule = async (req, res) => {
+export const createPermissionWithModule = async (req, res) => {
   try {
-    const { moduleName } = req.body;
+    const { moduleName, permissions, slugs } = req.body;
 
     if (!moduleName) {
       return res
@@ -406,22 +323,152 @@ export const createPermissionModule = async (req, res) => {
         );
     }
 
-    const sqlQuery = "INSERT INTO permission_module (module_name) VALUES (?)";
-    pool.query(sqlQuery, [moduleName], (err, results) => {
+    if (
+      !permissions ||
+      !Array.isArray(permissions) ||
+      permissions.length === 0
+    ) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Permissions array is required and cannot be empty" },
+            "Bad Request"
+          )
+        );
+    }
+
+    if (
+      !slugs ||
+      !Array.isArray(slugs) ||
+      slugs.length === 0 ||
+      slugs.length !== permissions.length
+    ) {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Slugs array must match the length of permissions array" },
+            "Bad Request"
+          )
+        );
+    }
+
+    // Check if the module already exists
+    const checkModuleQuery = "SELECT id FROM modules WHERE module_name = ?";
+    pool.query(checkModuleQuery, [moduleName], (err, results) => {
       if (err) {
         console.log(err);
         return res
           .status(500)
           .json(
             failureResponse(
-              { error: "Database query error " },
-              "Failed to create the module"
+              { error: "Internal Server Error" },
+              "Failed to check the module"
             )
           );
       }
-      return res
-        .status(200)
-        .json(successResponse({ moduleName }, "Module created successfully"));
+
+      let moduleId;
+
+      if (results.length > 0) {
+        // If the module already exists, use its id
+        moduleId = results[0].id;
+      } else {
+        // Insert the module if it doesn't exist
+        const modelQuery = "INSERT INTO modules (module_name) VALUES (?)";
+        pool.query(modelQuery, [moduleName], (err, insertResults) => {
+          if (err) {
+            console.log(err);
+            return res
+              .status(500)
+              .json(
+                failureResponse(
+                  { error: "Internal Server Error" },
+                  "Failed to create the permission module"
+                )
+              );
+          }
+
+          moduleId = insertResults.insertId;
+          createPermissions(moduleId); // Call the permission creation logic after module creation
+        });
+      }
+
+      if (moduleId) {
+        createPermissions(moduleId); // If the module exists, proceed with permission creation
+      }
+
+      // Function to create permissions
+      function createPermissions(moduleId) {
+        const permissionQuery = `
+            INSERT INTO permissions (name, slug)
+            VALUES ?
+          `;
+
+        const permissionValues = permissions.map((permission, index) => [
+          permission,
+          slugs[index],
+        ]);
+
+        pool.query(
+          permissionQuery,
+          [permissionValues],
+          (err, permissionResults) => {
+            if (err) {
+              console.log(err);
+              return res
+                .status(500)
+                .json(
+                  failureResponse(
+                    { error: "Internal Server Error" },
+                    "Failed to create the permissions"
+                  )
+                );
+            }
+
+            // Permission IDs start from permissionResults.insertId and increment by 1 for each permission
+            const permissionId = permissionResults.insertId;
+
+            // Correctly map moduleId and permissionId for each permission
+            const permissionModuleId = permissions.map((_, index) => [
+              moduleId,
+              permissionId + index,
+            ]);
+
+            const permissionModuleQuery = `
+            INSERT INTO permission_modules (module_id, permission_id)
+            VALUES ?
+          `;
+
+            pool.query(
+              permissionModuleQuery,
+              [permissionModuleId],
+              (err, results) => {
+                if (err) {
+                  console.log(err);
+                  return res
+                    .status(500)
+                    .json(
+                      failureResponse(
+                        { error: "Internal Server Error" },
+                        "Failed to create the permission module relationship"
+                      )
+                    );
+                }
+                return res
+                  .status(200)
+                  .json(
+                    successResponse(
+                      { moduleId, permissionId },
+                      "Permission with Module created Successfully"
+                    )
+                  );
+              }
+            );
+          }
+        );
+      }
     });
   } catch (error) {
     console.log(error);
@@ -435,4 +482,6 @@ export const createPermissionModule = async (req, res) => {
       );
   }
 };
+
+
 

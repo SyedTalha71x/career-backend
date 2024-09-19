@@ -24,12 +24,13 @@ export const auth = (requiredPermission = null) => {
         return res.status(401).json({ status: false, message: 'Unauthorized Access' });
       }
 
-      // Fetch user with role and permissions
+      // Fetch user with role and permissions using roles_to_users table
       const userQuery = `
         SELECT u.*, r.name AS role, CONCAT('[', GROUP_CONCAT('"', p.name, '"' SEPARATOR ','), ']') AS permissions
         FROM users u
-        LEFT JOIN roles r ON u.role_id = r.id
-        LEFT JOIN role_to_permission rp ON rp.role_id = u.role_id
+        LEFT JOIN roles_to_users ru ON ru.user_id = u.id
+        LEFT JOIN roles r ON ru.role_id = r.id
+        LEFT JOIN role_to_permission rp ON rp.role_id = ru.role_id
         LEFT JOIN permissions p ON p.id = rp.permission_id
         WHERE u.id = ? GROUP BY u.id
       `;
@@ -47,8 +48,8 @@ export const auth = (requiredPermission = null) => {
         const user = results[0];
         user.permissions = user.permissions ? JSON.parse(user.permissions) : [];
 
-        console.log('User:', user); // Debugging line
-        console.log('Role ID:', user.role_id); // Debugging line
+        console.log('User:', user); 
+        console.log('Role ID:', user.role_id); 
 
         // If user is an admin, bypass permission checks
         if (user.role_id === 1) {
