@@ -9,6 +9,7 @@ import fileRoutes from './routes/file-routes.js';
 import profileRoutes from "./routes/profile-routes.js";
 import rolePermissionRoutes from './routes/role-permission-routes.js';
 import subscriptionRoutes from './routes/subscription-routes.js';
+import NotificationRoutes from './routes/notification-routes.js'
 import path from 'path';
 import MappingRoutes from './routes/mapping-routes.js';
 import { fileURLToPath } from 'url';
@@ -17,7 +18,8 @@ import { networkInterfaces } from 'os';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-configDotenv(); // Load environment variables
+// Load environment variables
+configDotenv(); 
 
 // Database Setup
 connectToDB();
@@ -31,7 +33,7 @@ app.use(express.json()); // Handles JSON payloads
 
 // Serve static files from 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// console.log('Uploads directory:', path.resolve(__dirname, 'uploads'));
+console.log('Uploads directory:', path.resolve(__dirname, 'uploads'));
 
 
 // ROUTES
@@ -41,9 +43,10 @@ app.use('/api', profileRoutes);
 app.use('/api', subscriptionRoutes);
 app.use('/api', rolePermissionRoutes);
 app.use('/api', MappingRoutes);
+app.use('/api', NotificationRoutes)
 
 // SERVER ACTION
-const PORT = process.env.PORT || 3000; // Default to port 3000 if not specified
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     function getServerIp() {
         const networkInterf = networkInterfaces();

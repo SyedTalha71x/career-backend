@@ -1,5 +1,5 @@
 import express from "express";
-import { createPath, getPathsWithDetails, getPathsForUser, getSkillsForUser , geteachskillsforpath, changeSkillStatus, getSinglePath} from "../controllers/mapping-controller.js";
+import { createPath, getPathsWithDetails, getPathsForUser, getSkillsForUser , updatePath, geteachskillsforpath, changeSkillStatus, getSinglePath, getSpecificSkillsWithStepId} from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";
 import path from 'path'
@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    const fileName = `${uuidv4()}${ext}`; // Unique file name
+    const fileName = `${uuidv4()}${ext}`; 
     cb(null, fileName);
   },
 });
@@ -36,12 +36,14 @@ const upload = multer({
 });
 
 const router = express.Router();
-router.post("/create-path", upload.single("file"), authenticate, createPath);
+router.post("/create-path", authenticate, createPath);
+router.put("/update-path/:id", upload.single('file'), authenticate, updatePath);
 router.get("/get-details-with-path", authenticate, getPathsWithDetails)
 router.get("/get-paths-for-user", authenticate, getPathsForUser)
 router.get("/get-skills-for-user", authenticate, getSkillsForUser)
 router.post("/get-each-skills-with-steps", authenticate, geteachskillsforpath)
 router.get("/check-status-of-skills/:id", authenticate, changeSkillStatus)
 router.get("/get-single-path/:id", authenticate, getSinglePath)
+router.get("/get-skills-for-single-step/:id", authenticate, getSpecificSkillsWithStepId)
 
 export default router;

@@ -1,6 +1,5 @@
 import { connectToDB } from "../utils/db/db.js";
 import { successResponse, failureResponse } from "../Helper/helper.js";
-import { generateRandomColor } from "../Security/security.js";
 import {
   GET_ALL_PATH_DETAILS_WITH_SKILL_AND_STEPS,
   GET_PATHS_WITH_TOTAL_SKILLS_COUNT,
@@ -22,31 +21,27 @@ const query = (sql, params) =>
   });
 export const createPath = (req, res) => {
   try {
-    const { prompt } = req.body;
-    const file = req.file;
+    const { title, description } = req.body;
     const userId = req.user?.userId;
+    console.log("-------------------", userId);
 
-    // Check if either prompt or file is provided, but not both
-    if ((!prompt && !file) || (prompt && file)) {
+    if (!userId) {
       return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "You must provide either a prompt or file" },
-            "Failed to create the path"
-          )
-        );
+        .status(404)
+        .json(failureResponse({ error: "Failed to create the path" }));
     }
 
-    // Extract the filename from the file path if a file is provided
-    const fileName = file ? file.filename : null;
+    if (!title && !description) {
+      return res
+        .status(400)
+        .json(failureResponse({ error: "Failed to create the path" }));
+    }
 
-    // SQL query to insert data into the path table
     const sqlQuery =
-      "INSERT INTO path (prompt, file, status, user_id) VALUES (?, ?, ?, ?)";
+      "INSERT INTO path (title, description, status, user_id) VALUES (?, ?, ?, ?)";
     pool.query(
       sqlQuery,
-      [prompt || null, fileName || null, "pending", userId],
+      [title || null, description || null, "pending", userId],
       (err, result) => {
         if (err) {
           return res
@@ -75,6 +70,77 @@ export const createPath = (req, res) => {
       );
   }
 };
+export const updatePath = (req, res) => {
+  try {
+    const { prompt } = req.body;
+    const userId = req.user?.userId;
+    const pathId = req.params.id; 
+    const file = req.file; 
+
+    if (!userId) {
+      return res
+        .status(404)
+        .json(failureResponse({ error: "User not found" }));
+    }
+
+    if (!pathId) {
+      return res
+        .status(400)
+        .json(failureResponse({ error: "Path ID is required" }));
+    }
+
+    const fileName = file ? file.filename : null; 
+
+    if (prompt) {
+      const sqlQuery = `UPDATE path SET prompt = ? WHERE id = ? AND user_id = ?`;
+      pool.query(sqlQuery, [prompt, pathId, userId], (err, result) => {
+        if (err) {
+          return res
+            .status(500)
+            .json(failureResponse({ error: "Internal Server Error" }));
+        }
+        
+        if (result.affectedRows === 0) {
+          return res
+            .status(404)
+            .json(failureResponse({ error: "Path not found or not owned by user" }));
+        }
+
+        return res
+          .status(200)
+          .json(successResponse({}, "Prompt updated successfully"));
+      });
+    } else if (fileName) {
+      const sqlQuery = `UPDATE path SET file = ? WHERE id = ? AND user_id = ?`;
+      pool.query(sqlQuery, [fileName, pathId, userId], (err, result) => {
+        if (err) {
+          return res
+            .status(500)
+            .json(failureResponse({ error: "Internal Server Error" }));
+        }
+
+        if (result.affectedRows === 0) {
+          return res
+            .status(404)
+            .json(failureResponse({ error: "Path not found or not owned by user" }));
+        }
+
+        return res
+          .status(200)
+          .json(successResponse({}, "File updated successfully"));
+      });
+    } else {
+      return res
+        .status(400)
+        .json(failureResponse({ error: "Either prompt or file must be provided" }));
+    }
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res
+      .status(500)
+      .json(failureResponse({ error: "Internal Server Error" }));
+  }
+};
 export const getPathsWithDetails = async (req, res) => {
   try {
     const userId = req.user?.userId;
@@ -90,7 +156,7 @@ export const getPathsWithDetails = async (req, res) => {
     const pathsQuery = `
       SELECT id, status 
       FROM path 
-      WHERE user_id = ? AND status = 'analyzed'
+      WHERE user_id = ? AND status = 'analyse'
     `;
     const pathsResult = await query(pathsQuery, [userId]);
 
@@ -114,7 +180,7 @@ export const getPathsWithDetails = async (req, res) => {
     const branchesResult = await query(branchesQuery, [pathIds]);
 
     const stepsQuery = `
-      SELECT id, title, description, branch_id, path_id 
+      SELECT id, title, description, branch_id, path_id, status
       FROM steps 
       WHERE path_id IN (?)
     `;
@@ -563,12 +629,12 @@ export const getSinglePath = async (req, res) => {
             { error: "Path ID is required" },
             "Failed to get details"
           )
-        );  
+        );
     }
 
     // Fetch the main path
     const pathQuery =
-      "SELECT id, status FROM path WHERE user_id = ? AND id = ? AND status = 'analyzed'";
+      "SELECT id, status FROM path WHERE user_id = ? AND id = ? AND status = 'analyse'";
     const pathResult = await query(pathQuery, [userId, pathId]);
 
     if (pathResult.length === 0) {
@@ -617,7 +683,7 @@ export const getSinglePath = async (req, res) => {
     // Recursive function to process steps
     const processSteps = (branch, branches, steps) => {
       const processedSteps = [];
-    
+
       for (const value of steps) {
         if (value.branch_id === branch.id) {
           // Fetch skills for the current step
@@ -630,7 +696,7 @@ export const getSinglePath = async (req, res) => {
             description: value.description,
             skills: stepSkills.map((skill) => ({ title: skill.title })),
           };
-    
+
           // Find sub-branches for the current step
           const searchedBranch = findBranchByStepId(branches, value.id);
           if (searchedBranch) {
@@ -648,38 +714,33 @@ export const getSinglePath = async (req, res) => {
           processedSteps.push(stepWithSkills);
         }
       }
-    
+
       // Attach processed steps to the branch
       branch.steps = processedSteps;
       return branch;
     };
-    
 
     // Convert branches to an object with branch details but no IDs
     const startingBranch = findBranchByStepId(branchesResult);
     if (!Array.isArray(startingBranch)) {
       console.log(true);
       console.log(startingBranch, branchesResult, stepsResult);
-      
-      const branch = processSteps(
-        startingBranch,
-        branchesResult,
-        stepsResult,
-      );
-      return res.json( {
+
+      const branch = processSteps(startingBranch, branchesResult, stepsResult);
+      return res.json({
         id: path.id,
         Status: path.status,
-        branch:branch,
+        branch: branch,
       });
     } else {
-      console.log(false)
-      return res.json( {
+      console.log(false);
+      return res.json({
         id: path.id,
         Status: path.status,
-        branch:{},
+        branch: {},
       });
     }
-    console.log('outer')
+    console.log("outer");
   } catch (error) {
     console.error("Error fetching path details:", error);
     return res
@@ -692,3 +753,45 @@ export const getSinglePath = async (req, res) => {
       );
   }
 };
+export const getSpecificSkillsWithStepId = (req,res) =>{
+  try{
+    const stepId = req.params.id;
+    const userId = req.user?.userId;
+
+    if(!userId){
+      return res
+      .status(400)
+      .json(
+        failureResponse(
+          { error: "User ID is required" },
+          "Failed to get details"
+        )
+      );
+    }
+
+    const sqlQuery = 'select * from skills where step_id = ?'
+    pool.query(sqlQuery, [stepId], (err, result)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json(failureResponse({error: 'Internal Server Error'}, 'Failed to fetch the skills'))
+      }
+      const formattedResult = result.map((item) => ({
+        id: item.id,
+        title: item.title,
+        status: item.status, 
+      }));
+
+      return res
+        .status(200)
+        .json(
+          successResponse(
+            { skills: formattedResult },
+            "Successfully fetched the skills"
+          )
+        );
+    })
+  }
+  catch(error){
+    return res.status(500).json(failureResponse({error: 'Internal Server Error'}, 'Failed to fetch the skills'))
+  }
+}

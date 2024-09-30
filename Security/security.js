@@ -21,15 +21,8 @@ export function verifyPassword(storedHash, password) {
   const hash = CryptoJS.HmacSHA256(password, SECRET_KEY).toString();
   return hash === storedHash;
 }
-export function generateToken(userId, email, authType, roleId = null) {
-  const payload = { userId, email, authType };
-
-  // Add roleId to payload only if it's provided
-  if (roleId) {
-    payload.roleId = roleId;
-  }
-
-  // Generate token with secret key and expiration from environment variables
+export function generateToken(userId, email, authType) {
+  const payload = { userId, email, authType }
   try {
     const token = jwt.sign(payload, SECRET_KEY)
     return token;

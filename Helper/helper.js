@@ -13,3 +13,12 @@ export const failureResponse = (error = {}, message = 'Failure') => {
         message: message
     };
 };
+
+export const createNotifications = (userId, title, description, link) =>{
+    return{
+        user_id: userId,
+        title: title,
+        description: description,
+        link: link
+}
+}

@@ -6,11 +6,13 @@ const authenticate = (req, res, next) => {
 
     const authHeader = req.header('Authorization');
 
-    if (!authHeader) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
 
     const token = authHeader.split(' ')[1];
+    console.log("parsed token -------------", token);
+    
     if (!token) {
         return res.status(401).json({ message: 'Access denied. Malformed token.' });
     }
@@ -21,6 +23,7 @@ const authenticate = (req, res, next) => {
         next();
     } catch (err) {
      
+        console.log(err);
         if (err.name === 'JsonWebTokenError') {
             return res.status(401).json({ message: 'Invalid token.' });
         }
