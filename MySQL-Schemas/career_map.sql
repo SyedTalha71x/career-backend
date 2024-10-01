@@ -212,7 +212,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (3,30,'System Maintenance Scheduled','Our system will be undergoing maintenance on October 1st at 10:00 PM.','https://www.google.com/',0,1),(4,30,'Database Admin Scheduled','Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.','https://www.google.com/',1,1),(5,30,'I am an infrastructure Specialist','This path has been analyse',NULL,0,1);
+INSERT INTO `notifications` VALUES (3,30,'System Maintenance Scheduled','Our system will be undergoing maintenance on October 1st at 10:00 PM.','https://www.google.com/',1,1),(4,30,'Database Admin Scheduled','Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.','https://www.google.com/',1,1),(5,30,'I am an infrastructure Specialist','This path has been analyse',NULL,1,1);
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -257,7 +257,7 @@ CREATE TABLE `path` (
   `prompt` longtext COLLATE utf8mb4_unicode_ci,
   `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('pending','analyse','analysing') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `status` enum('pending','analysed','analysing') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `user_id` int DEFAULT NULL,
   `title` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `description` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -575,4 +575,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-30 11:59:13
+-- Dump completed on 2024-10-01  6:02:49
