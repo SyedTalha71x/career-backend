@@ -1,5 +1,7 @@
 import { connectToDB } from "../utils/db/db.js";
 import { successResponse, failureResponse } from "../Helper/helper.js";
+import axios from "axios";
+
 import {
   GET_ALL_PATH_DETAILS_WITH_SKILL_AND_STEPS,
   GET_PATHS_WITH_TOTAL_SKILLS_COUNT,
@@ -19,9 +21,10 @@ const query = (sql, params) =>
       resolve(results);
     });
   });
-export const createPath = (req, res) => {
+
+export const createPath = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, prompt } = req.body;
     const userId = req.user?.userId;
     console.log("-------------------", userId);
 
@@ -31,18 +34,19 @@ export const createPath = (req, res) => {
         .json(failureResponse({ error: "Failed to create the path" }));
     }
 
-    if (!title && !description) {
+    if (!title && !prompt) {
       return res
         .status(400)
         .json(failureResponse({ error: "Failed to create the path" }));
     }
 
     const sqlQuery =
-      "INSERT INTO path (title, description, status, user_id) VALUES (?, ?, ?, ?)";
+      "INSERT INTO path (title, prompt, status, user_id) VALUES (?, ?, ?, ?)";
+
     pool.query(
       sqlQuery,
-      [title || null, description || null, "pending", userId],
-      (err, result) => {
+      [title || null, prompt || null, "pending", userId],
+      async (err, result) => {
         if (err) {
           return res
             .status(500)
@@ -53,6 +57,32 @@ export const createPath = (req, res) => {
               )
             );
         }
+
+        try {
+          const authHeader = req.header("Authorization"); 
+
+          const roadmapResponse = await axios.post(
+            `http://64.23.166.88:3500/generate_roadmap?id=${result.insertId}`,
+            {}, 
+            {
+              headers: {
+                Authorization: authHeader, 
+              },
+            }
+          );
+          console.log("Roadmap response:", roadmapResponse.data);
+        } catch (roadmapError) {
+          console.error("Error calling generate_roadmap API:", roadmapError);
+          return res
+            .status(500)
+            .json(
+              failureResponse(
+                { error: "Failed to call roadmap generation API" },
+                "Failed to create the path"
+              )
+            );
+        }
+
         res
           .status(200)
           .json(successResponse({}, "Path is created successfully"));
@@ -70,6 +100,7 @@ export const createPath = (req, res) => {
       );
   }
 };
+
 export const updatePath = (req, res) => {
   try {
     const { prompt } = req.body;
@@ -78,9 +109,7 @@ export const updatePath = (req, res) => {
     const file = req.file;
 
     if (!userId) {
-      return res
-        .status(404)
-        .json(failureResponse({ error: "User not found" }));
+      return res.status(404).json(failureResponse({ error: "User not found" }));
     }
 
     if (!pathId) {
@@ -103,7 +132,9 @@ export const updatePath = (req, res) => {
         if (result.affectedRows === 0) {
           return res
             .status(404)
-            .json(failureResponse({ error: "Path not found or not owned by user" }));
+            .json(
+              failureResponse({ error: "Path not found or not owned by user" })
+            );
         }
 
         return res
@@ -122,7 +153,9 @@ export const updatePath = (req, res) => {
         if (result.affectedRows === 0) {
           return res
             .status(404)
-            .json(failureResponse({ error: "Path not found or not owned by user" }));
+            .json(
+              failureResponse({ error: "Path not found or not owned by user" })
+            );
         }
 
         return res
@@ -132,7 +165,9 @@ export const updatePath = (req, res) => {
     } else {
       return res
         .status(400)
-        .json(failureResponse({ error: "Either prompt or file must be provided" }));
+        .json(
+          failureResponse({ error: "Either prompt or file must be provided" })
+        );
     }
   } catch (error) {
     console.error("Unexpected error:", error);
@@ -769,11 +804,18 @@ export const getSpecificSkillsWithStepId = (req, res) => {
         );
     }
 
-    const sqlQuery = 'select * from skills where step_id = ?'
+    const sqlQuery = "select * from skills where step_id = ?";
     pool.query(sqlQuery, [stepId], (err, result) => {
       if (err) {
         console.log(err);
-        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to fetch the skills'))
+        return res
+          .status(500)
+          .json(
+            failureResponse(
+              { error: "Internal Server Error" },
+              "Failed to fetch the skills"
+            )
+          );
       }
       const formattedResult = result.map((item) => ({
         id: item.id,
@@ -789,9 +831,15 @@ export const getSpecificSkillsWithStepId = (req, res) => {
             "Successfully fetched the skills"
           )
         );
-    })
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        failureResponse(
+          { error: "Internal Server Error" },
+          "Failed to fetch the skills"
+        )
+      );
   }
-  catch (error) {
-    return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to fetch the skills'))
-  }
-}
+};
