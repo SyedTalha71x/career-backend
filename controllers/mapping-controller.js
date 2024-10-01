@@ -74,8 +74,8 @@ export const updatePath = (req, res) => {
   try {
     const { prompt } = req.body;
     const userId = req.user?.userId;
-    const pathId = req.params.id; 
-    const file = req.file; 
+    const pathId = req.params.id;
+    const file = req.file;
 
     if (!userId) {
       return res
@@ -89,7 +89,7 @@ export const updatePath = (req, res) => {
         .json(failureResponse({ error: "Path ID is required" }));
     }
 
-    const fileName = file ? file.filename : null; 
+    const fileName = file ? file.filename : null;
 
     if (prompt) {
       const sqlQuery = `UPDATE path SET prompt = ? WHERE id = ? AND user_id = ?`;
@@ -99,7 +99,7 @@ export const updatePath = (req, res) => {
             .status(500)
             .json(failureResponse({ error: "Internal Server Error" }));
         }
-        
+
         if (result.affectedRows === 0) {
           return res
             .status(404)
@@ -156,7 +156,7 @@ export const getPathsWithDetails = async (req, res) => {
     const pathsQuery = `
       SELECT id, status 
       FROM path 
-      WHERE user_id = ? AND status = 'analyse'
+      WHERE user_id = ? AND status = 'analysed'
     `;
     const pathsResult = await query(pathsQuery, [userId]);
 
@@ -753,32 +753,32 @@ export const getSinglePath = async (req, res) => {
       );
   }
 };
-export const getSpecificSkillsWithStepId = (req,res) =>{
-  try{
+export const getSpecificSkillsWithStepId = (req, res) => {
+  try {
     const stepId = req.params.id;
     const userId = req.user?.userId;
 
-    if(!userId){
+    if (!userId) {
       return res
-      .status(400)
-      .json(
-        failureResponse(
-          { error: "User ID is required" },
-          "Failed to get details"
-        )
-      );
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "User ID is required" },
+            "Failed to get details"
+          )
+        );
     }
 
     const sqlQuery = 'select * from skills where step_id = ?'
-    pool.query(sqlQuery, [stepId], (err, result)=>{
-      if(err){
+    pool.query(sqlQuery, [stepId], (err, result) => {
+      if (err) {
         console.log(err);
-        return res.status(500).json(failureResponse({error: 'Internal Server Error'}, 'Failed to fetch the skills'))
+        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to fetch the skills'))
       }
       const formattedResult = result.map((item) => ({
         id: item.id,
         title: item.title,
-        status: item.status, 
+        status: item.status,
       }));
 
       return res
@@ -791,7 +791,7 @@ export const getSpecificSkillsWithStepId = (req,res) =>{
         );
     })
   }
-  catch(error){
-    return res.status(500).json(failureResponse({error: 'Internal Server Error'}, 'Failed to fetch the skills'))
+  catch (error) {
+    return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to fetch the skills'))
   }
 }
