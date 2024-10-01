@@ -320,7 +320,7 @@ export const updateUnReadNotificationForSpecificUser = (req, res) => {
       );
   }
 };
-export const createPathNotification = (req,res) => {
+export const createPathNotification = (req, res) => {
   try {
     const PathId = req.params.id;
     const userId = req.user?.userId;
@@ -379,7 +379,7 @@ export const createPathNotification = (req,res) => {
           }
 
           return res
-            .status(201)
+            .status(200)
             .json(
               successResponse({
                 message: "Notification created",
@@ -389,7 +389,7 @@ export const createPathNotification = (req,res) => {
         }
       );
     });
-  }  catch (error) {
+  } catch (error) {
     console.log(error);
     return res
       .status(500)
