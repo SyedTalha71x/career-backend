@@ -34,10 +34,10 @@ export const createPath = async (req, res) => {
         .json(failureResponse({ error: "Failed to create the path" }));
     }
 
-    if (!title && !prompt) {
+    if (!title || !prompt) {
       return res
         .status(400)
-        .json(failureResponse({ error: "Failed to create the path" }));
+        .json(failureResponse({ error: "Title or prompt is required" }));
     }
 
     const sqlQuery =
