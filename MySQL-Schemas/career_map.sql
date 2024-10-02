@@ -41,6 +41,11 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
+INSERT INTO `branch` (`id`, `step_id`, `color`, `path_id`) VALUES
+(18, NULL, 'black', 2),
+(19, 507, 'green', 2),
+(20, 507, 'purple', 2),
+(21, 507, 'blue', 2);
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -271,7 +276,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert'),(2,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert'),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert'),(4,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert'),(5,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert');
+INSERT INTO `path` VALUES (1,'Welcome to the era of automation',NULL,'pending',28,'I am an automation expert'),(2,'Welcome to the era of automation',NULL,'analysed',28,'I am an automation expert'),(3,'Welcome to the era of automation',NULL,'pending',28,'I am an automation expert'),(4,'Welcome to the era of automation',NULL,'pending',28,'I am an automation expert'),(5,'Welcome to the era of automation',NULL,'pending',28,'I am an automation expert');
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -439,6 +444,43 @@ CREATE TABLE `skills` (
 
 LOCK TABLES `skills` WRITE;
 /*!40000 ALTER TABLE `skills` DISABLE KEYS */;
+
+INSERT INTO `skills` (`id`, `title`, `sort`, `step_id`, `status`) VALUES
+(2514, 'Cloud Management', 1, 507, 'pending'),
+(2515, 'Infrastructure Automation', 2, 507, 'pending'),
+(2516, 'Linux/Windows System Administration', 3, 507, 'pending'),
+(2517, 'Scripting (Python, Shell)', 4, 507, 'pending'),
+(2518, 'Continuous Integration/Continuous Deployment', 5, 507, 'pending'),
+(2519, 'Intrusion Detection', 1, 508, 'pending'),
+(2520, 'Incident Response', 2, 508, 'pending'),
+(2521, 'Security Assessment and Testing', 3, 508, 'pending'),
+(2522, 'Security Systems Management', 4, 508, 'pending'),
+(2523, 'Cybersecurity Knowledge', 5, 508, 'pending'),
+(2524, 'Security Architecture Design', 1, 509, 'pending'),
+(2525, 'Network and Security Infrastructure', 2, 509, 'pending'),
+(2526, 'Risk Assessment', 3, 509, 'pending'),
+(2527, 'Security Policy Development', 4, 509, 'pending'),
+(2528, 'Data and Network Encryption', 5, 509, 'pending'),
+(2529, 'Leadership', 1, 510, 'pending'),
+(2530, 'Project Management', 2, 510, 'pending'),
+(2531, 'Teamwork and Collaboration', 3, 510, 'pending'),
+(2532, 'Conflict Resolution', 4, 510, 'pending'),
+(2533, 'Strategic Planning', 5, 510, 'pending'),
+(2534, 'IT Service Management', 1, 511, 'pending'),
+(2535, 'Strategic Planning', 2, 511, 'pending'),
+(2536, 'Budgeting', 3, 511, 'pending'),
+(2537, 'Vendor Management', 4, 511, 'pending'),
+(2538, 'Resource Allocation', 5, 511, 'pending'),
+(2539, 'Advanced Cloud Management', 1, 512, 'pending'),
+(2540, 'Advanced Infrastructure Automation', 2, 512, 'pending'),
+(2541, 'Performance Tuning', 3, 512, 'pending'),
+(2542, 'Advanced System Administration', 4, 512, 'pending'),
+(2543, 'Complex Problem Solving', 5, 512, 'pending'),
+(2544, 'Cloud Architecture', 1, 513, 'pending'),
+(2545, 'Cloud Migration', 2, 513, 'pending'),
+(2546, 'Cloud Security', 3, 513, 'pending'),
+(2547, 'Cloud Service Management', 4, 513, 'pending'),
+(2548, 'Cloud Cost Optimization', 5, 513, 'pending');
 /*!40000 ALTER TABLE `skills` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -472,6 +514,14 @@ CREATE TABLE `steps` (
 
 LOCK TABLES `steps` WRITE;
 /*!40000 ALTER TABLE `steps` DISABLE KEYS */;
+INSERT INTO `steps` (`id`, `title`, `description`, `sort`, `path_id`, `status`, `branch_id`) VALUES
+(507, 'DevOps Engineer', 'Managing and automating cloud infrastructure', 1, 2, 'pending', 18),
+(508, 'Security Analyst', 'Analyzing and improving system security', 1, 2, 'pending', 19),
+(509, 'Security Architect', 'Designing secure network and system infrastructure', 2, 2, 'pending', 19),
+(510, 'Team Lead DevOps', 'Leading a team of DevOps engineers', 1, 2, 'pending', 20),
+(511, 'Information Technology Manager', 'Managing IT services and teams', 2, 2, 'pending', 20),
+(512, 'Senior DevOps Engineer', 'Handling complex DevOps projects and responsibilities', 1, 2, 'pending', 21),
+(513, 'Cloud Solutions Architect', 'Designing and implementing cloud solutions', 2, 2, 'pending', 21);
 /*!40000 ALTER TABLE `steps` ENABLE KEYS */;
 UNLOCK TABLES;
 
