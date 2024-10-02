@@ -641,153 +641,107 @@ export const changeSkillStatus = (req, res) => {
       );
   }
 };
-export const getSinglePath = async (req, res) => {
+export const getSingleBranch = async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const pathId = req.params.id;
+    const branchId = req.params.id;
+
+    console.log('Branch id ', branchId);
+    console.log('User id ', userId);
 
     if (!userId) {
       return res
         .status(400)
-        .json(
-          failureResponse(
-            { error: "User ID is required" },
-            "Failed to get details"
-          )
-        );
+        .json(failureResponse({ error: "User ID is required" }, "Failed to get details"));
     }
-    if (!pathId) {
+    if (!branchId) {
       return res
         .status(400)
-        .json(
-          failureResponse(
-            { error: "Path ID is required" },
-            "Failed to get details"
-          )
-        );
+        .json(failureResponse({ error: "Branch ID is required" }, "Failed to get details"));
     }
 
-    // Fetch the main path
-    const pathQuery =
-      "SELECT id, status FROM path WHERE user_id = ? AND id = ? AND status = 'analyse'";
-    const pathResult = await query(pathQuery, [userId, pathId]);
+    // Fetch the branch to verify its existence and get associated step_id
+    const branchQuery = "SELECT id, path_id, step_id, color FROM branch WHERE id = ?";
+    const branchResult = await query(branchQuery, [branchId]);
+
+    if (branchResult.length === 0) {
+      return res.status(404).json(failureResponse({ status: 404 }, "Branch not found."));
+    }
+
+    const branch = branchResult[0];
+
+    // Verify that the branch belongs to the user's path
+    const pathQuery = "SELECT id, status FROM path WHERE id = ? AND user_id = ?";
+    const pathResult = await query(pathQuery, [branch.path_id, userId]);
 
     if (pathResult.length === 0) {
-      return res
-        .status(404)
-        .json(
-          failureResponse({ status: 404 }, "No paths found for this user.")
-        );
+      return res.status(404).json(failureResponse({ status: 404 }, "No paths found for this user."));
     }
 
-    const path = pathResult[0];
+    // Fetch the main step associated with this branch
+    const mainStepResult = [];
+    if (branch.step_id) {
+      const stepQuery = "SELECT id, title, description FROM steps WHERE id = ?";
+      const stepResult = await query(stepQuery, [branch.step_id]);
 
-    // Fetch branches and steps for the path
-    const branchesQuery =
-      "SELECT id, color, step_id FROM branch WHERE path_id = ?";
-    const branchesResult = await query(branchesQuery, [pathId]);
+      if (stepResult.length > 0) {
+        mainStepResult.push(stepResult[0]);
+      }
+    }
 
-    const stepsQuery =
-      "SELECT id, title, description, branch_id FROM steps WHERE path_id = ?";
-    const stepsResult = await query(stepsQuery, [pathId]);
+    // Fetch all steps associated with this branch
+    const allStepsQuery = "SELECT id, title, description FROM steps WHERE branch_id = ?";
+    const allStepsResult = await query(allStepsQuery, [branchId]);
 
-    const stepIds = stepsResult.map((step) => step.id);
+    // Combine main step and all associated steps
+    const combinedStepsResult = [...mainStepResult, ...allStepsResult];
 
-    // Fetch skills only if there are steps
+    const stepIds = combinedStepsResult.map(step => step.id);
+
+    // Fetch skills associated with the combined steps
     let skillsResult = [];
     if (stepIds.length > 0) {
-      const skillsQuery =
-        "SELECT title, step_id FROM skills WHERE step_id IN (?)";
+      const skillsQuery = "SELECT title, step_id FROM skills WHERE step_id IN (?)";
       skillsResult = await query(skillsQuery, [stepIds]);
     }
 
-    // Function to find branches by step_id
-    const findBranchByStepId = (branches, step_id = null) => {
-      const branchArr = [];
-      for (const value of branches) {
-        if (value.step_id === step_id) {
-          if (step_id === null) {
-            return value;
-          } else {
-            branchArr.push(value);
-          }
-        }
-      }
-      return branchArr;
-    };
-    // Recursive function to process steps
-    const processSteps = (branch, branches, steps) => {
-      const processedSteps = [];
+    // Prepare response data array
+    const data = [];
 
-      for (const value of steps) {
-        if (value.branch_id === branch.id) {
-          // Fetch skills for the current step
-          const stepSkills = skillsResult.filter(
-            (skill) => skill.step_id === value.id
-          );
-          const stepWithSkills = {
-            id: value.id, // Include step ID if needed
-            title: value.title,
-            description: value.description,
-            skills: stepSkills.map((skill) => ({ title: skill.title })),
-          };
-
-          // Find sub-branches for the current step
-          const searchedBranch = findBranchByStepId(branches, value.id);
-          if (searchedBranch) {
-            // Process each sub-branch
-            const processedBranch = [];
-            for (const sb of searchedBranch) {
-              const subProcessedBranch = processSteps(sb, branches, steps);
-              processedBranch.push(subProcessedBranch);
-            }
-            if (processedBranch.length > 0) {
-              // Add branches to the step
-              stepWithSkills.branches = processedBranch;
-            }
-          }
-          processedSteps.push(stepWithSkills);
-        }
-      }
-
-      // Attach processed steps to the branch
-      branch.steps = processedSteps;
-      return branch;
+    // Add branch details with its associated steps and skills
+    const branchData = {
+      id: branch.id,
+      color: branch.color,
+      steps: [],
     };
 
-    // Convert branches to an object with branch details but no IDs
-    const startingBranch = findBranchByStepId(branchesResult);
-    if (!Array.isArray(startingBranch)) {
-      console.log(true);
-      console.log(startingBranch, branchesResult, stepsResult);
-
-      const branch = processSteps(startingBranch, branchesResult, stepsResult);
-      return res.json({
-        id: path.id,
-        Status: path.status,
-        branch: branch,
-      });
-    } else {
-      console.log(false);
-      return res.json({
-        id: path.id,
-        Status: path.status,
-        branch: {},
+    for (const step of combinedStepsResult) {
+      const stepSkills = skillsResult.filter(skill => skill.step_id === step.id);
+      branchData.steps.push({
+        id: step.id,
+        title: step.title,
+        description: step.description,
+        skills: stepSkills.map(skill => ({ title: skill.title })),
       });
     }
-    console.log("outer");
+
+    data.push(branchData);
+
+    return res.json({
+      data,
+    });
   } catch (error) {
-    console.error("Error fetching path details:", error);
+    console.error("Error fetching branch details:", error);
     return res
       .status(500)
-      .json(
-        failureResponse(
-          { error: "Internal Server Error" },
-          "Failed to get the data"
-        )
-      );
+      .json(failureResponse({ error: "Internal Server Error" }, "Failed to get the data"));
   }
 };
+
+
+
+
+
 export const getSpecificSkillsWithStepId = (req, res) => {
   try {
     const stepId = req.params.id;
