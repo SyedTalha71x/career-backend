@@ -189,7 +189,7 @@ export const getPathsWithDetails = async (req, res) => {
 
     // Fetch all paths for the user
     const pathsQuery = `
-      SELECT id, status 
+      SELECT id, status, title 
       FROM path 
       WHERE user_id = ? AND status = 'analysed'
     `;
@@ -290,12 +290,14 @@ export const getPathsWithDetails = async (req, res) => {
           return {
             id: path.id,
             Status: path.status,
+            Title: path.title,
             branch,
           };
         } else {
           return {
             id: path.id,
             Status: path.status,
+            Title: path.title,
             branch: {},
           };
         }
@@ -671,7 +673,7 @@ export const getSingleBranch = async (req, res) => {
     const branch = branchResult[0];
 
     // Verify that the branch belongs to the user's path
-    const pathQuery = "SELECT id, status FROM path WHERE id = ? AND user_id = ?";
+    const pathQuery = "SELECT id, status, title FROM path WHERE id = ? AND user_id = ?";
     const pathResult = await query(pathQuery, [branch.path_id, userId]);
 
     if (pathResult.length === 0) {
@@ -681,7 +683,7 @@ export const getSingleBranch = async (req, res) => {
     // Fetch the main step associated with this branch
     const mainStepResult = [];
     if (branch.step_id) {
-      const stepQuery = "SELECT id, title, description FROM steps WHERE id = ?";
+      const stepQuery = "SELECT id, title, description, status FROM steps WHERE id = ?";
       const stepResult = await query(stepQuery, [branch.step_id]);
 
       if (stepResult.length > 0) {
@@ -690,7 +692,7 @@ export const getSingleBranch = async (req, res) => {
     }
 
     // Fetch all steps associated with this branch
-    const allStepsQuery = "SELECT id, title, description FROM steps WHERE branch_id = ?";
+    const allStepsQuery = "SELECT id, title, description, status FROM steps WHERE branch_id = ?";
     const allStepsResult = await query(allStepsQuery, [branchId]);
 
     // Combine main step and all associated steps
@@ -710,6 +712,7 @@ export const getSingleBranch = async (req, res) => {
 
     // Add branch details with its associated steps and skills
     const branchData = {
+      pathTitle: pathResult[0].title,
       id: branch.id,
       color: branch.color,
       steps: [],
@@ -721,6 +724,7 @@ export const getSingleBranch = async (req, res) => {
         id: step.id,
         title: step.title,
         description: step.description,
+        status: step.status,
         skills: stepSkills.map(skill => ({ title: skill.title })),
       });
     }
