@@ -26,6 +26,7 @@ export const createPath = async (req, res) => {
   try {
     const { title, prompt } = req.body;
     const userId = req.user?.userId;
+    const file = req.file;
     console.log("-------------------", userId);
 
     if (!userId) {
@@ -33,19 +34,27 @@ export const createPath = async (req, res) => {
         .status(404)
         .json(failureResponse({ error: "Failed to create the path" }));
     }
-
-    if (!title || !prompt) {
+    if (!title) {
       return res
         .status(400)
-        .json(failureResponse({ error: "Title or prompt is required" }));
+        .json(failureResponse({ error: "Title is required" }));
     }
 
+    if (!prompt && !file) {
+      return res
+        .status(400)
+        .json(failureResponse({ error: "Either prompt or file is required" }));
+    }
+
+    const fileName = file ? file.filename : null;
+    console.log(fileName)
+
     const sqlQuery =
-      "INSERT INTO path (title, prompt, status, user_id) VALUES (?, ?, ?, ?)";
+      "INSERT INTO path (title, prompt, status, user_id, file) VALUES (?, ?, ?, ?, ?)";
 
     pool.query(
       sqlQuery,
-      [title || null, prompt || null, "pending", userId],
+      [title || null, prompt || null, "pending", userId, fileName],
       async (err, result) => {
         if (err) {
           return res
@@ -59,14 +68,13 @@ export const createPath = async (req, res) => {
         }
 
         try {
-          const authHeader = req.header("Authorization"); 
-
+          const authHeader = req.header("Authorization");
           const roadmapResponse = await axios.post(
             `http://64.23.166.88:3500/generate_roadmap?id=${result.insertId}`,
-            {}, 
+            {},
             {
               headers: {
-                Authorization: authHeader, 
+                Authorization: authHeader,
               },
             }
           );
@@ -100,10 +108,9 @@ export const createPath = async (req, res) => {
       );
   }
 };
-
 export const updatePath = (req, res) => {
   try {
-    const { prompt } = req.body;
+    const {title, prompt } = req.body;
     const userId = req.user?.userId;
     const pathId = req.params.id;
     const file = req.file;
@@ -121,9 +128,11 @@ export const updatePath = (req, res) => {
     const fileName = file ? file.filename : null;
 
     if (prompt) {
-      const sqlQuery = `UPDATE path SET prompt = ? WHERE id = ? AND user_id = ?`;
-      pool.query(sqlQuery, [prompt, pathId, userId], (err, result) => {
+      const sqlQuery = `UPDATE path SET prompt = ?, title = ? WHERE id = ? AND user_id = ?`;
+      pool.query(sqlQuery, [prompt, title, pathId, userId], (err, result) => {
         if (err) {
+          console.log("---", err);
+          
           return res
             .status(500)
             .json(failureResponse({ error: "Internal Server Error" }));
@@ -142,9 +151,11 @@ export const updatePath = (req, res) => {
           .json(successResponse({}, "Prompt updated successfully"));
       });
     } else if (fileName) {
-      const sqlQuery = `UPDATE path SET file = ? WHERE id = ? AND user_id = ?`;
-      pool.query(sqlQuery, [fileName, pathId, userId], (err, result) => {
+      const sqlQuery = `UPDATE path SET file = ?, title = ? WHERE id = ? AND user_id = ?`;
+      pool.query(sqlQuery, [fileName, title, pathId, userId], (err, result) => {
         if (err) {
+          console.log("ooo", err);
+          
           return res
             .status(500)
             .json(failureResponse({ error: "Internal Server Error" }));
@@ -648,42 +659,61 @@ export const getSingleBranch = async (req, res) => {
     const userId = req.user?.userId;
     const branchId = req.params.id;
 
-    console.log('Branch id ', branchId);
-    console.log('User id ', userId);
+    console.log("Branch id ", branchId);
+    console.log("User id ", userId);
 
     if (!userId) {
       return res
         .status(400)
-        .json(failureResponse({ error: "User ID is required" }, "Failed to get details"));
+        .json(
+          failureResponse(
+            { error: "User ID is required" },
+            "Failed to get details"
+          )
+        );
     }
     if (!branchId) {
       return res
         .status(400)
-        .json(failureResponse({ error: "Branch ID is required" }, "Failed to get details"));
+        .json(
+          failureResponse(
+            { error: "Branch ID is required" },
+            "Failed to get details"
+          )
+        );
     }
 
     // Fetch the branch to verify its existence and get associated step_id
-    const branchQuery = "SELECT id, path_id, step_id, color FROM branch WHERE id = ?";
+    const branchQuery =
+      "SELECT id, path_id, step_id, color FROM branch WHERE id = ?";
     const branchResult = await query(branchQuery, [branchId]);
 
     if (branchResult.length === 0) {
-      return res.status(404).json(failureResponse({ status: 404 }, "Branch not found."));
+      return res
+        .status(404)
+        .json(failureResponse({ status: 404 }, "Branch not found."));
     }
 
     const branch = branchResult[0];
 
     // Verify that the branch belongs to the user's path
-    const pathQuery = "SELECT id, status, title FROM path WHERE id = ? AND user_id = ?";
+    const pathQuery =
+      "SELECT id, status, title FROM path WHERE id = ? AND user_id = ?";
     const pathResult = await query(pathQuery, [branch.path_id, userId]);
 
     if (pathResult.length === 0) {
-      return res.status(404).json(failureResponse({ status: 404 }, "No paths found for this user."));
+      return res
+        .status(404)
+        .json(
+          failureResponse({ status: 404 }, "No paths found for this user.")
+        );
     }
 
     // Fetch the main step associated with this branch
     const mainStepResult = [];
     if (branch.step_id) {
-      const stepQuery = "SELECT id, title, description, status FROM steps WHERE id = ?";
+      const stepQuery =
+        "SELECT id, title, description, status FROM steps WHERE id = ?";
       const stepResult = await query(stepQuery, [branch.step_id]);
 
       if (stepResult.length > 0) {
@@ -692,18 +722,20 @@ export const getSingleBranch = async (req, res) => {
     }
 
     // Fetch all steps associated with this branch
-    const allStepsQuery = "SELECT id, title, description, status FROM steps WHERE branch_id = ?";
+    const allStepsQuery =
+      "SELECT id, title, description, status FROM steps WHERE branch_id = ?";
     const allStepsResult = await query(allStepsQuery, [branchId]);
 
     // Combine main step and all associated steps
     const combinedStepsResult = [...mainStepResult, ...allStepsResult];
 
-    const stepIds = combinedStepsResult.map(step => step.id);
+    const stepIds = combinedStepsResult.map((step) => step.id);
 
     // Fetch skills associated with the combined steps
     let skillsResult = [];
     if (stepIds.length > 0) {
-      const skillsQuery = "SELECT title, step_id FROM skills WHERE step_id IN (?)";
+      const skillsQuery =
+        "SELECT title, step_id FROM skills WHERE step_id IN (?)";
       skillsResult = await query(skillsQuery, [stepIds]);
     }
 
@@ -719,13 +751,15 @@ export const getSingleBranch = async (req, res) => {
     };
 
     for (const step of combinedStepsResult) {
-      const stepSkills = skillsResult.filter(skill => skill.step_id === step.id);
+      const stepSkills = skillsResult.filter(
+        (skill) => skill.step_id === step.id
+      );
       branchData.steps.push({
         id: step.id,
         title: step.title,
         description: step.description,
         status: step.status,
-        skills: stepSkills.map(skill => ({ title: skill.title })),
+        skills: stepSkills.map((skill) => ({ title: skill.title })),
       });
     }
 
@@ -738,13 +772,14 @@ export const getSingleBranch = async (req, res) => {
     console.error("Error fetching branch details:", error);
     return res
       .status(500)
-      .json(failureResponse({ error: "Internal Server Error" }, "Failed to get the data"));
+      .json(
+        failureResponse(
+          { error: "Internal Server Error" },
+          "Failed to get the data"
+        )
+      );
   }
 };
-
-
-
-
 
 export const getSpecificSkillsWithStepId = (req, res) => {
   try {

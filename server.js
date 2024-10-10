@@ -33,7 +33,7 @@ app.use(express.json()); // Handles JSON payloads
 
 // Serve static files from 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-console.log('Uploads directory:', path.resolve(__dirname, 'uploads'));
+// console.log('Uploads directory:', path.resolve(__dirname, 'uploads'));
 
 
 // ROUTES

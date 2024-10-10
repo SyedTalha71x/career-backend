@@ -219,7 +219,6 @@ export const googleLogin = async (req, res) => {
         res.status(500).json(failureResponse(null, 'Google authentication failed.'));
     }
 };
-
 export const facebookLogin = async (req, res) => {
     const { accessToken } = req.body;
     try {
