@@ -1,14 +1,13 @@
-/*!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19  Distrib 10.6.18-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.37, for Linux (x86_64)
 --
 -- Host: localhost    Database: career_map
 -- ------------------------------------------------------
--- Server version	10.6.18-MariaDB-0ubuntu0.22.04.1
+-- Server version	8.0.37-0ubuntu0.23.10.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -22,12 +21,12 @@
 
 DROP TABLE IF EXISTS `branch`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `branch` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `step_id` bigint(20) DEFAULT NULL,
-  `color` varchar(255) NOT NULL,
-  `path_id` bigint(20) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `step_id` bigint DEFAULT NULL,
+  `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `path_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`step_id`),
   KEY `fk_branch_path_id` (`path_id`),
@@ -52,15 +51,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `facebook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `facebook_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `facebook_id` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `facebook_id` (`facebook_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -81,15 +80,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `google_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `google_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `google_id` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `profile_picture` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `google_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`),
   UNIQUE KEY `email` (`email`)
@@ -107,19 +106,47 @@ INSERT INTO `google_login` VALUES (4,'109075669814140893830','pycess76x@gmail.co
 UNLOCK TABLES;
 
 --
+-- Table structure for table `gpt_data`
+--
+
+DROP TABLE IF EXISTS `gpt_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `gpt_data` (
+  `id` int DEFAULT NULL,
+  `gpt_id` text,
+  `result` text,
+  `step_id` int DEFAULT NULL,
+  `parent_gpt_id` text,
+  `created` text,
+  `prompt` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gpt_data`
+--
+
+LOCK TABLES `gpt_data` WRITE;
+/*!40000 ALTER TABLE `gpt_data` DISABLE KEYS */;
+INSERT INTO `gpt_data` VALUES (14,'chatcmpl-AIXJwTk8ZLLor6Zo1gzPbieERqpRP','Becoming a DevOps engineer involves a combination of formal education, skills development, hands-on experience, and continuous learning. Here are the best steps to take:\n\n### 1. Educational Background\n- **Formal Education**: While a degree in computer science, IT, or a related field can be beneficial, it’s not strictly necessary. Many successful DevOps engineers come from various educational backgrounds.\n- **Self-Learning**: Online courses, bootcamps, or certifications can provide a solid foundation',3,'','2024-10-15 09:54:53','How to become a devops engineer'),(15,'chatcmpl-AIYZx756cmdPD92f5Wd0y8LbsI1Ic','Becoming an infrastructure engineer generally requires a combination of education, practical experience, and skill development. Here are the best steps to take:\n\n### 1. **Educational Background**\n   - **Bachelor\'s Degree**: Obtain a degree in relevant fields such as Computer Science, Information Technology, Network Engineering, or a related discipline.\n   - **Certifications**: Consider obtaining certifications that demonstrate your knowledge in specific technologies (e.g., CompTIA Network+, Cisco’s CCNA, Microsoft Certified: Azure Administrator',3,'chatcmpl-AIXJwTk8ZLLor6Zo1gzPbieERqpRP','2024-10-15 09:56:33','How to become a infrastructure engineer'),(20,'chatcmpl-AIaVCmEZNE819gtJV23Se61it9Ymt','Becoming a .NET developer involves a combination of education, practice, and experience. Here\'s a step-by-step guide to help you get started:\n\n### 1. **Understand the Basics of Programming**\n\n- **Learn Programming Fundamentals:** Start with basic programming concepts like variables, data types, loops, conditionals, and data structures. Languages like C# (the primary language for .NET) or Python can help you grasp these concepts.\n\n### 2. **Familiarize Yourself with .NET Framework',3,'chatcmpl-AIYZx756cmdPD92f5Wd0y8LbsI1Ic','2024-10-15 11:59:46','How to become a dotnet engineer'),(21,'chatcmpl-AIaii0Xgr9cglnLj6VRkkxdaOsUco','Becoming an infrastructure specialist typically involves a combination of education, certifications, and hands-on experience. Here’s a structured approach to help you on this career path:\n\n### 1. Educational Background\n- **Degree**: Obtain a bachelor\'s degree in a relevant field such as Computer Science, Information Technology, Network Administration, or Computer Engineering. Some roles may require advanced degrees for senior positions.\n- **Courses**: Focus on courses related to network design, database management, systems analysis, and cloud computing.\n\n',3,'chatcmpl-AIaVCmEZNE819gtJV23Se61it9Ymt','2024-10-15 12:13:46','How to become a infrastructure specialist'),(NULL,'chatcmpl-AIu7OHXrXS8CryAlgxBJKDZ0SyYpH','That\'s a great career aspiration! Transitioning from a Junior React Developer to an AI Engineer involves building on your existing skills and acquiring new ones. Here’s a roadmap you might find helpful:\n\n### 1. Understand the Basics of AI and Machine Learning\n- **Courses**: Consider taking online courses on platforms like Coursera, edX, or Khan Academy. Some recommended courses are:\n  - **Andrew Ng’s Machine Learning Course** (Coursera)\n  - **Deep Learning Specialization** (',1046,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuAfAdXDPww7tlPkaBB03pcqTSoy','That\'s great to hear! Transitioning from a junior React developer to an AI engineer can be an exciting journey. Here are some steps and tips to help you make this transition effectively:\n\n### 1. Strengthen Your Programming Skills\n- **Python**: AI and machine learning (ML) heavily rely on Python due to its simplicity and the availability of numerous libraries such as NumPy, Pandas, and Scikit-learn.\n- **JavaScript and React**: As you transition, knowing how',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuFJ0N447DuozB5sRdnr7h8ihzhd','That\'s a great goal! Transitioning from a junior React developer to an AI engineer involves gaining new knowledge and skills in areas such as machine learning, data science, and possibly back-end development. Here’s a step-by-step guide to help you on your journey:\n\n### 1. Understand the Basics of AI and Machine Learning\n- **Read Books and Resources**: Start with foundational books like \"Artificial Intelligence: A Modern Approach\" by Stuart Russell and Peter Norvig, or \"Hands-On Machine Learning',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuKh3LfCD59tvJOOEz8qDykRcPMC','That\'s great to hear! Transitioning from a Junior React.js Developer to a full-stack developer is a valuable career move that will expand your skills and opportunities. Here are some steps you can take to help facilitate this transition:\n\n### 1. Understand Full-Stack Development:\n\nFull-stack development involves both front-end and back-end technologies. Here\'s a breakdown:\n\n- **Front-end**: You already have experience with React.js, so focus on mastering additional front-end technologies:\n  - HTML, CSS, and',1046,'chatcmpl-AIu7OHXrXS8CryAlgxBJKDZ0SyYpH',NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIuMW8P25UMLPdnbnmqryVM2NWHcI','That\'s great to hear! Transitioning from a Junior React.js Developer to a Full Stack Developer is a valuable goal that can open up many career opportunities. Here’s a structured approach to help you achieve this:\n\n### 1. Strengthen Your Frontend Skills:\n- **Deepen React Knowledge**: Understand hooks, context, lifecycle methods, and React Router.\n- **State Management**: Learn about state management libraries like Redux or MobX, and modern React tools like Recoil or Zustand.\n-',1046,'chatcmpl-AIu7OHXrXS8CryAlgxBJKDZ0SyYpH',NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIuSkepGl9yqGiRRW7H12CQEQev1P','That\'s a great ambition! Transitioning from a Junior React.js Developer to an AI Engineer can be an exciting journey. Here are some steps you can follow to facilitate this transition:\n\n### 1. Strengthen Your Programming Skills\n- **Python**: Python is the most widely used language in AI and machine learning. Familiarize yourself with it if you\'re not already proficient.\n- **Data Structures and Algorithms**: A good understanding of data structures and algorithms is crucial for AI as it helps you write efficient',NULL,NULL,NULL,'I\'m a Junior React.js Developer & wanna be a Ai engineer'),(NULL,'chatcmpl-AIuUk84MBGWLo0XlPOzkzYuEhJuFP','That\'s a great career path! Transitioning from a junior React developer to an AI engineer can be a rewarding journey. Here are some steps you can take to make this transition:\n\n### 1. **Strengthen Your Programming Skills**\n   - **Python**: Most AI frameworks and libraries, such as TensorFlow and PyTorch, are primarily developed in Python. If you’re not familiar with it, focus on learning Python.\n   - **Data Structures and Algorithms**: A solid understanding of data structures',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuWKVUawtROZzQDxNev3Fgr0bkLc','That\'s great! Transitioning from a junior React developer to an AI engineer can be an exciting journey. Here’s a suggested roadmap to help you make this shift:\n\n### 1. **Strengthen Your Programming Skills**\n   - **Python**: Most AI frameworks and libraries are based on Python, so it’s essential to learn this language.\n   - **Statistical Libraries**: Familiarize yourself with libraries like NumPy, Pandas, and Matplotlib for data manipulation and visualization.\n\n### 2',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuZOWLTeg71K1L0LZcUEWXqGad3Q','That\'s a great career aspiration! Transitioning from a junior React developer to an AI engineer is definitely achievable with the right approach and resources. Here are some steps to guide you on this journey:\n\n### 1. **Foundational Knowledge**\n   - **Mathematics:** Strengthen your understanding of linear algebra, calculus, and statistics. These are essential for understanding machine learning algorithms.\n   - **Programming Skills:** Since you’re already familiar with JavaScript, consider learning Python, which is the most popular',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuaDBzXEjCtqh406IqwP0YbqHq9o','That\'s a great ambition! Transitioning from a junior React developer to an AI engineer is a feasible path, especially since you already have a background in programming and understanding of software development concepts. Here are some steps you can take to make this transition:\n\n### 1. Learn the Basics of AI and Machine Learning (ML)\n- **Resources**: \n  - **Online Courses**: Platforms like Coursera, edX, and Udacity offer courses on machine learning and AI from institutions like Stanford and',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIub42772tUuFTPXCOcsRLRfWdd8o','That\'s a great career transition! Being a React developer gives you a solid foundation in software development, and transitioning to AI engineering can open up many exciting opportunities. Here are some steps you can take to make this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Online Courses**: Start with courses from platforms like Coursera, edX, or Udacity. Good beginner courses include Andrew Ng\'s Machine Learning course on Coursera or Fast.ai\'s Practical Deep Learning',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIvquQ8yHKxGjhqSmrTcssGkzofBH','Transitioning from a Team Lead role into the machine learning (ML) field can be an exciting opportunity. Here are some steps and strategies to effectively manage this transition:\n\n### 1. Assess Your Current Skills\n- **Technical Skills**: Identify any relevant technical skills you already possess. As a Team Lead, you may have experience in programming, data analysis, or project management.\n- **Soft Skills**: Leadership, communication, and collaboration are crucial in ML roles. Your experience as a Team Lead',NULL,NULL,NULL,'I am a Team Lead & want to switch my field in ml line'),(NULL,'chatcmpl-AIvvDEMuPtUPnj5vHcWROwljwRdCR','That\'s great! Data analysis is a valuable skill that complements your development background well. Here’s a step-by-step guide to help you transition into data analysis:\n\n### Step 1: Understand the Basics of Data Analysis\n- **What is Data Analysis?** Familiarize yourself with the concepts, purpose, and importance of data analysis.\n- **Types of Data Analysis:** Learn about descriptive, diagnostic, predictive, and prescriptive analysis.\n\n### Step 2: Learn Key Tools and Technologies\n1. **',NULL,NULL,NULL,'I am Junior React.js Developer & want to learn data analysis'),(NULL,'chatcmpl-AIwBrOGebq40Vp3RSwtAKnO6FDUI7','### React JS Development\n\n#### Is React JS a Good Field for Fresh Graduates?\n\nReact.js is a popular JavaScript library for building user interfaces, especially single-page applications. Here are some reasons why React development can be a great field for fresh graduates:\n\n1. **High Demand**: There is a strong demand for React developers in the job market. Many companies are adopting React for web and mobile app development.\n\n2. **Strong Community Support**: React has a thriving community, which means that',NULL,NULL,NULL,'I want to discuss with you I am react js developer how about this field it\'s good for fresh graduate or not? how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIwCpmiyC7maPSUYAaKXAb5KKN7vs','As a Director of Engineering at a university, your role typically encompasses a broad range of responsibilities focused on both the administrative and technical aspects of engineering education, research, and outreach. Here are some key roles and responsibilities you may have:\n\n1. **Leadership and Management:**\n   - Oversee the engineering department, including faculty, staff, and students.\n   - Foster a collaborative and innovative culture within the department.\n   - Provide strategic direction for the engineering programs aligned with the university’s mission and goals.\n\n',NULL,NULL,NULL,'I am a Director of Engineering in my university tell me the roles of mine job?'),(NULL,'chatcmpl-AIwDD72e1XqulIaeHsCH5wSDmPAfA','The role of a Director of Engineering is a senior leadership position responsible for overseeing engineering teams and driving the technical direction of projects and initiatives within an organization. Here are the typical responsibilities, qualifications, and skills associated with this role:\n\n### Responsibilities:\n\n1. **Leadership and Management:**\n   - Lead and manage engineering teams, including recruiting, mentoring, and evaluating personnel.\n   - Foster a culture of innovation, collaboration, and continuous improvement within the engineering division.\n\n2. **Strategic Planning:**\n  ',NULL,NULL,NULL,'Director of Engineering '),(NULL,'chatcmpl-AIwDVMMAJq6TMisSFSNwZrCtrJz7h','The Director of Engineering is a senior leadership role within an organization, primarily responsible for overseeing the engineering department and ensuring that engineering projects align with the company\'s goals and objectives. This role is integral in guiding teams, driving innovation, and advancing technical strategies.\n\n### Key Responsibilities:\n\n1. **Strategic Leadership**:\n   - Develop and communicate a clear engineering vision and strategy aligned with the company\'s goals.\n   - Collaborate with other executives to define and prioritize engineering initiatives.\n\n2. **Team Management**:\n  ',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIwHzb501trmZbJonc01rzS1HS3zn','The role of a Vice President (VP) of Technology is a senior leadership position within an organization, often responsible for overseeing the development and implementation of technology strategies that align with the company\'s goals and objectives. Here are some key responsibilities and qualifications typically associated with the position:\n\n### Key Responsibilities:\n\n1. **Strategic Leadership**: Develop and execute the company\'s technology strategy to support business goals and enhance organizational efficiency.\n\n2. **Team Management**: Lead and mentor technology teams, including software development, IT operations',NULL,NULL,NULL,'VP of Technology '),(NULL,'chatcmpl-AIwIqlTu5pXFFzHa5UnNet8ALnc2s','That\'s a wonderful goal! Learning singing composition can be both a creative and fulfilling endeavor. Here are some steps and tips to help you get started:\n\n### 1. Understand the Basics of Music Theory\n- **Learn Musical Notation**: Familiarize yourself with the basics of reading sheet music, including notes, rhythms, and rests.\n- **Scales and Chords**: Understand major and minor scales and basic chord progressions, as they are essential for composing.\n- **Key Signatures**',NULL,NULL,NULL,'I am a Team Lead & wannt to learn singing composition.'),(NULL,'chatcmpl-AIwKTZsHl52DjRwAKDHQjkPEFja1X','That\'s great to hear! Transitioning from a Team Lead position to an AI Engineer role can be an exciting career move. Here are some steps you can take to facilitate this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Courses**: Consider enrolling in online courses or taking a degree in data science, machine learning, or artificial intelligence. Platforms like Coursera, edX, and Udacity have excellent courses.\n   - **Books**: Read foundational books',1052,NULL,NULL,'I am Team Lead & wanna be an Ai engineer'),(NULL,'chatcmpl-AIwlz6yyIhuwgAj7YrEt7nupGKmQW','The Director of Engineering is a senior leadership position responsible for overseeing the engineering department within an organization. This role typically involves managing engineering teams, developing engineering projects, ensuring quality standards, and aligning engineering efforts with the overall business objectives. Here are some key responsibilities and qualifications associated with this role:\n\n### Key Responsibilities:\n\n1. **Leadership and Management:**\n   - Lead and manage the engineering team, providing guidance, support, and mentorship.\n   - Foster a collaborative and innovative work environment.\n\n2. **Strateg',NULL,NULL,NULL,'Director of Engineering department0'),(NULL,'chatcmpl-AIwn6LMHeik1b9Bxn8MLSuA2ckj5U','The role of a Director of Engineering is a senior management position responsible for overseeing the engineering department within an organization. This role typically involves a combination of technical expertise, strategic planning, team leadership, and project management. Here are some key responsibilities and skills often associated with the position:\n\n### Key Responsibilities:\n\n1. **Strategic Planning**: Collaborating with other executives to define the company’s engineering strategy and ensure alignment with organizational goals.\n\n2. **Team Leadership**: Leading and mentoring engineers and technical staff',NULL,NULL,NULL,'Director of Engineering '),(NULL,'chatcmpl-AIwo8218rcduQMw3eeIx2JdqvduFX','A Development Manager plays a crucial role in organizations, particularly in sectors like software development, construction, and business growth initiatives. The responsibilities and expectations for this position can vary widely between industries, but generally include the following key areas:\n\n### Key Responsibilities:\n\n1. **Project Management**: Oversee the planning, execution, and delivery of projects. This includes defining project scope, goals, and deliverables.\n\n2. **Team Leadership**: Manage and lead a team of developers, engineers, or other professionals',NULL,NULL,NULL,'Development Manager'),(NULL,'chatcmpl-AIwv6DMdFOdSLnFLgHCKBN2KA5oUr','To effectively direct the engineering department with a focus on long-term technical goals, several key strategies and initiatives can be implemented. Here’s a structured approach:\n\n### Vision and Mission Alignment\n1. **Define a Clear Vision**: Articulate a long-term vision that aligns with the overall goals of the organization. Ensure that the engineering department understands how its objectives contribute to this vision.\n  \n2. **Set Long-term Technical Goals**: Establish specific, measurable, achievable, relevant, and time-bound (',NULL,NULL,NULL,'Direct the engineering department, focusing on long-term technical goals.'),(NULL,'chatcmpl-AIx4aiJuQjcjMYzG7MAUCaJbw89uu','The role of a Director of Engineering is critical in many organizations, particularly within the technology, manufacturing, and construction sectors. This leadership position involves overseeing engineering teams, projects, and strategy to ensure that the organization meets its technical goals and stays competitive in the market. Here are some key responsibilities, qualifications, and skills associated with the role:\n\n### Key Responsibilities:\n1. **Leadership and Management:**\n   - Manage engineering teams, including hiring, training, and performance evaluations.\n   - Foster a collaborative and',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIx6Bk1rmduZEOA8luvVHS4K8ALqT','The Director of Engineering is a leadership role within an organization that focuses on strategic planning, development, and execution of engineering projects. This position typically involves overseeing engineering teams, managing budgets, ensuring project timelines are met, and aligning engineering initiatives with the broader goals of the organization.\n\n### Key Responsibilities:\n\n1. **Leadership and Strategy**:\n   - Develop and implement engineering strategies that align with the company\'s overall objectives.\n   - Provide direction and mentorship to engineering teams, fostering a culture of innovation and collaboration.\n\n2',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIx8EJYiUOjO7SBkGpSt2FRQu2Tt7','The role of a Director of Engineering is critical in technology-driven companies. This position typically involves overseeing engineering teams, managing projects, and ensuring that engineering practices align with the company\'s strategic goals. Here are some key responsibilities and skills associated with the role:\n\n### Key Responsibilities:\n\n1. **Leadership and Team Management**:\n   - Lead and mentor engineering teams, fostering a culture of innovation and collaboration.\n   - Recruit, retain, and develop engineering talent.\n\n2. **Strategic Planning**:\n   - Con',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIxBmQ9pkQUIz1PCKJIcmDHOh5RGx','Building full-stack projects is a great way to enhance your skills and apply what you\'ve learned about both frontend and backend development. Below are some ideas for full-stack projects, along with a brief overview of the technologies you might use.\n\n### 1. **Personal Portfolio Website**\n   - **Description**: A website to showcase your projects, skills, and resume.\n   - **Frontend**: HTML, CSS, JavaScript (React, Vue, or Angular)\n   - **Backend**: Node.js',NULL,NULL,NULL,'Build Full Stack Projects'),(NULL,'chatcmpl-AIxCUivr7uSDvTPa7qsvNJF6buRO3','Alhamdulillah, mai theek hoon. Aap kaise hain?',NULL,NULL,NULL,'Hassan  Bhai kia hal hain?'),(NULL,'chatcmpl-AIxDaevU9YD773SAeXqEXAdrrQLvw','That\'s great! Transitioning from a Junior React.js Developer to a Full Stack Developer is a rewarding journey that will broaden your skill set and open up new opportunities. Here’s a structured approach to help you along the way:\n\n### 1. **Strengthen Your Frontend Skills:**\n   - **Deepen React Knowledge:** Learn advanced concepts like hooks, context API, state management libraries (Redux, MobX), component lifecycle, and optimization techniques.\n   - **Other Frontend Frameworks:** Familiar',NULL,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxDhnhg3a4UaORf5KicDJf4o7eoe','That\'s a great aspiration! Transitioning from a Junior React.js Developer to a full-stack developer can open up many exciting opportunities for you. Here’s a roadmap to guide you on your journey:\n\n### 1. Strengthen Your Front-End Skills\n- **Deepen React Knowledge**: Make sure you are familiar with advanced concepts such as hooks, context API, performance optimization, and server-side rendering (e.g., Next.js).\n- **Learn JavaScript ES6+**: Ensure you are comfortable',NULL,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxE1RF6CwMqLDsmBxKx3PP8N6evB','Transitioning from a React.js developer to an AI engineer is an exciting journey that combines your existing programming skills with new concepts in data science, machine learning, and artificial intelligence. Here\'s a roadmap to guide you through the process:\n\n### 1. Foundation in Mathematics and Statistics\nUnderstanding the fundamental mathematical concepts is crucial in AI:\n\n- **Linear Algebra:** Matrix operations, vector spaces, eigenvalues, etc.\n- **Calculus:** Derivatives, integrals, and gradients (essential for optimization).\n-',NULL,NULL,NULL,'I want to discuss with you I am react js developer how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIxFvLFmJqKgOsklyu6AmoPcx8TTZ','That\'s a great ambition! Transitioning from a React developer to an AI engineer can be an exciting journey. Here are some steps you can take to facilitate this transition:\n\n### 1. **Learn the Fundamentals of AI and Machine Learning**\n   - **Mathematics**: A solid understanding of linear algebra, calculus, probability, and statistics is crucial.\n   - **Resources**: \n     - Online courses (Coursera, edX, Udacity) on machine learning and AI.\n     -',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIxGmPompLupn27n6jd6xbNbhi8LF','That\'s great to hear! Transitioning from a junior React developer to an AI engineer can be a rewarding journey, combining your existing knowledge of web development with the fascinating field of artificial intelligence. Here’s a roadmap to help you get started:\n\n### 1. Strengthen Your Foundations\n\n#### Programming Skills\n- **Python**: Most AI projects are done using Python due to its simplicity and extensive libraries. Get comfortable with Python syntax and data structures.\n- **Libraries**: Familiarize yourself with libraries commonly',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIxHWNKeUqaU1cgJf8VBocqbgM7NR','That\'s a great career path! Transitioning from a Junior React.js Developer to an AI Engineer involves building on your programming knowledge and gaining experience in artificial intelligence and machine learning. Here’s a structured approach to help you make that transition:\n\n### 1. Strengthen Your Programming Skills\n- **Python**: Familiarize yourself with Python, as it is the most widely used programming language in AI and machine learning.\n- **Libraries**: Learn about essential libraries such as NumPy, Pandas, Mat',NULL,NULL,NULL,'I\'m a Junior React.js Developer & wanna be a Ai engineer'),(NULL,'chatcmpl-AIxKDKeiSNUyhuqXVIXq96GMf5GpD','That\'s a great goal! Transitioning from a Junior React.js Developer to a Full Stack Developer involves learning both front-end and back-end technologies. Here are the steps you can take to achieve that:\n\n### 1. Strengthen Your Front-End Skills\n- **Deepen Your React Knowledge**: Understand advanced concepts like hooks, context API, state management libraries (e.g., Redux, MobX), and React Router.\n- **Learn CSS Frameworks**: Familiarize yourself with frameworks like Bootstrap,',NULL,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxMxDBkF2rOkVsEeAqf8PDmfMSCx','Transitioning from a React.js developer to an AI engineer is an exciting journey that can open up many opportunities in the growing field of artificial intelligence. Here’s a roadmap to help guide you through the learning process:\n\n### 1. **Strengthen Your Mathematical Foundation**\nAI heavily relies on concepts from mathematics. You should strengthen your understanding of the following areas:\n\n- **Linear Algebra:** Understand vectors, matrices, and operations on them.\n- **Calculus:** Learn about derivatives and integrals, which are',246,NULL,NULL,'I want to discuss with you I am react js developer how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIxNKEn6evL6vh5SyjSV1L36izToh','Transitioning from a React.js developer to an AI engineer is an exciting journey that involves gaining knowledge in areas such as machine learning, data science, and possibly even deep learning. Below is a structured roadmap to help you make this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Key Concepts:**\n     - What is AI? Types of AI (Narrow AI, General AI)\n     - What is Machine Learning? Types of Machine Learning (Supervised,',246,'chatcmpl-AIxMxDBkF2rOkVsEeAqf8PDmfMSCx',NULL,'I want to discuss with you I am react js developer how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIxNb0QB95Bw5D9dIA82uSMbFoHCn','Switching from a JavaScript developer to an AI engineer is a great move, as the demand for AI skills continues to grow. Here are some steps you can take to facilitate this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning (ML)**\n   - Familiarize yourself with core concepts such as supervised learning, unsupervised learning, neural networks, natural language processing, and computer vision.\n   - Recommended resources:\n     - **Books**: \"Hands-On Machine Learning',229,NULL,NULL,'I am js developer & want to switch my career as an Ai engineer'),(NULL,'chatcmpl-AIxNoVMJIObPucvOsZJ288MoJ6nln','Transitioning from a JavaScript developer to an AI engineer is a great move, especially as AI continues to be a pivotal field in technology. Here’s a roadmap that can help you make this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Learn the Fundamentals:** Start with the basics of Artificial Intelligence, Machine Learning (ML), and Deep Learning. Online platforms like Coursera, edX, and Udacity offer courses tailored to these topics.\n   - **',229,'chatcmpl-AIxNb0QB95Bw5D9dIA82uSMbFoHCn',NULL,'I am js developer & want to switch my career as an Ai engineer'),(NULL,'chatcmpl-AIxO7sxhwcRJrSRFjt0GRVDZonAa7','That\'s a great goal! Transitioning from a Junior React.js Developer to a Full Stack Developer involves broadening your skill set to include backend technologies, databases, and possibly DevOps practices. Here’s a structured approach to help you make this transition:\n\n### Frontend Skills to Strengthen\n1. **Advanced React.js**: Improve your understanding of hooks, context API, and state management libraries like Redux or MobX. Also, familiarize yourself with performance optimization and component design patterns.\n\n2. **Type',235,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxSXp2NFQAhsnhxzBPqcL7PrPUZR','The role of a Director of Engineering is a senior leadership position within an organization, typically responsible for overseeing engineering teams and driving the engineering vision and strategy. Here are key aspects of the role:\n\n### Responsibilities:\n1. **Leadership**: Lead and mentor engineering teams, fostering a culture of innovation, collaboration, and high performance.\n2. **Strategic Planning**: Develop and implement engineering strategies aligned with company goals, ensuring that resources are effectively allocated.\n3. **Project Management**: Oversee project',237,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIxXry2sTFeUwwgRRCrkJOATDWuIr','An Engineering Manager is a key leadership role within an engineering organization, responsible for overseeing technical teams, ensuring project delivery, and aligning engineering efforts with business objectives. Here are some key aspects of the role:\n\n### Key Responsibilities:\n\n1. **Team Leadership:**\n   - Lead, mentor, and manage engineering teams to foster a productive and innovative environment.\n   - Develop team culture and promote collaboration and unity within the team.\n\n2. **Project Management:**\n   - Oversee engineering projects from conception to completion',236,NULL,NULL,'Engineering Manager'),(NULL,'chatcmpl-AIxgFjrC7umudgLnosfklzwmDbrKk','Becoming an infrastructure engineer typically involves a combination of education, skills development, and professional experience. Here are the steps you can take to pursue a career in this field:\n\n### 1. **Educational Background**\n   - **Obtain a Relevant Degree:** Most infrastructure engineers hold a bachelor’s degree in computer science, information technology, civil engineering, or a related field. Some positions may require a master\'s degree.\n   - **Consider Certifications:** Certifications can enhance your qualifications. Relevant certifications may include:\n    ',3,'chatcmpl-AIaii0Xgr9cglnLj6VRkkxdaOsUco',NULL,'How to become a infrastructure engineer'),(NULL,'chatcmpl-AIxgwV5WRW83Bi8sPKofUk3V3iSow','Becoming a backend engineer requires a combination of education, skills development, and practical experience. Here are steps to guide you on your journey:\n\n### 1. **Understand the Role of a Backend Engineer**\n   - Research what backend engineers do, their responsibilities, and the technologies they commonly use.\n   - Recognize that the backend is responsible for server-side logic, database interactions, API development, and integration with frontend technologies.\n\n### 2. **Educational Background**\n   - A degree in computer science',3,'chatcmpl-AIaii0Xgr9cglnLj6VRkkxdaOsUco',NULL,'How to become a backend engineer');
+/*!40000 ALTER TABLE `gpt_data` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `instagram_login`
 --
 
 DROP TABLE IF EXISTS `instagram_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `instagram_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `instagram_id` varchar(50) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `instagram_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `instagram_id` (`instagram_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -140,15 +167,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `linkedin_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `linkedin_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `linkedin_id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `linkedin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `linkedin_id` (`linkedin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -169,10 +196,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `modules` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `module_name` varchar(255) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -193,15 +220,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(350) NOT NULL,
-  `description` varchar(350) NOT NULL,
-  `link` varchar(255) DEFAULT NULL,
-  `read` tinyint(4) NOT NULL DEFAULT 0,
-  `seen` tinyint(4) NOT NULL DEFAULT 0,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `title` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `read` tinyint NOT NULL DEFAULT '0',
+  `seen` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
@@ -224,15 +251,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `outlook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `outlook_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `outlook_id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `outlook_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `outlook_id` (`outlook_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -253,18 +280,18 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `path`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `path` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `prompt` longtext DEFAULT NULL,
-  `file` varchar(255) DEFAULT NULL,
-  `status` enum('pending','analysed','analysing') DEFAULT 'pending',
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(250) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `prompt` longtext COLLATE utf8mb4_unicode_ci,
+  `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('pending','analysed','analysing') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `user_id` int DEFAULT NULL,
+  `title` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +300,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'I am react js developer & wanna be full stack mern developer','d4b2abc4-65f4-4a3f-bd3b-270ab27a65a3.pdf','pending',30,'react js developer'),(2,'I Just graduated from law school how can I become a solicitor',NULL,'analysed',36,'Law grad to solicitor'),(3,'Pipefitter to superintendant ',NULL,'analysed',36,'Pipefitter to superintendant '),(4,'What can I be with a law degree',NULL,'analysed',36,'Law '),(5,'What can i do with a law degree in U.K.',NULL,'analysed',36,'law 2'),(6,'I am a javascript developer & want to be a full stack developer what would be the roadmap for it?',NULL,'analysed',28,'javascript'),(7,'I am a IT Specialist what career paths can I have I live in the UK ',NULL,'analysed',36,'IT Specialist Career'),(8,'I am javascipt developer & wanna be a full stack developer what would be the roadmap for?','334a1067-d924-4cd2-a42d-bc2612d7b4e5.pdf','analysed',37,'javascript deveoper'),(9,'I am a python developer & wanna be a Ai engineer what would be the roadmap?','1d7686ce-83a4-438a-8ae8-a4d0ce46d4a0.pdf','analysed',37,'python developer'),(10,'I am data entry operator & want to learn the frontend ','f0b247f6-ad06-485e-b3f6-d22be34f8601.pdf','analysed',37,'ml engineer'),(11,NULL,'e5a30587-73c2-40f4-96ee-e4706a54563f.pdf','analysed',37,' python developer'),(12,NULL,'7fccd126-daea-4f25-bedb-a15249716d67.pdf','analysed',37,'data entry operator'),(13,NULL,'2b348b00-61bd-4457-ab0c-35dda14820c3.pdf','analysed',37,'data entry operator'),(14,NULL,'c9dfe5f2-29b8-4ef1-8392-06c961c93d10.pdf','analysed',28,'frontend developer'),(15,NULL,'b3cbb438-aebb-427f-a431-55d48e1812b4.pdf','analysed',37,'react js developer'),(16,'I am react devloper & wanna be an Ai engineer',NULL,'analysed',37,'ai engineer'),(17,'I am a bike mechanic and I want to become an automobile engineer',NULL,'analysed',37,'mechanic '),(18,'I am react js developer & wanna be a blockchain developer','2a0a2e58-55eb-4e50-ab04-b1b827b27bbe.pdf','analysed',37,'blockchain with Ai developer'),(19,'I am a singer & want to be a web developer',NULL,'analysed',37,'singer'),(20,NULL,'79479a04-116d-4d37-95f0-76485f23cb45.pdf','analysed',37,'python developer banna hy mujhe'),(21,NULL,'acf53ce1-a330-4b2f-8734-5ec4b8425e12.pdf','analysed',37,'python developer banna hy mujhe'),(22,'I am python developer & wanna be a Automation engineer create a roadmap for it.','60db6ee6-ac9f-427a-8638-429b1be4c912.pdf','analysed',28,'python developer'),(23,NULL,'18577e96-741c-4a8a-8ce7-7953a8b8c6a9.pdf','pending',37,'python developer'),(24,NULL,'47d3d700-908e-48a4-af3a-10936a757f7a.pdf','pending',37,'python developer'),(25,'I am python developer & switch my field as a data analytics engineer',NULL,'pending',28,'python developer');
+INSERT INTO `path` VALUES (1,'I am react js developer & wanna be full stack mern developer','d4b2abc4-65f4-4a3f-bd3b-270ab27a65a3.pdf','pending',30,'react js developer'),(2,'I Just graduated from law school how can I become a solicitor',NULL,'analysed',36,'Law grad to solicitor'),(3,'Pipefitter to superintendant ',NULL,'analysed',36,'Pipefitter to superintendant '),(4,'What can I be with a law degree',NULL,'analysed',36,'Law '),(5,'What can i do with a law degree in U.K.',NULL,'analysed',36,'law 2'),(6,'I am a javascript developer & want to be a full stack developer what would be the roadmap for it?',NULL,'analysed',28,'javascript'),(7,'I am a IT Specialist what career paths can I have I live in the UK ',NULL,'analysed',36,'IT Specialist Career'),(8,'I am javascipt developer & wanna be a full stack developer what would be the roadmap for?','334a1067-d924-4cd2-a42d-bc2612d7b4e5.pdf','analysed',37,'javascript deveoper'),(9,'I am a python developer & wanna be a Ai engineer what would be the roadmap?','1d7686ce-83a4-438a-8ae8-a4d0ce46d4a0.pdf','analysed',37,'python developer'),(10,'I am data entry operator & want to learn the frontend ','f0b247f6-ad06-485e-b3f6-d22be34f8601.pdf','analysed',37,'ml engineer'),(11,NULL,'e5a30587-73c2-40f4-96ee-e4706a54563f.pdf','analysed',37,' python developer'),(12,NULL,'7fccd126-daea-4f25-bedb-a15249716d67.pdf','analysed',37,'data entry operator'),(13,NULL,'2b348b00-61bd-4457-ab0c-35dda14820c3.pdf','analysed',37,'data entry operator'),(14,NULL,'c9dfe5f2-29b8-4ef1-8392-06c961c93d10.pdf','analysed',28,'frontend developer'),(15,NULL,'b3cbb438-aebb-427f-a431-55d48e1812b4.pdf','analysed',37,'react js developer'),(16,'I am react devloper & wanna be an Ai engineer',NULL,'analysed',37,'ai engineer'),(17,'I am a bike mechanic and I want to become an automobile engineer',NULL,'analysed',37,'mechanic '),(18,'I am react js developer & wanna be a blockchain developer','2a0a2e58-55eb-4e50-ab04-b1b827b27bbe.pdf','analysed',37,'blockchain with Ai developer'),(19,'I am a singer & want to be a web developer',NULL,'analysed',37,'singer'),(20,NULL,'79479a04-116d-4d37-95f0-76485f23cb45.pdf','analysed',37,'python developer banna hy mujhe'),(21,NULL,'acf53ce1-a330-4b2f-8734-5ec4b8425e12.pdf','analysed',37,'python developer banna hy mujhe'),(22,'I am python developer & wanna be a Automation engineer create a roadmap for it.','60db6ee6-ac9f-427a-8638-429b1be4c912.pdf','analysed',28,'python developer'),(23,NULL,'18577e96-741c-4a8a-8ce7-7953a8b8c6a9.pdf','pending',37,'python developer'),(24,NULL,'47d3d700-908e-48a4-af3a-10936a757f7a.pdf','pending',37,'python developer'),(25,'I am python developer & switch my field as a data analytics engineer',NULL,'pending',28,'python developer'),(26,'I am a data entry operator & wanna switch my field as a data analyst what would be the roadmap for it?',NULL,'pending',28,'data entry operator');
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -283,10 +310,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permission_modules` (
-  `permission_id` int(11) DEFAULT NULL,
-  `module_id` int(11) DEFAULT NULL,
+  `permission_id` int DEFAULT NULL,
+  `module_id` int DEFAULT NULL,
   KEY `permission_id` (`permission_id`),
   KEY `module_id` (`module_id`),
   CONSTRAINT `permission_modules_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`),
@@ -310,13 +337,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_to_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permission_to_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `role_id` int(11) NOT NULL,
-  `permission_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `role_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   KEY `permission_id` (`permission_id`),
@@ -341,13 +368,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permissions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `slug` varchar(255) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -368,10 +395,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `role_to_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `role_to_users` (
-  `role_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `role_id` int NOT NULL,
+  `user_id` int NOT NULL,
   KEY `role_id` (`role_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
@@ -395,12 +422,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -422,13 +449,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skills`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skills` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `sort` tinyint(1) NOT NULL,
-  `step_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') DEFAULT 'pending',
+  `step_id` bigint DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
@@ -451,15 +478,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `steps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `steps` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `sort` tinyint(4) NOT NULL,
-  `path_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') DEFAULT 'pending',
-  `branch_id` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `sort` tinyint NOT NULL,
+  `path_id` bigint DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `branch_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`path_id`),
   KEY `fk_steps_branch_id` (`branch_id`),
@@ -485,12 +512,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `subscriptions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subscriptions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `valid_till` int(11) DEFAULT NULL,
+  `valid_till` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -511,15 +538,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_subscription` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subscription_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `subscription_id` int NOT NULL,
+  `user_id` int NOT NULL,
   `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `subscription_id` (`subscription_id`),
   KEY `user_id` (`user_id`),
@@ -544,14 +571,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `otp` varchar(6) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `otp` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
@@ -578,4 +605,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-15 13:12:21
+-- Dump completed on 2024-10-16 12:48:39

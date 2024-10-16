@@ -9,6 +9,8 @@ import {
   changeSkillStatus,
   getSingleBranch,
   getSpecificSkillsWithStepId,
+  sendMessage,
+  getMessage
 } from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";
@@ -55,6 +57,8 @@ router.post("/get-each-skills-with-steps", authenticate, geteachskillsforpath);
 router.get("/check-status-of-skills/:id", authenticate, changeSkillStatus);
 router.get("/get-single-branch/:id", authenticate, getSingleBranch);
 router.get("/get-skills-for-single-step/:id", authenticate, getSpecificSkillsWithStepId);
+router.post("/send-message", authenticate,  sendMessage);
+router.get("/get-message/:id", authenticate, getMessage)
 
 // Error handling middleware
 router.use((err, req, res, next) => {

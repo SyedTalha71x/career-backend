@@ -10,6 +10,7 @@ import {
   GET_SINGLE_PATH_DETAILS,
 } from "../Models/mapping-controller-queries.js";
 
+const OPENAI_KEY = process.env.OPENAI_SECRET_KEY;
 const pool = connectToDB();
 
 const query = (sql, params) =>
@@ -47,7 +48,7 @@ export const createPath = async (req, res) => {
     }
 
     const fileName = file ? file.filename : null;
-    console.log(fileName)
+    console.log(fileName);
 
     const sqlQuery =
       "INSERT INTO path (title, prompt, status, user_id, file) VALUES (?, ?, ?, ?, ?)";
@@ -110,7 +111,7 @@ export const createPath = async (req, res) => {
 };
 export const updatePath = (req, res) => {
   try {
-    const {title, prompt } = req.body;
+    const { title, prompt } = req.body;
     const userId = req.user?.userId;
     const pathId = req.params.id;
     const file = req.file;
@@ -132,7 +133,7 @@ export const updatePath = (req, res) => {
       pool.query(sqlQuery, [prompt, title, pathId, userId], (err, result) => {
         if (err) {
           console.log("---", err);
-          
+
           return res
             .status(500)
             .json(failureResponse({ error: "Internal Server Error" }));
@@ -155,7 +156,7 @@ export const updatePath = (req, res) => {
       pool.query(sqlQuery, [fileName, title, pathId, userId], (err, result) => {
         if (err) {
           console.log("ooo", err);
-          
+
           return res
             .status(500)
             .json(failureResponse({ error: "Internal Server Error" }));
@@ -780,7 +781,6 @@ export const getSingleBranch = async (req, res) => {
       );
   }
 };
-
 export const getSpecificSkillsWithStepId = (req, res) => {
   try {
     const stepId = req.params.id;
@@ -836,3 +836,127 @@ export const getSpecificSkillsWithStepId = (req, res) => {
       );
   }
 };
+export const sendMessage = async (req, res) => {
+  try {
+    const { message, step_id } = req.body; 
+    const systemMessage = "You are an experienced career advisor with a deep understanding of career development paths.";
+
+    const getChatGPTResponse = async (content) => {
+      const response = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content }],
+          max_tokens: 100,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${OPENAI_KEY}`,
+          },
+        }
+      );
+      return response.data;
+    };
+
+    const userResponse = await getChatGPTResponse(message);
+    const gpt_id = userResponse.id;
+    const result = userResponse.choices[0].message.content;
+
+    const systemResponse = await getChatGPTResponse(systemMessage);
+
+    const responseData = {
+      systemMessage: {
+        id: systemResponse.id,
+        object: systemResponse.object,
+        created: systemResponse.created,
+        model: systemResponse.model,
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: "system",
+              content: systemResponse.choices[0].message.content,
+              refusal: null,
+            },
+            logprobs: null,
+            finish_reason: systemResponse.choices[0].finish_reason,
+          },
+        ],
+        usage: systemResponse.usage,
+        system_fingerprint: systemResponse.system_fingerprint,
+      },
+      userMessage: {
+        id: userResponse.id,
+        object: userResponse.object,
+        created: userResponse.created,
+        model: userResponse.model,
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: "user",
+              content: userResponse.choices[0].message.content,
+              refusal: null,
+            },
+            logprobs: null,
+            finish_reason: userResponse.choices[0].finish_reason,
+          },
+        ],
+        usage: userResponse.usage,
+        system_fingerprint: userResponse.system_fingerprint,
+      },
+    };
+
+    // Check if there is a previous record to use as a parent
+    const previousRecordQuery = `
+      SELECT gpt_id FROM gpt_data 
+      WHERE step_id = ? 
+      ORDER BY created DESC 
+      LIMIT 1
+    `;
+
+    const previousRecord = await query(previousRecordQuery, [step_id]);
+    const parentId = previousRecord.length > 0 ? previousRecord[0].gpt_id : null; // Get the gpt_id of the last record
+
+    const insertQuery = `
+    INSERT INTO gpt_data (gpt_id, result, step_id${parentId ? ', prompt, parent_gpt_id' : ', prompt'})
+    VALUES (?, ?, ?, ?${parentId ? ', ?' : ''})
+  `;
+  
+  const queryParams = [gpt_id, result, step_id, message]; 
+  if (parentId) queryParams.push(parentId); 
+    await query(insertQuery, queryParams);
+
+    return res.status(200).json({ status: true });
+  } catch (error) {
+    console.error("Error in sendMessage API:", error);
+    return res.status(500).json({ status: false,  error: "Internal Server Error" });
+  }
+};
+
+export const getMessage = async (req, res) => {
+  try {
+    const step_id = req.params.id;
+    const getQry = `
+      SELECT id, gpt_id, result, prompt
+      FROM gpt_data 
+      WHERE step_id = ? 
+      ORDER BY created DESC 
+      LIMIT 10
+    `;
+
+    const records = await query(getQry, [step_id]);
+
+    if (records.length === 0) {
+      return res.status(404).json({ message: 'No records found for the provided step ID' });
+    }
+    return res.status(200).json({ data: records });
+  } catch (error) {
+    console.error("Error in getMessage API:", error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+
