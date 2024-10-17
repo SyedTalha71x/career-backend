@@ -7,7 +7,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 const pool = connectToDB();
 
-
 export const createSubscriptions = async (req, res) => {
     try {
         const { name, price, valid_till } = req.body;

@@ -204,6 +204,7 @@ export const getPathsWithDetails = async (req, res) => {
       SELECT id, status, title 
       FROM path 
       WHERE user_id = ? AND status = 'analysed'
+      ORDER BY status DESC
     `;
     const pathsResult = await query(pathsQuery, [userId]);
 
