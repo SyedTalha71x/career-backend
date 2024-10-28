@@ -9,6 +9,7 @@ import fileRoutes from './routes/file-routes.js';
 import profileRoutes from "./routes/profile-routes.js";
 import rolePermissionRoutes from './routes/role-permission-routes.js';
 import subscriptionRoutes from './routes/subscription-routes.js';
+import modelSubscriptionRoutes from './routes/model-subscription-routes.js';
 import NotificationRoutes from './routes/notification-routes.js'
 import path from 'path';
 import MappingRoutes from './routes/mapping-routes.js';
@@ -44,6 +45,7 @@ app.use('/api', subscriptionRoutes);
 app.use('/api', rolePermissionRoutes);
 app.use('/api', MappingRoutes);
 app.use('/api', NotificationRoutes)
+app.use('/api', modelSubscriptionRoutes);
 
 // SERVER ACTION
 const PORT = process.env.PORT || 3000;

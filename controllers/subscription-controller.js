@@ -28,7 +28,8 @@ export const createSubscriptions = async (req, res) => {
         console.log(error);
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Subscription Creation Failed'));
     }
-}
+};
+
 export const purchaseSubscription = async (req, res) => {
     try {
         const { subscriptionId } = req.body;
@@ -69,7 +70,7 @@ export const purchaseSubscription = async (req, res) => {
             mode: 'payment',
             success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/cancel`,
-            client_reference_id: subscriptionId,  // Store the subscriptionId in the session
+            client_reference_id: subscriptionId,
         });
 
         if (session) {
@@ -96,7 +97,7 @@ export const getSubscription = async (req, res) => {
         console.log(error);
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to Checkout'));
     }
-}
+};
 export const confirmSubscription = async (req, res) => {
     try {
         const { sessionId } = req.body;

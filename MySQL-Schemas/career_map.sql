@@ -1,608 +1,1067 @@
--- MySQL dump 10.13  Distrib 8.0.37, for Linux (x86_64)
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost    Database: career_map
--- ------------------------------------------------------
--- Server version	8.0.37-0ubuntu0.23.10.2
+-- Host: 127.0.0.1
+-- Generation Time: Oct 28, 2024 at 07:19 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `career_map`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `action_plan_summary`
+--
+
+CREATE TABLE `action_plan_summary` (
+  `id` bigint(20) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `responsiblity` enum('self','mentor','self/mentor') NOT NULL,
+  `plan_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `branch`
 --
 
-DROP TABLE IF EXISTS `branch`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `branch` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `step_id` bigint DEFAULT NULL,
+  `id` bigint(20) NOT NULL,
+  `step_id` bigint(20) DEFAULT NULL,
   `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `path_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `path_id` (`step_id`),
-  KEY `fk_branch_path_id` (`path_id`),
-  CONSTRAINT `fk_branch_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_branch_step_id` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=209 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `path_id` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `branch`
+-- Table structure for table `career_goals_overview`
 --
 
-LOCK TABLES `branch` WRITE;
-/*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (5,NULL,'#f4b084',1),(6,22,'#a9d08e',1),(7,22,'#ccccff',1),(8,22,'#9bc2e6',1),(29,NULL,'#f4b084',2),(30,146,'#a9d08e',2),(31,146,'#ccccff',2),(32,146,'#9bc2e6',2),(33,NULL,'#f4b084',3),(34,167,'#a9d08e',3),(35,167,'#ccccff',3),(36,167,'#9bc2e6',3),(37,NULL,'#f4b084',4),(38,187,'#a9d08e',4),(39,187,'#ccccff',4),(40,187,'#9bc2e6',4),(41,NULL,'#f4b084',5),(42,208,'#a9d08e',5),(43,208,'#ccccff',5),(44,208,'#9bc2e6',5),(45,NULL,'#f4b084',6),(46,229,'#a9d08e',6),(47,229,'#ccccff',6),(48,229,'#9bc2e6',6),(49,NULL,'#f4b084',7),(50,250,'#a9d08e',7),(51,250,'#ccccff',7),(52,250,'#9bc2e6',7),(109,NULL,'#f4b084',9),(110,555,'#a9d08e',9),(111,555,'#ccccff',9),(112,555,'#9bc2e6',9),(133,NULL,'#f4b084',11),(134,679,'#a9d08e',11),(135,679,'#ccccff',11),(136,679,'#9bc2e6',11),(137,NULL,'#f4b084',18),(138,700,'#a9d08e',18),(139,700,'#ccccff',18),(140,700,'#9bc2e6',18),(141,NULL,'#f4b084',17),(142,717,'#a9d08e',17),(143,717,'#ccccff',17),(144,717,'#9bc2e6',17),(145,NULL,'#f4b084',15),(146,738,'#a9d08e',15),(147,738,'#ccccff',15),(148,738,'#9bc2e6',15),(149,NULL,'#f4b084',13),(150,755,'#a9d08e',13),(151,755,'#ccccff',13),(152,755,'#9bc2e6',13),(157,NULL,'#f4b084',12),(158,797,'#a9d08e',12),(159,797,'#ccccff',12),(160,797,'#9bc2e6',12),(165,NULL,'#f4b084',21),(166,839,'#a9d08e',21),(167,839,'#ccccff',21),(168,839,'#9bc2e6',21),(169,NULL,'#f4b084',20),(170,860,'#a9d08e',20),(171,860,'#ccccff',20),(172,860,'#9bc2e6',20),(177,NULL,'#f4b084',10),(178,899,'#a9d08e',10),(179,899,'#ccccff',10),(180,899,'#9bc2e6',10),(181,NULL,'#f4b084',8),(182,919,'#a9d08e',8),(183,919,'#ccccff',8),(184,919,'#9bc2e6',8),(193,NULL,'#f4b084',22),(194,981,'#a9d08e',22),(195,981,'#ccccff',22),(196,981,'#9bc2e6',22),(197,NULL,'#f4b084',19),(198,1001,'#a9d08e',19),(199,1001,'#ccccff',19),(200,1001,'#9bc2e6',19),(201,NULL,'#f4b084',16),(202,1025,'#a9d08e',16),(203,1025,'#ccccff',16),(204,1025,'#9bc2e6',16),(205,NULL,'#f4b084',14),(206,1046,'#a9d08e',14),(207,1046,'#ccccff',14),(208,1046,'#9bc2e6',14);
-/*!40000 ALTER TABLE `branch` ENABLE KEYS */;
-UNLOCK TABLES;
+CREATE TABLE `career_goals_overview` (
+  `id` bigint(20) NOT NULL,
+  `plan_id` bigint(20) NOT NULL,
+  `title` text NOT NULL,
+  `type` enum('s','l') NOT NULL,
+  `completion_date` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `career_path_progression_map`
+--
+
+CREATE TABLE `career_path_progression_map` (
+  `id` bigint(20) NOT NULL,
+  `plan_id` bigint(20) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  `suggested_timing` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `facebook_login`
 --
 
-DROP TABLE IF EXISTS `facebook_login`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `facebook_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `facebook_id` (`facebook_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `facebook_login`
---
-
-LOCK TABLES `facebook_login` WRITE;
-/*!40000 ALTER TABLE `facebook_login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `facebook_login` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `google_login`
 --
 
-DROP TABLE IF EXISTS `google_login`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `google_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `google_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` text COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `google_id` (`google_id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `profile_picture` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `google_login`
 --
 
-LOCK TABLES `google_login` WRITE;
-/*!40000 ALTER TABLE `google_login` DISABLE KEYS */;
-INSERT INTO `google_login` VALUES (4,'109075669814140893830','pycess76x@gmail.com','Talha Hussain','https://lh3.googleusercontent.com/a/ACg8ocIa9k1DVtuum9RBvO7yaYjcaUZX_ev4cXOl8ZxFOR8fZ9nnBA=s96-c','2024-08-08 11:14:20','2024-08-08 11:14:20'),(5,'110076916993612126119','pc16777.syedtalhahussain@gmail.com','Syed Talha Hussain','https://lh3.googleusercontent.com/a/ACg8ocJtV42Mo0Nk89nzEzcKovoOy8Ew1iCB7WPeu9EZHvJ9ZmowSw=s96-c','2024-08-12 08:23:09','2024-08-13 11:17:13'),(8,'116605168680275671000','syedtalha71x@gmail.com','Talha','https://lh3.googleusercontent.com/a/ACg8ocI0Uc1DRZWyA28sY-Byf-q1MEw_4kAkUp_6eGDY9R3-FlAGXw=s96-c','2024-08-22 09:43:07','2024-08-22 09:43:07');
-/*!40000 ALTER TABLE `google_login` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `google_login` (`id`, `google_id`, `email`, `name`, `profile_picture`, `created_at`, `updated_at`) VALUES
+(4, '109075669814140893830', 'pycess76x@gmail.com', 'Talha Hussain', 'https://lh3.googleusercontent.com/a/ACg8ocIa9k1DVtuum9RBvO7yaYjcaUZX_ev4cXOl8ZxFOR8fZ9nnBA=s96-c', '2024-08-08 11:14:20', '2024-08-08 11:14:20'),
+(5, '110076916993612126119', 'pc16777.syedtalhahussain@gmail.com', 'Syed Talha Hussain', 'https://lh3.googleusercontent.com/a/ACg8ocJtV42Mo0Nk89nzEzcKovoOy8Ew1iCB7WPeu9EZHvJ9ZmowSw=s96-c', '2024-08-12 08:23:09', '2024-08-13 11:17:13'),
+(8, '116605168680275671000', 'syedtalha71x@gmail.com', 'Talha', 'https://lh3.googleusercontent.com/a/ACg8ocI0Uc1DRZWyA28sY-Byf-q1MEw_4kAkUp_6eGDY9R3-FlAGXw=s96-c', '2024-08-22 09:43:07', '2024-08-22 09:43:07');
 
---
--- Table structure for table `gpt_data`
---
-
-DROP TABLE IF EXISTS `gpt_data`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `gpt_data` (
-  `id` int DEFAULT NULL,
-  `gpt_id` text,
-  `result` text,
-  `step_id` int DEFAULT NULL,
-  `parent_gpt_id` text,
-  `created` text,
-  `prompt` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `gpt_data`
---
-
-LOCK TABLES `gpt_data` WRITE;
-/*!40000 ALTER TABLE `gpt_data` DISABLE KEYS */;
-INSERT INTO `gpt_data` VALUES (14,'chatcmpl-AIXJwTk8ZLLor6Zo1gzPbieERqpRP','Becoming a DevOps engineer involves a combination of formal education, skills development, hands-on experience, and continuous learning. Here are the best steps to take:\n\n### 1. Educational Background\n- **Formal Education**: While a degree in computer science, IT, or a related field can be beneficial, it’s not strictly necessary. Many successful DevOps engineers come from various educational backgrounds.\n- **Self-Learning**: Online courses, bootcamps, or certifications can provide a solid foundation',3,'','2024-10-15 09:54:53','How to become a devops engineer'),(15,'chatcmpl-AIYZx756cmdPD92f5Wd0y8LbsI1Ic','Becoming an infrastructure engineer generally requires a combination of education, practical experience, and skill development. Here are the best steps to take:\n\n### 1. **Educational Background**\n   - **Bachelor\'s Degree**: Obtain a degree in relevant fields such as Computer Science, Information Technology, Network Engineering, or a related discipline.\n   - **Certifications**: Consider obtaining certifications that demonstrate your knowledge in specific technologies (e.g., CompTIA Network+, Cisco’s CCNA, Microsoft Certified: Azure Administrator',3,'chatcmpl-AIXJwTk8ZLLor6Zo1gzPbieERqpRP','2024-10-15 09:56:33','How to become a infrastructure engineer'),(20,'chatcmpl-AIaVCmEZNE819gtJV23Se61it9Ymt','Becoming a .NET developer involves a combination of education, practice, and experience. Here\'s a step-by-step guide to help you get started:\n\n### 1. **Understand the Basics of Programming**\n\n- **Learn Programming Fundamentals:** Start with basic programming concepts like variables, data types, loops, conditionals, and data structures. Languages like C# (the primary language for .NET) or Python can help you grasp these concepts.\n\n### 2. **Familiarize Yourself with .NET Framework',3,'chatcmpl-AIYZx756cmdPD92f5Wd0y8LbsI1Ic','2024-10-15 11:59:46','How to become a dotnet engineer'),(21,'chatcmpl-AIaii0Xgr9cglnLj6VRkkxdaOsUco','Becoming an infrastructure specialist typically involves a combination of education, certifications, and hands-on experience. Here’s a structured approach to help you on this career path:\n\n### 1. Educational Background\n- **Degree**: Obtain a bachelor\'s degree in a relevant field such as Computer Science, Information Technology, Network Administration, or Computer Engineering. Some roles may require advanced degrees for senior positions.\n- **Courses**: Focus on courses related to network design, database management, systems analysis, and cloud computing.\n\n',3,'chatcmpl-AIaVCmEZNE819gtJV23Se61it9Ymt','2024-10-15 12:13:46','How to become a infrastructure specialist'),(NULL,'chatcmpl-AIu7OHXrXS8CryAlgxBJKDZ0SyYpH','That\'s a great career aspiration! Transitioning from a Junior React Developer to an AI Engineer involves building on your existing skills and acquiring new ones. Here’s a roadmap you might find helpful:\n\n### 1. Understand the Basics of AI and Machine Learning\n- **Courses**: Consider taking online courses on platforms like Coursera, edX, or Khan Academy. Some recommended courses are:\n  - **Andrew Ng’s Machine Learning Course** (Coursera)\n  - **Deep Learning Specialization** (',1046,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuAfAdXDPww7tlPkaBB03pcqTSoy','That\'s great to hear! Transitioning from a junior React developer to an AI engineer can be an exciting journey. Here are some steps and tips to help you make this transition effectively:\n\n### 1. Strengthen Your Programming Skills\n- **Python**: AI and machine learning (ML) heavily rely on Python due to its simplicity and the availability of numerous libraries such as NumPy, Pandas, and Scikit-learn.\n- **JavaScript and React**: As you transition, knowing how',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuFJ0N447DuozB5sRdnr7h8ihzhd','That\'s a great goal! Transitioning from a junior React developer to an AI engineer involves gaining new knowledge and skills in areas such as machine learning, data science, and possibly back-end development. Here’s a step-by-step guide to help you on your journey:\n\n### 1. Understand the Basics of AI and Machine Learning\n- **Read Books and Resources**: Start with foundational books like \"Artificial Intelligence: A Modern Approach\" by Stuart Russell and Peter Norvig, or \"Hands-On Machine Learning',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuKh3LfCD59tvJOOEz8qDykRcPMC','That\'s great to hear! Transitioning from a Junior React.js Developer to a full-stack developer is a valuable career move that will expand your skills and opportunities. Here are some steps you can take to help facilitate this transition:\n\n### 1. Understand Full-Stack Development:\n\nFull-stack development involves both front-end and back-end technologies. Here\'s a breakdown:\n\n- **Front-end**: You already have experience with React.js, so focus on mastering additional front-end technologies:\n  - HTML, CSS, and',1046,'chatcmpl-AIu7OHXrXS8CryAlgxBJKDZ0SyYpH',NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIuMW8P25UMLPdnbnmqryVM2NWHcI','That\'s great to hear! Transitioning from a Junior React.js Developer to a Full Stack Developer is a valuable goal that can open up many career opportunities. Here’s a structured approach to help you achieve this:\n\n### 1. Strengthen Your Frontend Skills:\n- **Deepen React Knowledge**: Understand hooks, context, lifecycle methods, and React Router.\n- **State Management**: Learn about state management libraries like Redux or MobX, and modern React tools like Recoil or Zustand.\n-',1046,'chatcmpl-AIu7OHXrXS8CryAlgxBJKDZ0SyYpH',NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIuSkepGl9yqGiRRW7H12CQEQev1P','That\'s a great ambition! Transitioning from a Junior React.js Developer to an AI Engineer can be an exciting journey. Here are some steps you can follow to facilitate this transition:\n\n### 1. Strengthen Your Programming Skills\n- **Python**: Python is the most widely used language in AI and machine learning. Familiarize yourself with it if you\'re not already proficient.\n- **Data Structures and Algorithms**: A good understanding of data structures and algorithms is crucial for AI as it helps you write efficient',NULL,NULL,NULL,'I\'m a Junior React.js Developer & wanna be a Ai engineer'),(NULL,'chatcmpl-AIuUk84MBGWLo0XlPOzkzYuEhJuFP','That\'s a great career path! Transitioning from a junior React developer to an AI engineer can be a rewarding journey. Here are some steps you can take to make this transition:\n\n### 1. **Strengthen Your Programming Skills**\n   - **Python**: Most AI frameworks and libraries, such as TensorFlow and PyTorch, are primarily developed in Python. If you’re not familiar with it, focus on learning Python.\n   - **Data Structures and Algorithms**: A solid understanding of data structures',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuWKVUawtROZzQDxNev3Fgr0bkLc','That\'s great! Transitioning from a junior React developer to an AI engineer can be an exciting journey. Here’s a suggested roadmap to help you make this shift:\n\n### 1. **Strengthen Your Programming Skills**\n   - **Python**: Most AI frameworks and libraries are based on Python, so it’s essential to learn this language.\n   - **Statistical Libraries**: Familiarize yourself with libraries like NumPy, Pandas, and Matplotlib for data manipulation and visualization.\n\n### 2',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuZOWLTeg71K1L0LZcUEWXqGad3Q','That\'s a great career aspiration! Transitioning from a junior React developer to an AI engineer is definitely achievable with the right approach and resources. Here are some steps to guide you on this journey:\n\n### 1. **Foundational Knowledge**\n   - **Mathematics:** Strengthen your understanding of linear algebra, calculus, and statistics. These are essential for understanding machine learning algorithms.\n   - **Programming Skills:** Since you’re already familiar with JavaScript, consider learning Python, which is the most popular',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIuaDBzXEjCtqh406IqwP0YbqHq9o','That\'s a great ambition! Transitioning from a junior React developer to an AI engineer is a feasible path, especially since you already have a background in programming and understanding of software development concepts. Here are some steps you can take to make this transition:\n\n### 1. Learn the Basics of AI and Machine Learning (ML)\n- **Resources**: \n  - **Online Courses**: Platforms like Coursera, edX, and Udacity offer courses on machine learning and AI from institutions like Stanford and',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIub42772tUuFTPXCOcsRLRfWdd8o','That\'s a great career transition! Being a React developer gives you a solid foundation in software development, and transitioning to AI engineering can open up many exciting opportunities. Here are some steps you can take to make this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Online Courses**: Start with courses from platforms like Coursera, edX, or Udacity. Good beginner courses include Andrew Ng\'s Machine Learning course on Coursera or Fast.ai\'s Practical Deep Learning',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIvquQ8yHKxGjhqSmrTcssGkzofBH','Transitioning from a Team Lead role into the machine learning (ML) field can be an exciting opportunity. Here are some steps and strategies to effectively manage this transition:\n\n### 1. Assess Your Current Skills\n- **Technical Skills**: Identify any relevant technical skills you already possess. As a Team Lead, you may have experience in programming, data analysis, or project management.\n- **Soft Skills**: Leadership, communication, and collaboration are crucial in ML roles. Your experience as a Team Lead',NULL,NULL,NULL,'I am a Team Lead & want to switch my field in ml line'),(NULL,'chatcmpl-AIvvDEMuPtUPnj5vHcWROwljwRdCR','That\'s great! Data analysis is a valuable skill that complements your development background well. Here’s a step-by-step guide to help you transition into data analysis:\n\n### Step 1: Understand the Basics of Data Analysis\n- **What is Data Analysis?** Familiarize yourself with the concepts, purpose, and importance of data analysis.\n- **Types of Data Analysis:** Learn about descriptive, diagnostic, predictive, and prescriptive analysis.\n\n### Step 2: Learn Key Tools and Technologies\n1. **',NULL,NULL,NULL,'I am Junior React.js Developer & want to learn data analysis'),(NULL,'chatcmpl-AIwBrOGebq40Vp3RSwtAKnO6FDUI7','### React JS Development\n\n#### Is React JS a Good Field for Fresh Graduates?\n\nReact.js is a popular JavaScript library for building user interfaces, especially single-page applications. Here are some reasons why React development can be a great field for fresh graduates:\n\n1. **High Demand**: There is a strong demand for React developers in the job market. Many companies are adopting React for web and mobile app development.\n\n2. **Strong Community Support**: React has a thriving community, which means that',NULL,NULL,NULL,'I want to discuss with you I am react js developer how about this field it\'s good for fresh graduate or not? how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIwCpmiyC7maPSUYAaKXAb5KKN7vs','As a Director of Engineering at a university, your role typically encompasses a broad range of responsibilities focused on both the administrative and technical aspects of engineering education, research, and outreach. Here are some key roles and responsibilities you may have:\n\n1. **Leadership and Management:**\n   - Oversee the engineering department, including faculty, staff, and students.\n   - Foster a collaborative and innovative culture within the department.\n   - Provide strategic direction for the engineering programs aligned with the university’s mission and goals.\n\n',NULL,NULL,NULL,'I am a Director of Engineering in my university tell me the roles of mine job?'),(NULL,'chatcmpl-AIwDD72e1XqulIaeHsCH5wSDmPAfA','The role of a Director of Engineering is a senior leadership position responsible for overseeing engineering teams and driving the technical direction of projects and initiatives within an organization. Here are the typical responsibilities, qualifications, and skills associated with this role:\n\n### Responsibilities:\n\n1. **Leadership and Management:**\n   - Lead and manage engineering teams, including recruiting, mentoring, and evaluating personnel.\n   - Foster a culture of innovation, collaboration, and continuous improvement within the engineering division.\n\n2. **Strategic Planning:**\n  ',NULL,NULL,NULL,'Director of Engineering '),(NULL,'chatcmpl-AIwDVMMAJq6TMisSFSNwZrCtrJz7h','The Director of Engineering is a senior leadership role within an organization, primarily responsible for overseeing the engineering department and ensuring that engineering projects align with the company\'s goals and objectives. This role is integral in guiding teams, driving innovation, and advancing technical strategies.\n\n### Key Responsibilities:\n\n1. **Strategic Leadership**:\n   - Develop and communicate a clear engineering vision and strategy aligned with the company\'s goals.\n   - Collaborate with other executives to define and prioritize engineering initiatives.\n\n2. **Team Management**:\n  ',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIwHzb501trmZbJonc01rzS1HS3zn','The role of a Vice President (VP) of Technology is a senior leadership position within an organization, often responsible for overseeing the development and implementation of technology strategies that align with the company\'s goals and objectives. Here are some key responsibilities and qualifications typically associated with the position:\n\n### Key Responsibilities:\n\n1. **Strategic Leadership**: Develop and execute the company\'s technology strategy to support business goals and enhance organizational efficiency.\n\n2. **Team Management**: Lead and mentor technology teams, including software development, IT operations',NULL,NULL,NULL,'VP of Technology '),(NULL,'chatcmpl-AIwIqlTu5pXFFzHa5UnNet8ALnc2s','That\'s a wonderful goal! Learning singing composition can be both a creative and fulfilling endeavor. Here are some steps and tips to help you get started:\n\n### 1. Understand the Basics of Music Theory\n- **Learn Musical Notation**: Familiarize yourself with the basics of reading sheet music, including notes, rhythms, and rests.\n- **Scales and Chords**: Understand major and minor scales and basic chord progressions, as they are essential for composing.\n- **Key Signatures**',NULL,NULL,NULL,'I am a Team Lead & wannt to learn singing composition.'),(NULL,'chatcmpl-AIwKTZsHl52DjRwAKDHQjkPEFja1X','That\'s great to hear! Transitioning from a Team Lead position to an AI Engineer role can be an exciting career move. Here are some steps you can take to facilitate this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Courses**: Consider enrolling in online courses or taking a degree in data science, machine learning, or artificial intelligence. Platforms like Coursera, edX, and Udacity have excellent courses.\n   - **Books**: Read foundational books',1052,NULL,NULL,'I am Team Lead & wanna be an Ai engineer'),(NULL,'chatcmpl-AIwlz6yyIhuwgAj7YrEt7nupGKmQW','The Director of Engineering is a senior leadership position responsible for overseeing the engineering department within an organization. This role typically involves managing engineering teams, developing engineering projects, ensuring quality standards, and aligning engineering efforts with the overall business objectives. Here are some key responsibilities and qualifications associated with this role:\n\n### Key Responsibilities:\n\n1. **Leadership and Management:**\n   - Lead and manage the engineering team, providing guidance, support, and mentorship.\n   - Foster a collaborative and innovative work environment.\n\n2. **Strateg',NULL,NULL,NULL,'Director of Engineering department0'),(NULL,'chatcmpl-AIwn6LMHeik1b9Bxn8MLSuA2ckj5U','The role of a Director of Engineering is a senior management position responsible for overseeing the engineering department within an organization. This role typically involves a combination of technical expertise, strategic planning, team leadership, and project management. Here are some key responsibilities and skills often associated with the position:\n\n### Key Responsibilities:\n\n1. **Strategic Planning**: Collaborating with other executives to define the company’s engineering strategy and ensure alignment with organizational goals.\n\n2. **Team Leadership**: Leading and mentoring engineers and technical staff',NULL,NULL,NULL,'Director of Engineering '),(NULL,'chatcmpl-AIwo8218rcduQMw3eeIx2JdqvduFX','A Development Manager plays a crucial role in organizations, particularly in sectors like software development, construction, and business growth initiatives. The responsibilities and expectations for this position can vary widely between industries, but generally include the following key areas:\n\n### Key Responsibilities:\n\n1. **Project Management**: Oversee the planning, execution, and delivery of projects. This includes defining project scope, goals, and deliverables.\n\n2. **Team Leadership**: Manage and lead a team of developers, engineers, or other professionals',NULL,NULL,NULL,'Development Manager'),(NULL,'chatcmpl-AIwv6DMdFOdSLnFLgHCKBN2KA5oUr','To effectively direct the engineering department with a focus on long-term technical goals, several key strategies and initiatives can be implemented. Here’s a structured approach:\n\n### Vision and Mission Alignment\n1. **Define a Clear Vision**: Articulate a long-term vision that aligns with the overall goals of the organization. Ensure that the engineering department understands how its objectives contribute to this vision.\n  \n2. **Set Long-term Technical Goals**: Establish specific, measurable, achievable, relevant, and time-bound (',NULL,NULL,NULL,'Direct the engineering department, focusing on long-term technical goals.'),(NULL,'chatcmpl-AIx4aiJuQjcjMYzG7MAUCaJbw89uu','The role of a Director of Engineering is critical in many organizations, particularly within the technology, manufacturing, and construction sectors. This leadership position involves overseeing engineering teams, projects, and strategy to ensure that the organization meets its technical goals and stays competitive in the market. Here are some key responsibilities, qualifications, and skills associated with the role:\n\n### Key Responsibilities:\n1. **Leadership and Management:**\n   - Manage engineering teams, including hiring, training, and performance evaluations.\n   - Foster a collaborative and',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIx6Bk1rmduZEOA8luvVHS4K8ALqT','The Director of Engineering is a leadership role within an organization that focuses on strategic planning, development, and execution of engineering projects. This position typically involves overseeing engineering teams, managing budgets, ensuring project timelines are met, and aligning engineering initiatives with the broader goals of the organization.\n\n### Key Responsibilities:\n\n1. **Leadership and Strategy**:\n   - Develop and implement engineering strategies that align with the company\'s overall objectives.\n   - Provide direction and mentorship to engineering teams, fostering a culture of innovation and collaboration.\n\n2',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIx8EJYiUOjO7SBkGpSt2FRQu2Tt7','The role of a Director of Engineering is critical in technology-driven companies. This position typically involves overseeing engineering teams, managing projects, and ensuring that engineering practices align with the company\'s strategic goals. Here are some key responsibilities and skills associated with the role:\n\n### Key Responsibilities:\n\n1. **Leadership and Team Management**:\n   - Lead and mentor engineering teams, fostering a culture of innovation and collaboration.\n   - Recruit, retain, and develop engineering talent.\n\n2. **Strategic Planning**:\n   - Con',NULL,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIxBmQ9pkQUIz1PCKJIcmDHOh5RGx','Building full-stack projects is a great way to enhance your skills and apply what you\'ve learned about both frontend and backend development. Below are some ideas for full-stack projects, along with a brief overview of the technologies you might use.\n\n### 1. **Personal Portfolio Website**\n   - **Description**: A website to showcase your projects, skills, and resume.\n   - **Frontend**: HTML, CSS, JavaScript (React, Vue, or Angular)\n   - **Backend**: Node.js',NULL,NULL,NULL,'Build Full Stack Projects'),(NULL,'chatcmpl-AIxCUivr7uSDvTPa7qsvNJF6buRO3','Alhamdulillah, mai theek hoon. Aap kaise hain?',NULL,NULL,NULL,'Hassan  Bhai kia hal hain?'),(NULL,'chatcmpl-AIxDaevU9YD773SAeXqEXAdrrQLvw','That\'s great! Transitioning from a Junior React.js Developer to a Full Stack Developer is a rewarding journey that will broaden your skill set and open up new opportunities. Here’s a structured approach to help you along the way:\n\n### 1. **Strengthen Your Frontend Skills:**\n   - **Deepen React Knowledge:** Learn advanced concepts like hooks, context API, state management libraries (Redux, MobX), component lifecycle, and optimization techniques.\n   - **Other Frontend Frameworks:** Familiar',NULL,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxDhnhg3a4UaORf5KicDJf4o7eoe','That\'s a great aspiration! Transitioning from a Junior React.js Developer to a full-stack developer can open up many exciting opportunities for you. Here’s a roadmap to guide you on your journey:\n\n### 1. Strengthen Your Front-End Skills\n- **Deepen React Knowledge**: Make sure you are familiar with advanced concepts such as hooks, context API, performance optimization, and server-side rendering (e.g., Next.js).\n- **Learn JavaScript ES6+**: Ensure you are comfortable',NULL,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxE1RF6CwMqLDsmBxKx3PP8N6evB','Transitioning from a React.js developer to an AI engineer is an exciting journey that combines your existing programming skills with new concepts in data science, machine learning, and artificial intelligence. Here\'s a roadmap to guide you through the process:\n\n### 1. Foundation in Mathematics and Statistics\nUnderstanding the fundamental mathematical concepts is crucial in AI:\n\n- **Linear Algebra:** Matrix operations, vector spaces, eigenvalues, etc.\n- **Calculus:** Derivatives, integrals, and gradients (essential for optimization).\n-',NULL,NULL,NULL,'I want to discuss with you I am react js developer how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIxFvLFmJqKgOsklyu6AmoPcx8TTZ','That\'s a great ambition! Transitioning from a React developer to an AI engineer can be an exciting journey. Here are some steps you can take to facilitate this transition:\n\n### 1. **Learn the Fundamentals of AI and Machine Learning**\n   - **Mathematics**: A solid understanding of linear algebra, calculus, probability, and statistics is crucial.\n   - **Resources**: \n     - Online courses (Coursera, edX, Udacity) on machine learning and AI.\n     -',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIxGmPompLupn27n6jd6xbNbhi8LF','That\'s great to hear! Transitioning from a junior React developer to an AI engineer can be a rewarding journey, combining your existing knowledge of web development with the fascinating field of artificial intelligence. Here’s a roadmap to help you get started:\n\n### 1. Strengthen Your Foundations\n\n#### Programming Skills\n- **Python**: Most AI projects are done using Python due to its simplicity and extensive libraries. Get comfortable with Python syntax and data structures.\n- **Libraries**: Familiarize yourself with libraries commonly',NULL,NULL,NULL,'I am junior react developer & wanna be an Ai engineer'),(NULL,'chatcmpl-AIxHWNKeUqaU1cgJf8VBocqbgM7NR','That\'s a great career path! Transitioning from a Junior React.js Developer to an AI Engineer involves building on your programming knowledge and gaining experience in artificial intelligence and machine learning. Here’s a structured approach to help you make that transition:\n\n### 1. Strengthen Your Programming Skills\n- **Python**: Familiarize yourself with Python, as it is the most widely used programming language in AI and machine learning.\n- **Libraries**: Learn about essential libraries such as NumPy, Pandas, Mat',NULL,NULL,NULL,'I\'m a Junior React.js Developer & wanna be a Ai engineer'),(NULL,'chatcmpl-AIxKDKeiSNUyhuqXVIXq96GMf5GpD','That\'s a great goal! Transitioning from a Junior React.js Developer to a Full Stack Developer involves learning both front-end and back-end technologies. Here are the steps you can take to achieve that:\n\n### 1. Strengthen Your Front-End Skills\n- **Deepen Your React Knowledge**: Understand advanced concepts like hooks, context API, state management libraries (e.g., Redux, MobX), and React Router.\n- **Learn CSS Frameworks**: Familiarize yourself with frameworks like Bootstrap,',NULL,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxMxDBkF2rOkVsEeAqf8PDmfMSCx','Transitioning from a React.js developer to an AI engineer is an exciting journey that can open up many opportunities in the growing field of artificial intelligence. Here’s a roadmap to help guide you through the learning process:\n\n### 1. **Strengthen Your Mathematical Foundation**\nAI heavily relies on concepts from mathematics. You should strengthen your understanding of the following areas:\n\n- **Linear Algebra:** Understand vectors, matrices, and operations on them.\n- **Calculus:** Learn about derivatives and integrals, which are',246,NULL,NULL,'I want to discuss with you I am react js developer how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIxNKEn6evL6vh5SyjSV1L36izToh','Transitioning from a React.js developer to an AI engineer is an exciting journey that involves gaining knowledge in areas such as machine learning, data science, and possibly even deep learning. Below is a structured roadmap to help you make this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Key Concepts:**\n     - What is AI? Types of AI (Narrow AI, General AI)\n     - What is Machine Learning? Types of Machine Learning (Supervised,',246,'chatcmpl-AIxMxDBkF2rOkVsEeAqf8PDmfMSCx',NULL,'I want to discuss with you I am react js developer how can I be Ai enginner tell me the roadmap of it.'),(NULL,'chatcmpl-AIxNb0QB95Bw5D9dIA82uSMbFoHCn','Switching from a JavaScript developer to an AI engineer is a great move, as the demand for AI skills continues to grow. Here are some steps you can take to facilitate this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning (ML)**\n   - Familiarize yourself with core concepts such as supervised learning, unsupervised learning, neural networks, natural language processing, and computer vision.\n   - Recommended resources:\n     - **Books**: \"Hands-On Machine Learning',229,NULL,NULL,'I am js developer & want to switch my career as an Ai engineer'),(NULL,'chatcmpl-AIxNoVMJIObPucvOsZJ288MoJ6nln','Transitioning from a JavaScript developer to an AI engineer is a great move, especially as AI continues to be a pivotal field in technology. Here’s a roadmap that can help you make this transition:\n\n### 1. **Understand the Basics of AI and Machine Learning**\n   - **Learn the Fundamentals:** Start with the basics of Artificial Intelligence, Machine Learning (ML), and Deep Learning. Online platforms like Coursera, edX, and Udacity offer courses tailored to these topics.\n   - **',229,'chatcmpl-AIxNb0QB95Bw5D9dIA82uSMbFoHCn',NULL,'I am js developer & want to switch my career as an Ai engineer'),(NULL,'chatcmpl-AIxO7sxhwcRJrSRFjt0GRVDZonAa7','That\'s a great goal! Transitioning from a Junior React.js Developer to a Full Stack Developer involves broadening your skill set to include backend technologies, databases, and possibly DevOps practices. Here’s a structured approach to help you make this transition:\n\n### Frontend Skills to Strengthen\n1. **Advanced React.js**: Improve your understanding of hooks, context API, and state management libraries like Redux or MobX. Also, familiarize yourself with performance optimization and component design patterns.\n\n2. **Type',235,NULL,NULL,'I am a Junior React.js Developer & wanna be a full stack developer'),(NULL,'chatcmpl-AIxSXp2NFQAhsnhxzBPqcL7PrPUZR','The role of a Director of Engineering is a senior leadership position within an organization, typically responsible for overseeing engineering teams and driving the engineering vision and strategy. Here are key aspects of the role:\n\n### Responsibilities:\n1. **Leadership**: Lead and mentor engineering teams, fostering a culture of innovation, collaboration, and high performance.\n2. **Strategic Planning**: Develop and implement engineering strategies aligned with company goals, ensuring that resources are effectively allocated.\n3. **Project Management**: Oversee project',237,NULL,NULL,'Director of Engineering'),(NULL,'chatcmpl-AIxXry2sTFeUwwgRRCrkJOATDWuIr','An Engineering Manager is a key leadership role within an engineering organization, responsible for overseeing technical teams, ensuring project delivery, and aligning engineering efforts with business objectives. Here are some key aspects of the role:\n\n### Key Responsibilities:\n\n1. **Team Leadership:**\n   - Lead, mentor, and manage engineering teams to foster a productive and innovative environment.\n   - Develop team culture and promote collaboration and unity within the team.\n\n2. **Project Management:**\n   - Oversee engineering projects from conception to completion',236,NULL,NULL,'Engineering Manager'),(NULL,'chatcmpl-AIxgFjrC7umudgLnosfklzwmDbrKk','Becoming an infrastructure engineer typically involves a combination of education, skills development, and professional experience. Here are the steps you can take to pursue a career in this field:\n\n### 1. **Educational Background**\n   - **Obtain a Relevant Degree:** Most infrastructure engineers hold a bachelor’s degree in computer science, information technology, civil engineering, or a related field. Some positions may require a master\'s degree.\n   - **Consider Certifications:** Certifications can enhance your qualifications. Relevant certifications may include:\n    ',3,'chatcmpl-AIaii0Xgr9cglnLj6VRkkxdaOsUco',NULL,'How to become a infrastructure engineer'),(NULL,'chatcmpl-AIxgwV5WRW83Bi8sPKofUk3V3iSow','Becoming a backend engineer requires a combination of education, skills development, and practical experience. Here are steps to guide you on your journey:\n\n### 1. **Understand the Role of a Backend Engineer**\n   - Research what backend engineers do, their responsibilities, and the technologies they commonly use.\n   - Recognize that the backend is responsible for server-side logic, database interactions, API development, and integration with frontend technologies.\n\n### 2. **Educational Background**\n   - A degree in computer science',3,'chatcmpl-AIaii0Xgr9cglnLj6VRkkxdaOsUco',NULL,'How to become a backend engineer');
-/*!40000 ALTER TABLE `gpt_data` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `instagram_login`
 --
 
-DROP TABLE IF EXISTS `instagram_login`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `instagram_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `instagram_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `instagram_id` (`instagram_id`)
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `instagram_login`
---
-
-LOCK TABLES `instagram_login` WRITE;
-/*!40000 ALTER TABLE `instagram_login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `instagram_login` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `linkedin_login`
 --
 
-DROP TABLE IF EXISTS `linkedin_login`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `linkedin_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `linkedin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `linkedin_id` (`linkedin_id`)
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `linkedin_login`
+-- Table structure for table `model_subscription`
 --
 
-LOCK TABLES `linkedin_login` WRITE;
-/*!40000 ALTER TABLE `linkedin_login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `linkedin_login` ENABLE KEYS */;
-UNLOCK TABLES;
+CREATE TABLE `model_subscription` (
+  `id` bigint(20) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `subscription_id` int(11) NOT NULL,
+  `payment_id` bigint(255) DEFAULT NULL,
+  `branch_id` int(11) NOT NULL,
+  `amount` int(20) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `modules`
 --
 
-DROP TABLE IF EXISTS `modules`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `modules` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` int(11) NOT NULL,
+  `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `modules`
 --
 
-LOCK TABLES `modules` WRITE;
-/*!40000 ALTER TABLE `modules` DISABLE KEYS */;
-INSERT INTO `modules` VALUES (1,'Transaction'),(6,'Pricing'),(7,'Subscription');
-/*!40000 ALTER TABLE `modules` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `modules` (`id`, `module_name`) VALUES
+(1, 'Transaction'),
+(6, 'Pricing'),
+(7, 'Subscription');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `next_steps_recommendations`
+--
+
+CREATE TABLE `next_steps_recommendations` (
+  `id` bigint(20) NOT NULL,
+  `plan_id` bigint(20) NOT NULL,
+  `recommendations` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `notifications`
 --
 
-DROP TABLE IF EXISTS `notifications`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notifications` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `title` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
   `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `read` tinyint NOT NULL DEFAULT '0',
-  `seen` tinyint NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `read` tinyint(4) NOT NULL DEFAULT 0,
+  `seen` tinyint(4) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `notifications`
 --
 
-LOCK TABLES `notifications` WRITE;
-/*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (3,30,'System Maintenance Scheduled','Our system will be undergoing maintenance on October 1st at 10:00 PM.','https://www.google.com/',1,1),(4,30,'Database Admin Scheduled','Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.','https://www.google.com/',1,1),(5,30,'I am an infrastructure Specialist','This path has been analyse',NULL,1,1),(6,30,'react js developer','This path has been analyse',NULL,1,1),(7,30,'react js developer','This path has been analyse',NULL,0,0),(8,36,'Law grad to solicitor','This path has been analyse',NULL,1,1),(9,36,'Pipefitter to superintendant ','This path has been analyse',NULL,1,1),(10,36,'Law ','This path has been analyse',NULL,1,1),(11,36,'law 2','This path has been analyse',NULL,1,1),(12,28,'javascript','This path has been analyse',NULL,1,1),(13,30,'Law grad to solicitor','This path has been analyse',NULL,0,0),(14,30,'Pipefitter to superintendant ','This path has been analyse',NULL,0,0),(15,30,'Law ','This path has been analyse',NULL,0,0),(16,30,'law 2','This path has been analyse',NULL,0,0),(17,30,'javascript','This path has been analyse',NULL,0,0),(18,36,'IT Specialist Career','This path has been analyse',NULL,0,1),(19,37,'javascript','This path has been analyse',NULL,1,1),(20,37,'python developer','This path has been analyse',NULL,1,1),(21,37,'data entry','This path has been analyse',NULL,1,1),(22,37,'data entry operator','This path has been analyse',NULL,1,1),(23,28,'frontend developer','This path has been analyse',NULL,1,1),(24,37,'ml engineer','This path has been analyse',NULL,1,1),(25,37,' Machine learning developer','This path has been analyse',NULL,1,1),(26,37,'react js developer','This path has been analyse',NULL,1,1),(27,37,'react js developer','This path has been analyse',NULL,1,1),(28,37,'ai engineer','This path has been analyse',NULL,1,1),(29,37,'data entry operator','This path has been analyse',NULL,1,1),(30,37,' python developer','This path has been analyse',NULL,1,1),(31,37,' python developer','This path has been analyse',NULL,1,1),(32,37,' python developer','This path has been analyse',NULL,1,1),(33,37,'python developer','This path has been analyse',NULL,1,1),(34,37,' python developer','This path has been analyse',NULL,1,1),(35,37,'mechanic ','This path has been analyse',NULL,1,1),(36,37,'blockchain developer','This path has been analyse',NULL,1,1),(37,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(38,37,' python developer','This path has been analyse',NULL,1,1),(39,37,' python developer','This path has been analyse',NULL,1,1),(40,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(41,37,'mechanic ','This path has been analyse',NULL,1,1),(42,37,'react js developer','This path has been analyse',NULL,1,1),(43,37,'data entry operator','This path has been analyse',NULL,1,1),(44,37,'ai engineer','This path has been analyse',NULL,1,1),(45,37,'data entry operator','This path has been analyse',NULL,1,1),(46,37,'singer','This path has been analyse',NULL,0,1),(47,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(48,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(49,37,'javascript deveoper','This path has been analyse',NULL,0,1),(50,37,'ml engineer','This path has been analyse',NULL,0,1),(51,37,'javascript deveoper','This path has been analyse',NULL,0,1),(52,28,'python developer','This path has been analyse',NULL,1,1),(53,28,'python developer','This path has been analyse',NULL,1,1),(54,28,'python developer','This path has been analyse',NULL,1,1),(55,28,'singer','This path has been analyse',NULL,0,0),(56,28,'ai engineer','This path has been analyse',NULL,0,0),(57,28,'frontend developer','This path has been analyse',NULL,0,0);
-/*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `notifications` (`id`, `user_id`, `title`, `description`, `link`, `read`, `seen`) VALUES
+(3, 30, 'System Maintenance Scheduled', 'Our system will be undergoing maintenance on October 1st at 10:00 PM.', 'https://www.google.com/', 1, 1),
+(4, 30, 'Database Admin Scheduled', 'Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.', 'https://www.google.com/', 1, 1),
+(5, 30, 'I am an infrastructure Specialist', 'This path has been analyse', NULL, 1, 1),
+(6, 30, 'react js developer', 'This path has been analyse', NULL, 1, 1),
+(7, 30, 'react js developer', 'This path has been analyse', NULL, 0, 0),
+(8, 36, 'Law grad to solicitor', 'This path has been analyse', NULL, 1, 1),
+(9, 36, 'Pipefitter to superintendant ', 'This path has been analyse', NULL, 1, 1),
+(10, 36, 'Law ', 'This path has been analyse', NULL, 1, 1),
+(11, 36, 'law 2', 'This path has been analyse', NULL, 1, 1),
+(12, 28, 'javascript', 'This path has been analyse', NULL, 1, 1),
+(13, 30, 'Law grad to solicitor', 'This path has been analyse', NULL, 0, 0),
+(14, 30, 'Pipefitter to superintendant ', 'This path has been analyse', NULL, 0, 0),
+(15, 30, 'Law ', 'This path has been analyse', NULL, 0, 0),
+(16, 30, 'law 2', 'This path has been analyse', NULL, 0, 0),
+(17, 30, 'javascript', 'This path has been analyse', NULL, 0, 0),
+(18, 36, 'IT Specialist Career', 'This path has been analyse', NULL, 0, 1),
+(19, 37, 'javascript', 'This path has been analyse', NULL, 1, 1),
+(20, 37, 'python developer', 'This path has been analyse', NULL, 1, 1),
+(21, 37, 'data entry', 'This path has been analyse', NULL, 1, 1),
+(22, 37, 'data entry operator', 'This path has been analyse', NULL, 1, 1),
+(23, 28, 'frontend developer', 'This path has been analyse', NULL, 1, 1),
+(24, 37, 'ml engineer', 'This path has been analyse', NULL, 1, 1),
+(25, 37, ' Machine learning developer', 'This path has been analyse', NULL, 1, 1),
+(26, 37, 'react js developer', 'This path has been analyse', NULL, 1, 1),
+(27, 37, 'react js developer', 'This path has been analyse', NULL, 1, 1),
+(28, 37, 'ai engineer', 'This path has been analyse', NULL, 1, 1),
+(29, 37, 'data entry operator', 'This path has been analyse', NULL, 1, 1),
+(30, 37, ' python developer', 'This path has been analyse', NULL, 1, 1),
+(31, 37, ' python developer', 'This path has been analyse', NULL, 1, 1),
+(32, 37, ' python developer', 'This path has been analyse', NULL, 1, 1),
+(33, 37, 'python developer', 'This path has been analyse', NULL, 1, 1),
+(34, 37, ' python developer', 'This path has been analyse', NULL, 1, 1),
+(35, 37, 'mechanic ', 'This path has been analyse', NULL, 1, 1),
+(36, 37, 'blockchain developer', 'This path has been analyse', NULL, 1, 1),
+(37, 37, 'blockchain with Ai developer', 'This path has been analyse', NULL, 1, 1),
+(38, 37, ' python developer', 'This path has been analyse', NULL, 1, 1),
+(39, 37, ' python developer', 'This path has been analyse', NULL, 1, 1),
+(40, 37, 'blockchain with Ai developer', 'This path has been analyse', NULL, 1, 1),
+(41, 37, 'mechanic ', 'This path has been analyse', NULL, 1, 1),
+(42, 37, 'react js developer', 'This path has been analyse', NULL, 1, 1),
+(43, 37, 'data entry operator', 'This path has been analyse', NULL, 1, 1),
+(44, 37, 'ai engineer', 'This path has been analyse', NULL, 1, 1),
+(45, 37, 'data entry operator', 'This path has been analyse', NULL, 1, 1),
+(46, 37, 'singer', 'This path has been analyse', NULL, 0, 1),
+(47, 37, 'python developer banna hy mujhe', 'This path has been analyse', NULL, 0, 1),
+(48, 37, 'python developer banna hy mujhe', 'This path has been analyse', NULL, 0, 1),
+(49, 37, 'javascript deveoper', 'This path has been analyse', NULL, 0, 1),
+(50, 37, 'ml engineer', 'This path has been analyse', NULL, 0, 1),
+(51, 37, 'javascript deveoper', 'This path has been analyse', NULL, 0, 1),
+(52, 28, 'python developer', 'This path has been analyse', NULL, 1, 1),
+(53, 28, 'python developer', 'This path has been analyse', NULL, 1, 1),
+(54, 28, 'python developer', 'This path has been analyse', NULL, 1, 1),
+(55, 28, 'singer', 'This path has been analyse', NULL, 0, 0),
+(56, 28, 'ai engineer', 'This path has been analyse', NULL, 0, 0),
+(57, 28, 'frontend developer', 'This path has been analyse', NULL, 0, 0);
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `outlook_login`
 --
 
-DROP TABLE IF EXISTS `outlook_login`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `outlook_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `outlook_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `outlook_id` (`outlook_id`)
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `outlook_login`
---
-
-LOCK TABLES `outlook_login` WRITE;
-/*!40000 ALTER TABLE `outlook_login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `outlook_login` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `path`
 --
 
-DROP TABLE IF EXISTS `path`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `path` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `prompt` longtext COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) NOT NULL,
+  `prompt` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` enum('pending','analysed','analysing') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `user_id` int DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `title` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `path`
---
-
-LOCK TABLES `path` WRITE;
-/*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'I am react js developer & wanna be full stack mern developer','d4b2abc4-65f4-4a3f-bd3b-270ab27a65a3.pdf','pending',30,'react js developer'),(2,'I Just graduated from law school how can I become a solicitor',NULL,'analysed',36,'Law grad to solicitor'),(3,'Pipefitter to superintendant ',NULL,'analysed',36,'Pipefitter to superintendant '),(4,'What can I be with a law degree',NULL,'analysed',36,'Law '),(5,'What can i do with a law degree in U.K.',NULL,'analysed',36,'law 2'),(6,'I am a javascript developer & want to be a full stack developer what would be the roadmap for it?',NULL,'analysed',28,'javascript'),(7,'I am a IT Specialist what career paths can I have I live in the UK ',NULL,'analysed',36,'IT Specialist Career'),(8,'I am javascipt developer & wanna be a full stack developer what would be the roadmap for?','334a1067-d924-4cd2-a42d-bc2612d7b4e5.pdf','analysed',37,'javascript deveoper'),(9,'I am a python developer & wanna be a Ai engineer what would be the roadmap?','1d7686ce-83a4-438a-8ae8-a4d0ce46d4a0.pdf','analysed',37,'python developer'),(10,'I am data entry operator & want to learn the frontend ','f0b247f6-ad06-485e-b3f6-d22be34f8601.pdf','analysed',37,'ml engineer'),(11,NULL,'e5a30587-73c2-40f4-96ee-e4706a54563f.pdf','analysed',37,' python developer'),(12,NULL,'7fccd126-daea-4f25-bedb-a15249716d67.pdf','analysed',37,'data entry operator'),(13,NULL,'2b348b00-61bd-4457-ab0c-35dda14820c3.pdf','analysed',37,'data entry operator'),(14,NULL,'c9dfe5f2-29b8-4ef1-8392-06c961c93d10.pdf','analysed',28,'frontend developer'),(15,NULL,'b3cbb438-aebb-427f-a431-55d48e1812b4.pdf','analysed',37,'react js developer'),(16,'I am react devloper & wanna be an Ai engineer',NULL,'analysed',37,'ai engineer'),(17,'I am a bike mechanic and I want to become an automobile engineer',NULL,'analysed',37,'mechanic '),(18,'I am react js developer & wanna be a blockchain developer','2a0a2e58-55eb-4e50-ab04-b1b827b27bbe.pdf','analysed',37,'blockchain with Ai developer'),(19,'I am a singer & want to be a web developer',NULL,'analysed',37,'singer'),(20,NULL,'79479a04-116d-4d37-95f0-76485f23cb45.pdf','analysed',37,'python developer banna hy mujhe'),(21,NULL,'acf53ce1-a330-4b2f-8734-5ec4b8425e12.pdf','analysed',37,'python developer banna hy mujhe'),(22,'I am python developer & wanna be a Automation engineer create a roadmap for it.','60db6ee6-ac9f-427a-8638-429b1be4c912.pdf','analysed',28,'python developer'),(23,NULL,'18577e96-741c-4a8a-8ce7-7953a8b8c6a9.pdf','pending',37,'python developer'),(24,NULL,'47d3d700-908e-48a4-af3a-10936a757f7a.pdf','pending',37,'python developer'),(25,'I am python developer & switch my field as a data analytics engineer',NULL,'pending',28,'python developer'),(26,'I am a data entry operator & wanna switch my field as a data analyst what would be the roadmap for it?',NULL,'pending',28,'data entry operator');
-/*!40000 ALTER TABLE `path` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `permission_modules`
---
-
-DROP TABLE IF EXISTS `permission_modules`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `permission_modules` (
-  `permission_id` int DEFAULT NULL,
-  `module_id` int DEFAULT NULL,
-  KEY `permission_id` (`permission_id`),
-  KEY `module_id` (`module_id`),
-  CONSTRAINT `permission_modules_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`),
-  CONSTRAINT `permission_modules_ibfk_2` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`)
+  `gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `permission_modules`
---
-
-LOCK TABLES `permission_modules` WRITE;
-/*!40000 ALTER TABLE `permission_modules` DISABLE KEYS */;
-INSERT INTO `permission_modules` VALUES (13,6),(14,7),(15,7);
-/*!40000 ALTER TABLE `permission_modules` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `permission_to_role`
---
-
-DROP TABLE IF EXISTS `permission_to_role`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `permission_to_role` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `role_id` int NOT NULL,
-  `permission_id` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `role_id` (`role_id`),
-  KEY `permission_id` (`permission_id`),
-  CONSTRAINT `permission_to_role_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `permission_to_role_ibfk_2` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `permission_to_role`
---
-
-LOCK TABLES `permission_to_role` WRITE;
-/*!40000 ALTER TABLE `permission_to_role` DISABLE KEYS */;
-INSERT INTO `permission_to_role` VALUES (6,2,4,'2024-09-19 08:09:57','2024-09-19 08:09:57'),(7,2,5,'2024-09-19 08:09:57','2024-09-19 08:09:57');
-/*!40000 ALTER TABLE `permission_to_role` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `permissions`
 --
 
-DROP TABLE IF EXISTS `permissions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permissions` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `permissions`
 --
 
-LOCK TABLES `permissions` WRITE;
-/*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (4,'index','2024-09-19 07:50:57','2024-09-19 08:00:13','transaction-index'),(5,'create','2024-09-19 07:50:57','2024-09-19 07:50:57','transaction-create'),(6,'update','2024-09-19 07:50:57','2024-09-19 07:50:57','transaction-update'),(13,'index','2024-09-19 11:27:53','2024-09-19 11:27:53','pricing-index'),(14,'createIndex','2024-09-19 11:29:12','2024-09-19 11:29:12','subscription-create-index'),(15,'viewIndex','2024-09-19 11:29:12','2024-09-19 11:29:12','subscription-view-index');
-/*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `permissions` (`id`, `name`, `created_at`, `updated_at`, `slug`) VALUES
+(4, 'index', '2024-09-19 07:50:57', '2024-09-19 08:00:13', 'transaction-index'),
+(5, 'create', '2024-09-19 07:50:57', '2024-09-19 07:50:57', 'transaction-create'),
+(6, 'update', '2024-09-19 07:50:57', '2024-09-19 07:50:57', 'transaction-update'),
+(13, 'index', '2024-09-19 11:27:53', '2024-09-19 11:27:53', 'pricing-index'),
+(14, 'createIndex', '2024-09-19 11:29:12', '2024-09-19 11:29:12', 'subscription-create-index'),
+(15, 'viewIndex', '2024-09-19 11:29:12', '2024-09-19 11:29:12', 'subscription-view-index');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `role_to_users`
+-- Table structure for table `permission_modules`
 --
 
-DROP TABLE IF EXISTS `role_to_users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `role_to_users` (
-  `role_id` int NOT NULL,
-  `user_id` int NOT NULL,
-  KEY `role_id` (`role_id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
-  CONSTRAINT `role_to_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+CREATE TABLE `permission_modules` (
+  `permission_id` int(11) DEFAULT NULL,
+  `module_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `role_to_users`
+-- Dumping data for table `permission_modules`
 --
 
-LOCK TABLES `role_to_users` WRITE;
-/*!40000 ALTER TABLE `role_to_users` DISABLE KEYS */;
-INSERT INTO `role_to_users` VALUES (1,30),(2,35);
-/*!40000 ALTER TABLE `role_to_users` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `permission_modules` (`permission_id`, `module_id`) VALUES
+(13, 6),
+(14, 7),
+(15, 7);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permission_to_role`
+--
+
+CREATE TABLE `permission_to_role` (
+  `id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `permission_to_role`
+--
+
+INSERT INTO `permission_to_role` (`id`, `role_id`, `permission_id`, `created_at`, `updated_at`) VALUES
+(6, 2, 4, '2024-09-19 08:09:57', '2024-09-19 08:09:57'),
+(7, 2, 5, '2024-09-19 08:09:57', '2024-09-19 08:09:57');
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `roles`
 --
 
-DROP TABLE IF EXISTS `roles`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `roles`
 --
 
-LOCK TABLES `roles` WRITE;
-/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'admin','2024-09-19 07:29:05','2024-09-19 07:39:58'),(2,'sub user','2024-09-19 08:04:12','2024-09-19 08:04:12');
-/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `roles` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'admin', '2024-09-19 07:29:05', '2024-09-19 07:39:58'),
+(2, 'sub user', '2024-09-19 08:04:12', '2024-09-19 08:04:12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role_to_users`
+--
+
+CREATE TABLE `role_to_users` (
+  `role_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `role_to_users`
+--
+
+INSERT INTO `role_to_users` (`role_id`, `user_id`) VALUES
+(1, 30),
+(2, 35);
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `skills`
 --
 
-DROP TABLE IF EXISTS `skills`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skills` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `sort` tinyint(1) NOT NULL,
-  `step_id` bigint DEFAULT NULL,
-  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  PRIMARY KEY (`id`),
-  KEY `step_id` (`step_id`),
-  CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5336 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `step_id` bigint(20) DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `skills`
+-- Table structure for table `skill_gap_analysis`
 --
 
-LOCK TABLES `skills` WRITE;
-/*!40000 ALTER TABLE `skills` DISABLE KEYS */;
-INSERT INTO `skills` VALUES (106,'Data Collection',1,22,'pending'),(107,'Basic Statistical Analysis',2,22,'pending'),(108,'Report Writing',3,22,'pending'),(109,'Time Management',4,22,'pending'),(110,'Communication',5,22,'pending'),(111,'Market Analysis',1,23,'pending'),(112,'Consumer Behavior',2,23,'pending'),(113,'Trend Forecasting',3,23,'pending'),(114,'Presentation Skills',4,23,'pending'),(115,'Critical Thinking',5,23,'pending'),(116,'Product Lifecycle Management',1,24,'pending'),(117,'Innovation Strategies',2,24,'pending'),(118,'Cross-functional Collaboration',3,24,'pending'),(119,'Negotiation',4,24,'pending'),(120,'Problem Solving',5,24,'pending'),(121,'Strategic Planning',1,25,'pending'),(122,'Sales Forecasting',2,25,'pending'),(123,'Networking',3,25,'pending'),(124,'Leadership',4,25,'pending'),(125,'Financial Acumen',5,25,'pending'),(126,'Corporate Strategy',1,26,'pending'),(127,'Executive Leadership',2,26,'pending'),(128,'Decision Making',3,26,'pending'),(129,'Change Management',4,26,'pending'),(130,'Visionary Thinking',5,26,'pending'),(131,'Team Management',1,27,'pending'),(132,'Project Coordination',2,27,'pending'),(133,'Conflict Resolution',3,27,'pending'),(134,'Mentoring',4,27,'pending'),(135,'Performance Evaluation',5,27,'pending'),(136,'Project Planning',1,28,'pending'),(137,'Budget Management',2,28,'pending'),(138,'Risk Assessment',3,28,'pending'),(139,'Stakeholder Management',4,28,'pending'),(140,'Resource Allocation',5,28,'pending'),(141,'Operational Efficiency',1,29,'pending'),(142,'Process Improvement',2,29,'pending'),(143,'Lean Management',3,29,'pending'),(144,'Cost Control',4,29,'pending'),(145,'Quality Assurance',5,29,'pending'),(146,'Strategic Alignment',1,30,'pending'),(147,'Cross-departmental Leadership',2,30,'pending'),(148,'Organizational Development',3,30,'pending'),(149,'Executive Communication',4,30,'pending'),(150,'Long-term Planning',5,30,'pending'),(151,'Executive Operations Management',1,31,'pending'),(152,'Corporate Governance',2,31,'pending'),(153,'Crisis Management',3,31,'pending'),(154,'Global Operations',4,31,'pending'),(155,'Strategic Visioning',5,31,'pending'),(156,'Advanced Data Analysis',1,32,'pending'),(157,'Data Visualization',2,32,'pending'),(158,'SQL',3,32,'pending'),(159,'Python/R',4,32,'pending'),(160,'Machine Learning Basics',5,32,'pending'),(161,'Predictive Modeling',1,33,'pending'),(162,'Algorithm Development',2,33,'pending'),(163,'Big Data Technologies',3,33,'pending'),(164,'Statistical Analysis',4,33,'pending'),(165,'Data Mining',5,33,'pending'),(166,'Project Leadership',1,34,'pending'),(167,'Advanced Machine Learning',2,34,'pending'),(168,'Deep Learning',3,34,'pending'),(169,'Cloud Computing',4,34,'pending'),(170,'Research and Development',5,34,'pending'),(171,'Technical Strategy',1,35,'pending'),(172,'System Architecture',2,35,'pending'),(173,'Innovation Leadership',3,35,'pending'),(174,'Technical Mentoring',4,35,'pending'),(175,'Emerging Technologies',5,35,'pending'),(176,'Technology Leadership',1,36,'pending'),(177,'IT Governance',2,36,'pending'),(178,'Digital Transformation',3,36,'pending'),(179,'Cybersecurity',4,36,'pending'),(180,'Tech Visioning',5,36,'pending'),(181,'Complex Data Analysis',1,37,'pending'),(182,'Data Modeling',2,37,'pending'),(183,'Advanced Excel',3,37,'pending'),(184,'Presentation Skills',4,37,'pending'),(185,'Data-Driven Decision Making',5,37,'pending'),(186,'Project Leadership',1,38,'pending'),(187,'Mentoring',2,38,'pending'),(188,'Strategic Analysis',3,38,'pending'),(189,'Report Generation',4,38,'pending'),(190,'Problem Solving',5,38,'pending'),(191,'Business Strategy',1,39,'pending'),(192,'Leadership',2,39,'pending'),(193,'Advanced Analytics',3,39,'pending'),(194,'Cross-functional Collaboration',4,39,'pending'),(195,'Innovation',5,39,'pending'),(196,'Department Leadership',1,40,'pending'),(197,'Data Strategy',2,40,'pending'),(198,'Innovation',3,40,'pending'),(199,'Executive Communication',4,40,'pending'),(200,'Budget Management',5,40,'pending'),(201,'Executive Leadership',1,41,'pending'),(202,'Data Governance',2,41,'pending'),(203,'Strategic Vision',3,41,'pending'),(204,'Change Management',4,41,'pending'),(205,'Industry Knowledge',5,41,'pending'),(726,'Legal Research',1,146,'pending'),(727,'Case Analysis',2,146,'pending'),(728,'Critical Thinking',3,146,'pending'),(729,'Communication',4,146,'pending'),(730,'Time Management',5,146,'pending'),(731,'Writing',1,147,'pending'),(732,'Research',2,147,'pending'),(733,'Interviewing',3,147,'pending'),(734,'Networking',4,147,'pending'),(735,'Public Speaking',5,147,'pending'),(736,'Analytical Thinking',1,148,'pending'),(737,'Public Speaking',2,148,'pending'),(738,'Media Communication',3,148,'pending'),(739,'Data Interpretation',4,148,'pending'),(740,'Persuasion',5,148,'pending'),(741,'Editing',1,149,'pending'),(742,'Project Management',2,149,'pending'),(743,'Attention to Detail',3,149,'pending'),(744,'Marketing',4,149,'pending'),(745,'Collaboration',5,149,'pending'),(746,'Consulting',1,150,'pending'),(747,'Problem Solving',2,150,'pending'),(748,'Client Management',3,150,'pending'),(749,'Strategic Planning',4,150,'pending'),(750,'Negotiation',5,150,'pending'),(751,'Leadership',1,151,'pending'),(752,'Team Management',2,151,'pending'),(753,'Visionary Thinking',3,151,'pending'),(754,'Conflict Resolution',4,151,'pending'),(755,'Decision Making',5,151,'pending'),(756,'Leadership',1,152,'pending'),(757,'Team Building',2,152,'pending'),(758,'Budgeting',3,152,'pending'),(759,'Project Management',4,152,'pending'),(760,'Communication',5,152,'pending'),(761,'Delegation',1,153,'pending'),(762,'Organizational Skills',2,153,'pending'),(763,'Motivation',3,153,'pending'),(764,'Conflict Resolution',4,153,'pending'),(765,'Time Management',5,153,'pending'),(766,'Strategic Planning',1,154,'pending'),(767,'Resource Allocation',2,154,'pending'),(768,'Risk Management',3,154,'pending'),(769,'Negotiation',4,154,'pending'),(770,'Performance Monitoring',5,154,'pending'),(771,'Visionary Leadership',1,155,'pending'),(772,'Cross-Department Communication',2,155,'pending'),(773,'Policy Development',3,155,'pending'),(774,'Change Management',4,155,'pending'),(775,'Problem-Solving',5,155,'pending'),(776,'Executive Leadership',1,156,'pending'),(777,'Strategic Vision',2,156,'pending'),(778,'Corporate Governance',3,156,'pending'),(779,'Legal Compliance',4,156,'pending'),(780,'Stakeholder Engagement',5,156,'pending'),(781,'Legal Tech Tools',1,157,'pending'),(782,'Data Analysis',2,157,'pending'),(783,'Cybersecurity',3,157,'pending'),(784,'E-Discovery',4,157,'pending'),(785,'Technical Writing',5,157,'pending'),(786,'System Implementation',1,158,'pending'),(787,'Problem Solving',2,158,'pending'),(788,'Tech Support',3,158,'pending'),(789,'Process Improvement',4,158,'pending'),(790,'User Training',5,158,'pending'),(791,'Project Management',1,159,'pending'),(792,'Team Leadership',2,159,'pending'),(793,'Budget Management',3,159,'pending'),(794,'Innovation',4,159,'pending'),(795,'Change Management',5,159,'pending'),(796,'Strategic Planning',1,160,'pending'),(797,'Tech Roadmap Development',2,160,'pending'),(798,'Vendor Management',3,160,'pending'),(799,'Risk Assessment',4,160,'pending'),(800,'Cross-functional Collaboration',5,160,'pending'),(801,'Executive Leadership',1,161,'pending'),(802,'Tech Visionary',2,161,'pending'),(803,'Corporate Strategy',3,161,'pending'),(804,'Innovation Leadership',4,161,'pending'),(805,'Stakeholder Management',5,161,'pending'),(806,'Practical Legal Knowledge',1,162,'pending'),(807,'Client Interaction',2,162,'pending'),(808,'Legal Drafting',3,162,'pending'),(809,'Advocacy',4,162,'pending'),(810,'Professional Conduct',5,162,'pending'),(811,'Networking',1,163,'pending'),(812,'Interview Skills',2,163,'pending'),(813,'Professionalism',3,163,'pending'),(814,'Adaptability',4,163,'pending'),(815,'Attention to Detail',5,163,'pending'),(816,'Advanced Legal Skills',1,164,'pending'),(817,'Client Care',2,164,'pending'),(818,'Commercial Awareness',3,164,'pending'),(819,'Negotiation',4,164,'pending'),(820,'Teamwork',5,164,'pending'),(821,'Exam Preparation',1,165,'pending'),(822,'Legal Knowledge',2,165,'pending'),(823,'Ethics',3,165,'pending'),(824,'Problem Solving',4,165,'pending'),(825,'Resilience',5,165,'pending'),(826,'Specialist Knowledge',1,166,'pending'),(827,'Client Relationships',2,166,'pending'),(828,'Business Development',3,166,'pending'),(829,'Leadership',4,166,'pending'),(830,'Strategic Thinking',5,166,'pending'),(831,'Basic Pipefitting',1,167,'pending'),(832,'Safety Procedures',2,167,'pending'),(833,'Blueprint Reading',3,167,'pending'),(834,'Hand Tool Proficiency',4,167,'pending'),(835,'Welding Basics',5,167,'pending'),(836,'Code Compliance',1,168,'pending'),(837,'Attention to Detail',2,168,'pending'),(838,'Inspection Techniques',3,168,'pending'),(839,'Report Writing',4,168,'pending'),(840,'Customer Service',5,168,'pending'),(841,'Risk Assessment',1,169,'pending'),(842,'Safety Training',2,169,'pending'),(843,'Incident Investigation',3,169,'pending'),(844,'Emergency Procedures',4,169,'pending'),(845,'Regulatory Knowledge',5,169,'pending'),(846,'Cost Estimation',1,170,'pending'),(847,'Analytical Skills',2,170,'pending'),(848,'Negotiation',3,170,'pending'),(849,'Spreadsheet Proficiency',4,170,'pending'),(850,'Time Management',5,170,'pending'),(851,'Leadership',1,171,'pending'),(852,'Project Management',2,171,'pending'),(853,'Budgeting',3,171,'pending'),(854,'Communication',4,171,'pending'),(855,'Problem-Solving',5,171,'pending'),(856,'Industry Knowledge',1,172,'pending'),(857,'Strategic Planning',2,172,'pending'),(858,'Client Relations',3,172,'pending'),(859,'Market Analysis',4,172,'pending'),(860,'Presentation Skills',5,172,'pending'),(861,'Team Leadership',1,173,'pending'),(862,'Conflict Resolution',2,173,'pending'),(863,'Quality Assurance',3,173,'pending'),(864,'Time Management',4,173,'pending'),(865,'Mentoring',5,173,'pending'),(866,'Operational Oversight',1,174,'pending'),(867,'Resource Allocation',2,174,'pending'),(868,'Regulation Compliance',3,174,'pending'),(869,'Scheduling',4,174,'pending'),(870,'Stakeholder Communication',5,174,'pending'),(871,'Project Planning',1,175,'pending'),(872,'Risk Management',2,175,'pending'),(873,'Budget Oversight',3,175,'pending'),(874,'Team Coordination',4,175,'pending'),(875,'Performance Evaluation',5,175,'pending'),(876,'Strategic Planning',1,176,'pending'),(877,'Leadership',2,176,'pending'),(878,'Process Improvement',3,176,'pending'),(879,'Financial Acumen',4,176,'pending'),(880,'Cross-Functional Collaboration',5,176,'pending'),(881,'Executive Leadership',1,177,'pending'),(882,'Decision Making',2,177,'pending'),(883,'Change Management',3,177,'pending'),(884,'Organizational Development',4,177,'pending'),(885,'Visionary Thinking',5,177,'pending'),(886,'Advanced Pipefitting',1,178,'pending'),(887,'Certifications',2,178,'pending'),(888,'Technical Proficiency',3,178,'pending'),(889,'Problem-Solving',4,178,'pending'),(890,'Innovation',5,178,'pending'),(891,'Specialization Knowledge',1,179,'pending'),(892,'Technical Expertise',2,179,'pending'),(893,'Precision',3,179,'pending'),(894,'Troubleshooting',4,179,'pending'),(895,'Continuous Learning',5,179,'pending'),(896,'Instructional Skills',1,180,'pending'),(897,'Curriculum Development',2,180,'pending'),(898,'Communication',3,180,'pending'),(899,'Feedback Delivery',4,180,'pending'),(900,'Motivational Skills',5,180,'pending'),(901,'Technical Analysis',1,181,'pending'),(902,'Solution Development',2,181,'pending'),(903,'Client Interaction',3,181,'pending'),(904,'Innovation',4,181,'pending'),(905,'Technical Writing',5,181,'pending'),(906,'Technical Leadership',1,182,'pending'),(907,'Strategic Vision',2,182,'pending'),(908,'Innovation Management',3,182,'pending'),(909,'Technical Strategy',4,182,'pending'),(910,'Cross-Disciplinary Knowledge',5,182,'pending'),(911,'Advanced Installation',1,183,'pending'),(912,'Blueprint Interpretation',2,183,'pending'),(913,'System Troubleshooting',3,183,'pending'),(914,'Pipe System Design',4,183,'pending'),(915,'Quality Control',5,183,'pending'),(916,'Leadership',1,184,'pending'),(917,'Project Coordination',2,184,'pending'),(918,'Team Building',3,184,'pending'),(919,'Problem Resolution',4,184,'pending'),(920,'Resource Management',5,184,'pending'),(921,'Supervisory Skills',1,185,'pending'),(922,'Time Management',2,185,'pending'),(923,'Quality Assurance',3,185,'pending'),(924,'Safety Enforcement',4,185,'pending'),(925,'Crew Management',5,185,'pending'),(926,'Project Oversight',1,186,'pending'),(927,'Strategic Planning',2,186,'pending'),(928,'Budget Management',3,186,'pending'),(929,'Stakeholder Engagement',4,186,'pending'),(930,'Leadership',5,186,'pending'),(931,'Legal Research',1,187,'pending'),(932,'Critical Thinking',2,187,'pending'),(933,'Communication',3,187,'pending'),(934,'Problem Solving',4,187,'pending'),(935,'Time Management',5,187,'pending'),(936,'Advisory Skills',1,188,'pending'),(937,'Analytical Skills',2,188,'pending'),(938,'Negotiation',3,188,'pending'),(939,'Interpersonal Skills',4,188,'pending'),(940,'Project Management',5,188,'pending'),(941,'Policy Analysis',1,189,'pending'),(942,'Strategic Planning',2,189,'pending'),(943,'Public Speaking',3,189,'pending'),(944,'Networking',4,189,'pending'),(945,'Research Skills',5,189,'pending'),(946,'Conflict Resolution',1,190,'pending'),(947,'Empathy',2,190,'pending'),(948,'Active Listening',3,190,'pending'),(949,'Patience',4,190,'pending'),(950,'Decision Making',5,190,'pending'),(951,'Advocacy',1,191,'pending'),(952,'Cultural Awareness',2,191,'pending'),(953,'Resilience',3,191,'pending'),(954,'Legal Writing',4,191,'pending'),(955,'Public Relations',5,191,'pending'),(956,'Entrepreneurial Skills',1,192,'pending'),(957,'Innovation',2,192,'pending'),(958,'Business Acumen',3,192,'pending'),(959,'Financial Literacy',4,192,'pending'),(960,'Leadership',5,192,'pending'),(961,'Leadership',1,193,'pending'),(962,'Team Building',2,193,'pending'),(963,'Delegation',3,193,'pending'),(964,'Strategic Thinking',4,193,'pending'),(965,'Performance Management',5,193,'pending'),(966,'Compliance',1,194,'pending'),(967,'Risk Management',2,194,'pending'),(968,'Budgeting',3,194,'pending'),(969,'Policy Development',4,194,'pending'),(970,'Negotiation',5,194,'pending'),(971,'Strategic Planning',1,195,'pending'),(972,'Executive Leadership',2,195,'pending'),(973,'Cross-Functional Collaboration',3,195,'pending'),(974,'Influencing Skills',4,195,'pending'),(975,'Crisis Management',5,195,'pending'),(976,'Executive Decision Making',1,196,'pending'),(977,'Corporate Governance',2,196,'pending'),(978,'Ethical Judgment',3,196,'pending'),(979,'Visionary Leadership',4,196,'pending'),(980,'Stakeholder Management',5,196,'pending'),(981,'Visionary Leadership',1,197,'pending'),(982,'Business Strategy',2,197,'pending'),(983,'Innovation',3,197,'pending'),(984,'Change Management',4,197,'pending'),(985,'Global Perspective',5,197,'pending'),(986,'Analytical Skills',1,198,'pending'),(987,'Attention to Detail',2,198,'pending'),(988,'Technical Writing',3,198,'pending'),(989,'Data Analysis',4,198,'pending'),(990,'Presentation Skills',5,198,'pending'),(991,'Data Interpretation',1,199,'pending'),(992,'Problem Solving',2,199,'pending'),(993,'Critical Thinking',3,199,'pending'),(994,'Statistical Analysis',4,199,'pending'),(995,'Report Writing',5,199,'pending'),(996,'Technical Proficiency',1,200,'pending'),(997,'Project Management',2,200,'pending'),(998,'Innovation',3,200,'pending'),(999,'System Design',4,200,'pending'),(1000,'User Experience',5,200,'pending'),(1001,'AI Understanding',1,201,'pending'),(1002,'Ethical Considerations',2,201,'pending'),(1003,'Change Management',3,201,'pending'),(1004,'Technical Communication',4,201,'pending'),(1005,'Solution Architecture',5,201,'pending'),(1006,'Technical Leadership',1,202,'pending'),(1007,'Innovation Strategy',2,202,'pending'),(1008,'Product Development',3,202,'pending'),(1009,'Agile Methodologies',4,202,'pending'),(1010,'Cybersecurity Awareness',5,202,'pending'),(1011,'Bar Exam Preparation',1,203,'pending'),(1012,'Legal Knowledge',2,203,'pending'),(1013,'Stress Management',3,203,'pending'),(1014,'Test-Taking Strategies',4,203,'pending'),(1015,'Focus and Concentration',5,203,'pending'),(1016,'Client Representation',1,204,'pending'),(1017,'Document Drafting',2,204,'pending'),(1018,'Negotiation',3,204,'pending'),(1019,'Case Management',4,204,'pending'),(1020,'Ethical Practices',5,204,'pending'),(1021,'Advanced Legal Research',1,205,'pending'),(1022,'Mentorship',2,205,'pending'),(1023,'Strategic Case Planning',3,205,'pending'),(1024,'Litigation Skills',4,205,'pending'),(1025,'Client Relationship Management',5,205,'pending'),(1026,'Business Development',1,206,'pending'),(1027,'Leadership',2,206,'pending'),(1028,'Financial Management',3,206,'pending'),(1029,'Client Acquisition',4,206,'pending'),(1030,'Conflict Resolution',5,206,'pending'),(1031,'Judicial Decision Making',1,207,'pending'),(1032,'Impartiality',2,207,'pending'),(1033,'Legal Interpretation',3,207,'pending'),(1034,'Courtroom Management',4,207,'pending'),(1035,'Public Service',5,207,'pending'),(1036,'Legal Research',1,208,'pending'),(1037,'Critical Thinking',2,208,'pending'),(1038,'Argumentation',3,208,'pending'),(1039,'Time Management',4,208,'pending'),(1040,'Communication',5,208,'pending'),(1041,'Advisory Skills',1,209,'pending'),(1042,'Business Acumen',2,209,'pending'),(1043,'Negotiation',3,209,'pending'),(1044,'Client Management',4,209,'pending'),(1045,'Problem Solving',5,209,'pending'),(1046,'Corporate Law',1,210,'pending'),(1047,'Risk Assessment',2,210,'pending'),(1048,'Contract Drafting',3,210,'pending'),(1049,'Compliance',4,210,'pending'),(1050,'Interpersonal Skills',5,210,'pending'),(1051,'Writing',1,211,'pending'),(1052,'Research',2,211,'pending'),(1053,'Interviewing',3,211,'pending'),(1054,'Storytelling',4,211,'pending'),(1055,'Media Law',5,211,'pending'),(1056,'Teaching',1,212,'pending'),(1057,'Curriculum Development',2,212,'pending'),(1058,'Public Speaking',3,212,'pending'),(1059,'Mentorship',4,212,'pending'),(1060,'Educational Technology',5,212,'pending'),(1061,'Policy Analysis',1,213,'pending'),(1062,'Legislative Process',2,213,'pending'),(1063,'Strategic Thinking',3,213,'pending'),(1064,'Advocacy',4,213,'pending'),(1065,'Stakeholder Engagement',5,213,'pending'),(1066,'Leadership',1,214,'pending'),(1067,'Conflict Resolution',2,214,'pending'),(1068,'Team Building',3,214,'pending'),(1069,'Project Management',4,214,'pending'),(1070,'Decision Making',5,214,'pending'),(1071,'Strategic Planning',1,215,'pending'),(1072,'Budget Management',2,215,'pending'),(1073,'Performance Evaluation',3,215,'pending'),(1074,'Risk Management',4,215,'pending'),(1075,'Communication',5,215,'pending'),(1076,'Corporate Governance',1,216,'pending'),(1077,'Board Relations',2,216,'pending'),(1078,'Compliance Oversight',3,216,'pending'),(1079,'Crisis Management',4,216,'pending'),(1080,'Leadership',5,216,'pending'),(1081,'Strategic Visioning',1,217,'pending'),(1082,'Policy Development',2,217,'pending'),(1083,'Executive Leadership',3,217,'pending'),(1084,'Negotiation',4,217,'pending'),(1085,'Influence',5,217,'pending'),(1086,'Business Development',1,218,'pending'),(1087,'Client Relations',2,218,'pending'),(1088,'Financial Acumen',3,218,'pending'),(1089,'Talent Management',4,218,'pending'),(1090,'Market Strategy',5,218,'pending'),(1091,'Tech Savvy',1,219,'pending'),(1092,'Problem Solving',2,219,'pending'),(1093,'Project Coordination',3,219,'pending'),(1094,'Data Analysis',4,219,'pending'),(1095,'Innovation',5,219,'pending'),(1096,'Technical Expertise',1,220,'pending'),(1097,'Attention to Detail',2,220,'pending'),(1098,'Legal Knowledge',3,220,'pending'),(1099,'Data Management',4,220,'pending'),(1100,'Analytical Skills',5,220,'pending'),(1101,'Data Analysis',1,221,'pending'),(1102,'Statistical Techniques',2,221,'pending'),(1103,'Problem Solving',3,221,'pending'),(1104,'Data Visualization',4,221,'pending'),(1105,'Legal Acumen',5,221,'pending'),(1106,'Programming',1,222,'pending'),(1107,'Software Development',2,222,'pending'),(1108,'User Experience',3,222,'pending'),(1109,'Problem Solving',4,222,'pending'),(1110,'Legal Processes',5,222,'pending'),(1111,'Tech Leadership',1,223,'pending'),(1112,'Strategic Planning',2,223,'pending'),(1113,'Innovation',3,223,'pending'),(1114,'Resource Management',4,223,'pending'),(1115,'Cross-Functional Leadership',5,223,'pending'),(1116,'Practical Legal Skills',1,224,'pending'),(1117,'Interviewing',2,224,'pending'),(1118,'Drafting',3,224,'pending'),(1119,'Solicitor Skills',4,224,'pending'),(1120,'Professional Conduct',5,224,'pending'),(1121,'Networking',1,225,'pending'),(1122,'Application Writing',2,225,'pending'),(1123,'Interview Skills',3,225,'pending'),(1124,'Professionalism',4,225,'pending'),(1125,'Adaptability',5,225,'pending'),(1126,'Legal Practice',1,226,'pending'),(1127,'Ethics',2,226,'pending'),(1128,'Client Care',3,226,'pending'),(1129,'Negotiation',4,226,'pending'),(1130,'Problem Solving',5,226,'pending'),(1131,'Expertise in Chosen Area',1,227,'pending'),(1132,'Advanced Research',2,227,'pending'),(1133,'Client Advising',3,227,'pending'),(1134,'Case Management',4,227,'pending'),(1135,'Continuous Learning',5,227,'pending'),(1136,'Leadership',1,228,'pending'),(1137,'Business Acumen',2,228,'pending'),(1138,'Client Management',3,228,'pending'),(1139,'Strategic Planning',4,228,'pending'),(1140,'Mentorship',5,228,'pending'),(1141,'JavaScript ES6+',1,229,'pending'),(1142,'React.js',2,229,'pending'),(1143,'Vue.js',3,229,'pending'),(1144,'Node.js',4,229,'pending'),(1145,'Git & Version Control',5,229,'pending'),(1146,'Angular',1,230,'pending'),(1147,'Svelte',2,230,'pending'),(1148,'Responsive Design',3,230,'pending'),(1149,'CSS Preprocessors',4,230,'pending'),(1150,'Web Accessibility',5,230,'pending'),(1151,'Express.js',1,231,'pending'),(1152,'Django',2,231,'pending'),(1153,'Ruby on Rails',3,231,'pending'),(1154,'RESTful APIs',4,231,'pending'),(1155,'GraphQL',5,231,'pending'),(1156,'Docker',1,232,'pending'),(1157,'Kubernetes',2,232,'pending'),(1158,'CI/CD Pipelines',3,232,'pending'),(1159,'Cloud Platforms (AWS/GCP/Azure)',4,232,'pending'),(1160,'Monitoring Tools',5,232,'pending'),(1161,'React Native',1,233,'pending'),(1162,'Flutter',2,233,'pending'),(1163,'iOS Development',3,233,'pending'),(1164,'Android Development',4,233,'pending'),(1165,'Mobile UI/UX',5,233,'pending'),(1166,'MERN Stack',1,234,'pending'),(1167,'MEAN Stack',2,234,'pending'),(1168,'LAMP Stack',3,234,'pending'),(1169,'Serverless Architecture',4,234,'pending'),(1170,'Microservices',5,234,'pending'),(1171,'Team Management',1,235,'pending'),(1172,'Project Planning',2,235,'pending'),(1173,'Conflict Resolution',3,235,'pending'),(1174,'Communication Skills',4,235,'pending'),(1175,'Time Management',5,235,'pending'),(1176,'Strategic Planning',1,236,'pending'),(1177,'Budget Management',2,236,'pending'),(1178,'Stakeholder Engagement',3,236,'pending'),(1179,'Mentoring',4,236,'pending'),(1180,'Performance Evaluation',5,236,'pending'),(1181,'Business Acumen',1,237,'pending'),(1182,'Cross-functional Leadership',2,237,'pending'),(1183,'Resource Allocation',3,237,'pending'),(1184,'Risk Management',4,237,'pending'),(1185,'Innovation Management',5,237,'pending'),(1186,'Visionary Leadership',1,238,'pending'),(1187,'Technology Strategy',2,238,'pending'),(1188,'Organizational Development',3,238,'pending'),(1189,'Change Management',4,238,'pending'),(1190,'Executive Communication',5,238,'pending'),(1191,'Executive Leadership',1,239,'pending'),(1192,'Corporate Strategy',2,239,'pending'),(1193,'Technological Innovation',3,239,'pending'),(1194,'Investor Relations',4,239,'pending'),(1195,'Global Perspective',5,239,'pending'),(1196,'Database Management',1,240,'pending'),(1197,'API Development',2,240,'pending'),(1198,'Server Architecture',3,240,'pending'),(1199,'Security Best Practices',4,240,'pending'),(1200,'Scalability',5,240,'pending'),(1201,'Infrastructure as Code',1,241,'pending'),(1202,'Continuous Integration',2,241,'pending'),(1203,'Continuous Deployment',3,241,'pending'),(1204,'Containerization',4,241,'pending'),(1205,'Cloud Services',5,241,'pending'),(1206,'Architectural Patterns',1,242,'pending'),(1207,'System Design',2,242,'pending'),(1208,'Network Architecture',3,242,'pending'),(1209,'Integration Strategies',4,242,'pending'),(1210,'Performance Optimization',5,242,'pending'),(1211,'Advanced Problem Solving',1,243,'pending'),(1212,'Technical Leadership',2,243,'pending'),(1213,'Mentorship',3,243,'pending'),(1214,'Emerging Technologies',4,243,'pending'),(1215,'Architectural Decision Making',5,243,'pending'),(1216,'Enterprise Architecture',1,244,'pending'),(1217,'Technology Roadmapping',2,244,'pending'),(1218,'Global Infrastructure',3,244,'pending'),(1219,'Innovation Leadership',4,244,'pending'),(1220,'Complex Systems Management',5,244,'pending'),(1221,'Node.js',1,245,'pending'),(1222,'Express.js',2,245,'pending'),(1223,'Database Basics (SQL & NoSQL)',3,245,'pending'),(1224,'RESTful Services',4,245,'pending'),(1225,'Authentication & Authorization',5,245,'pending'),(1226,'Advanced React.js',1,246,'pending'),(1227,'State Management (Redux/MobX)',2,246,'pending'),(1228,'TypeScript',3,246,'pending'),(1229,'Webpack & Build Tools',4,246,'pending'),(1230,'Testing Libraries (Jest/Enzyme)',5,246,'pending'),(1231,'Integration of Frontend & Backend',1,247,'pending'),(1232,'Deployment Strategies',2,247,'pending'),(1233,'Full Stack Testing',3,247,'pending'),(1234,'Performance Optimization',4,247,'pending'),(1235,'Version Control Best Practices',5,247,'pending'),(1236,'Microservices Architecture',1,248,'pending'),(1237,'Cloud Computing',2,248,'pending'),(1238,'API Design & Development',3,248,'pending'),(1239,'Advanced Security Practices',4,248,'pending'),(1240,'Scalable Application Design',5,248,'pending'),(1241,'End-to-End Project Delivery',1,249,'pending'),(1242,'Cross-Disciplinary Collaboration',2,249,'pending'),(1243,'Continuous Integration & Deployment',3,249,'pending'),(1244,'User-Centric Design',4,249,'pending'),(1245,'Agile Methodologies',5,249,'pending'),(1246,'Troubleshooting',1,250,'pending'),(1247,'Customer Service',2,250,'pending'),(1248,'Operating Systems',3,250,'pending'),(1249,'Network Configuration',4,250,'pending'),(1250,'Hardware Maintenance',5,250,'pending'),(1251,'Analytical Skills',1,251,'pending'),(1252,'Communication',2,251,'pending'),(1253,'Project Management',3,251,'pending'),(1254,'Business Acumen',4,251,'pending'),(1255,'Strategic Planning',5,251,'pending'),(1256,'Data Analysis',1,252,'pending'),(1257,'Requirements Gathering',2,252,'pending'),(1258,'Stakeholder Communication',3,252,'pending'),(1259,'Process Improvement',4,252,'pending'),(1260,'Documentation',5,252,'pending'),(1261,'Product Lifecycle Management',1,253,'pending'),(1262,'Market Research',2,253,'pending'),(1263,'User Experience',3,253,'pending'),(1264,'Agile Methodologies',4,253,'pending'),(1265,'Leadership',5,253,'pending'),(1266,'Creative Thinking',1,254,'pending'),(1267,'Innovation Strategy',2,254,'pending'),(1268,'Technology Trends',3,254,'pending'),(1269,'Cross-functional Leadership',4,254,'pending'),(1270,'Change Management',5,254,'pending'),(1271,'Technology Vision',1,255,'pending'),(1272,'Executive Leadership',2,255,'pending'),(1273,'Budgeting',3,255,'pending'),(1274,'Enterprise Architecture',4,255,'pending'),(1275,'Risk Management',5,255,'pending'),(1276,'Team Management',1,256,'pending'),(1277,'Conflict Resolution',2,256,'pending'),(1278,'Performance Monitoring',3,256,'pending'),(1279,'Delegation',4,256,'pending'),(1280,'Mentoring',5,256,'pending'),(1281,'Operational Management',1,257,'pending'),(1282,'Budget Management',2,257,'pending'),(1283,'Vendor Management',3,257,'pending'),(1284,'Project Management',4,257,'pending'),(1285,'Resource Allocation',5,257,'pending'),(1286,'Strategic Planning',1,258,'pending'),(1287,'Cross-functional Leadership',2,258,'pending'),(1288,'Policy Development',3,258,'pending'),(1289,'Risk Management',4,258,'pending'),(1290,'Stakeholder Engagement',5,258,'pending'),(1291,'Executive Communication',1,259,'pending'),(1292,'Organizational Leadership',2,259,'pending'),(1293,'Strategic Budgeting',3,259,'pending'),(1294,'Technological Innovation',4,259,'pending'),(1295,'Corporate Governance',5,259,'pending'),(1296,'Visionary Leadership',1,260,'pending'),(1297,'Innovation Management',2,260,'pending'),(1298,'IT Governance',3,260,'pending'),(1299,'Enterprise Strategy',4,260,'pending'),(1300,'Digital Transformation',5,260,'pending'),(1301,'System Configuration',1,261,'pending'),(1302,'Security Management',2,261,'pending'),(1303,'Backup and Recovery',3,261,'pending'),(1304,'Server Management',4,261,'pending'),(1305,'Scripting',5,261,'pending'),(1306,'Network Design',1,262,'pending'),(1307,'Routing and Switching',2,262,'pending'),(1308,'Firewall Management',3,262,'pending'),(1309,'Wireless Networking',4,262,'pending'),(1310,'Network Troubleshooting',5,262,'pending'),(1311,'Cloud Platforms',1,263,'pending'),(1312,'Virtualization',2,263,'pending'),(1313,'Cloud Security',3,263,'pending'),(1314,'DevOps',4,263,'pending'),(1315,'Cost Optimization',5,263,'pending'),(1316,'Continuous Integration',1,264,'pending'),(1317,'Automation Tools',2,264,'pending'),(1318,'Containerization',3,264,'pending'),(1319,'Monitoring and Logging',4,264,'pending'),(1320,'Infrastructure as Code',5,264,'pending'),(1321,'Solution Architecture',1,265,'pending'),(1322,'Technical Leadership',2,265,'pending'),(1323,'Integration Patterns',3,265,'pending'),(1324,'Performance Optimization',4,265,'pending'),(1325,'Scalability',5,265,'pending'),(1326,'Network Monitoring',1,266,'pending'),(1327,'Troubleshooting',2,266,'pending'),(1328,'Security Protocols',3,266,'pending'),(1329,'LAN/WAN Configuration',4,266,'pending'),(1330,'Network Performance Optimization',5,266,'pending'),(1331,'System Design',1,267,'pending'),(1332,'Data Analysis',2,267,'pending'),(1333,'Requirements Gathering',3,267,'pending'),(1334,'Technical Documentation',4,267,'pending'),(1335,'Project Coordination',5,267,'pending'),(1336,'Project Planning',1,268,'pending'),(1337,'Risk Management',2,268,'pending'),(1338,'Budgeting',3,268,'pending'),(1339,'Team Leadership',4,268,'pending'),(1340,'Stakeholder Communication',5,268,'pending'),(1341,'Operational Efficiency',1,269,'pending'),(1342,'Service Management',2,269,'pending'),(1343,'ITIL Framework',3,269,'pending'),(1344,'Incident Management',4,269,'pending'),(1345,'Continuous Improvement',5,269,'pending'),(1346,'Strategic Leadership',1,270,'pending'),(1347,'Policy Development',2,270,'pending'),(1348,'Budget Oversight',3,270,'pending'),(1349,'Technology Roadmapping',4,270,'pending'),(1350,'Executive Communication',5,270,'pending'),(2771,'Python Programming',1,555,'pending'),(2772,'Version Control (Git)',2,555,'pending'),(2773,'Debugging',3,555,'pending'),(2774,'Unit Testing',4,555,'pending'),(2775,'API Integration',5,555,'pending'),(2776,'Pandas',1,556,'pending'),(2777,'NumPy',2,556,'pending'),(2778,'Data Visualization',3,556,'pending'),(2779,'Statistical Analysis',4,556,'pending'),(2780,'SQL',5,556,'pending'),(2781,'Machine Learning',1,557,'pending'),(2782,'Scikit-Learn',2,557,'pending'),(2783,'Data Cleaning',3,557,'pending'),(2784,'Feature Engineering',4,557,'pending'),(2785,'Model Evaluation',5,557,'pending'),(2786,'Research Methodology',1,558,'pending'),(2787,'Deep Learning',2,558,'pending'),(2788,'TensorFlow',3,558,'pending'),(2789,'PyTorch',4,558,'pending'),(2790,'Scientific Writing',5,558,'pending'),(2791,'Business Analysis',1,559,'pending'),(2792,'AI Strategy',2,559,'pending'),(2793,'Client Communication',3,559,'pending'),(2794,'Solution Design',4,559,'pending'),(2795,'Project Management',5,559,'pending'),(2796,'Leadership',1,560,'pending'),(2797,'Strategic Planning',2,560,'pending'),(2798,'AI Governance',3,560,'pending'),(2799,'Innovation Management',4,560,'pending'),(2800,'Cross-functional Collaboration',5,560,'pending'),(2801,'Team Management',1,561,'pending'),(2802,'Agile Methodologies',2,561,'pending'),(2803,'Conflict Resolution',3,561,'pending'),(2804,'Performance Evaluation',4,561,'pending'),(2805,'Mentoring',5,561,'pending'),(2806,'Project Planning',1,562,'pending'),(2807,'Risk Management',2,562,'pending'),(2808,'Stakeholder Communication',3,562,'pending'),(2809,'Budget Management',4,562,'pending'),(2810,'Resource Allocation',5,562,'pending'),(2811,'Program Coordination',1,563,'pending'),(2812,'Strategic Alignment',2,563,'pending'),(2813,'Change Management',3,563,'pending'),(2814,'Portfolio Management',4,563,'pending'),(2815,'Executive Reporting',5,563,'pending'),(2816,'Technical Leadership',1,564,'pending'),(2817,'Engineering Best Practices',2,564,'pending'),(2818,'Innovation Leadership',3,564,'pending'),(2819,'Budget Oversight',4,564,'pending'),(2820,'Talent Development',5,564,'pending'),(2821,'Visionary Leadership',1,565,'pending'),(2822,'Technology Roadmapping',2,565,'pending'),(2823,'Executive Communication',3,565,'pending'),(2824,'Organizational Development',4,565,'pending'),(2825,'Industry Networking',5,565,'pending'),(2826,'Model Deployment',1,566,'pending'),(2827,'Data Preprocessing',2,566,'pending'),(2828,'Algorithm Optimization',3,566,'pending'),(2829,'Cloud Computing',4,566,'pending'),(2830,'Continuous Integration',5,566,'pending'),(2831,'Neural Networks',1,567,'pending'),(2832,'Convolutional Networks',2,567,'pending'),(2833,'Recurrent Networks',3,567,'pending'),(2834,'GPU Programming',4,567,'pending'),(2835,'Hyperparameter Tuning',5,567,'pending'),(2836,'System Design',1,568,'pending'),(2837,'Architecture Patterns',2,568,'pending'),(2838,'Scalability',3,568,'pending'),(2839,'Security',4,568,'pending'),(2840,'Integration',5,568,'pending'),(2841,'Solution Architecture',1,569,'pending'),(2842,'Customer Engagement',2,569,'pending'),(2843,'Technical Writing',3,569,'pending'),(2844,'Proof of Concept',4,569,'pending'),(2845,'Technical Sales',5,569,'pending'),(2846,'Technology Vision',1,570,'pending'),(2847,'Innovation Strategy',2,570,'pending'),(2848,'Cross-Industry Expertise',3,570,'pending'),(2849,'Investor Relations',4,570,'pending'),(2850,'Corporate Governance',5,570,'pending'),(2851,'Basic AI Concepts',1,571,'pending'),(2852,'Python for AI',2,571,'pending'),(2853,'Data Handling',3,571,'pending'),(2854,'AI Ethics',4,571,'pending'),(2855,'Problem Solving',5,571,'pending'),(2856,'TensorFlow Basics',1,572,'pending'),(2857,'Model Training',2,572,'pending'),(2858,'Data Augmentation',3,572,'pending'),(2859,'Model Evaluation',4,572,'pending'),(2860,'Python Libraries for AI',5,572,'pending'),(2861,'Advanced AI Techniques',1,573,'pending'),(2862,'Natural Language Processing',2,573,'pending'),(2863,'Computer Vision',3,573,'pending'),(2864,'AI Frameworks',4,573,'pending'),(2865,'AI Model Optimization',5,573,'pending'),(2866,'AI System Design',1,574,'pending'),(2867,'AI Deployment',2,574,'pending'),(2868,'AI Security',3,574,'pending'),(2869,'AI Scalability',4,574,'pending'),(2870,'AI Project Management',5,574,'pending'),(3391,'Python',1,679,'pending'),(3392,'Machine Learning',2,679,'pending'),(3393,'Data Manipulation',3,679,'pending'),(3394,'Deep Learning',4,679,'pending'),(3395,'TensorFlow',5,679,'pending'),(3396,'Research Methodology',1,680,'pending'),(3397,'AI Ethics',2,680,'pending'),(3398,'Advanced Statistics',3,680,'pending'),(3399,'Scientific Writing',4,680,'pending'),(3400,'Data Analysis',5,680,'pending'),(3401,'Product Design',1,681,'pending'),(3402,'Market Analysis',2,681,'pending'),(3403,'Prototyping',3,681,'pending'),(3404,'User Experience',4,681,'pending'),(3405,'AI Integration',5,681,'pending'),(3406,'Consulting',1,682,'pending'),(3407,'Business Strategy',2,682,'pending'),(3408,'AI Implementation',3,682,'pending'),(3409,'Client Management',4,682,'pending'),(3410,'Solution Architecture',5,682,'pending'),(3411,'Entrepreneurship',1,683,'pending'),(3412,'Business Development',2,683,'pending'),(3413,'Fundraising',3,683,'pending'),(3414,'Networking',4,683,'pending'),(3415,'Innovation',5,683,'pending'),(3416,'Public Speaking',1,684,'pending'),(3417,'Thought Leadership',2,684,'pending'),(3418,'Content Creation',3,684,'pending'),(3419,'Networking',4,684,'pending'),(3420,'Industry Knowledge',5,684,'pending'),(3421,'Leadership',1,685,'pending'),(3422,'Team Management',2,685,'pending'),(3423,'Project Management',3,685,'pending'),(3424,'Communication',4,685,'pending'),(3425,'Conflict Resolution',5,685,'pending'),(3426,'Project Planning',1,686,'pending'),(3427,'Resource Management',2,686,'pending'),(3428,'Risk Management',3,686,'pending'),(3429,'Stakeholder Engagement',4,686,'pending'),(3430,'Budgeting',5,686,'pending'),(3431,'Program Management',1,687,'pending'),(3432,'Strategic Planning',2,687,'pending'),(3433,'Cross-functional Leadership',3,687,'pending'),(3434,'Performance Monitoring',4,687,'pending'),(3435,'Change Management',5,687,'pending'),(3436,'Executive Leadership',1,688,'pending'),(3437,'AI Strategy',2,688,'pending'),(3438,'Corporate Governance',3,688,'pending'),(3439,'Innovation Leadership',4,688,'pending'),(3440,'Organizational Development',5,688,'pending'),(3441,'Industry Influence',1,689,'pending'),(3442,'Policy Advocacy',2,689,'pending'),(3443,'Thought Leadership',3,689,'pending'),(3444,'Strategic Networking',4,689,'pending'),(3445,'Global Perspective',5,689,'pending'),(3446,'Advanced Machine Learning',1,690,'pending'),(3447,'Data Engineering',2,690,'pending'),(3448,'Algorithm Development',3,690,'pending'),(3449,'Big Data Technologies',4,690,'pending'),(3450,'Model Optimization',5,690,'pending'),(3451,'System Design',1,691,'pending'),(3452,'Cloud Computing',2,691,'pending'),(3453,'Scalability',3,691,'pending'),(3454,'Security',4,691,'pending'),(3455,'Integration',5,691,'pending'),(3456,'MLOps',1,692,'pending'),(3457,'Continuous Integration',2,692,'pending'),(3458,'Model Deployment',3,692,'pending'),(3459,'Monitoring',4,692,'pending'),(3460,'Automation',5,692,'pending'),(3461,'NLP',1,693,'pending'),(3462,'Computer Vision',2,693,'pending'),(3463,'Domain Expertise',3,693,'pending'),(3464,'Research and Development',4,693,'pending'),(3465,'Technical Writing',5,693,'pending'),(3466,'Innovation',1,694,'pending'),(3467,'Emerging Technologies',2,694,'pending'),(3468,'Technical Leadership',3,694,'pending'),(3469,'Prototype Development',4,694,'pending'),(3470,'Collaboration',5,694,'pending'),(3471,'Advanced Machine Learning',1,695,'pending'),(3472,'Data Engineering',2,695,'pending'),(3473,'Algorithm Development',3,695,'pending'),(3474,'Big Data Technologies',4,695,'pending'),(3475,'Model Optimization',5,695,'pending'),(3476,'NLP',1,696,'pending'),(3477,'Computer Vision',2,696,'pending'),(3478,'Domain Expertise',3,696,'pending'),(3479,'Research and Development',4,696,'pending'),(3480,'Technical Writing',5,696,'pending'),(3481,'System Design',1,697,'pending'),(3482,'Cloud Computing',2,697,'pending'),(3483,'Scalability',3,697,'pending'),(3484,'Security',4,697,'pending'),(3485,'Integration',5,697,'pending'),(3486,'Executive Leadership',1,698,'pending'),(3487,'AI Strategy',2,698,'pending'),(3488,'Corporate Governance',3,698,'pending'),(3489,'Innovation Leadership',4,698,'pending'),(3490,'Organizational Development',5,698,'pending'),(3491,'Industry Influence',1,699,'pending'),(3492,'Policy Advocacy',2,699,'pending'),(3493,'Thought Leadership',3,699,'pending'),(3494,'Strategic Networking',4,699,'pending'),(3495,'Global Perspective',5,699,'pending'),(3496,'HTML5',1,700,'pending'),(3497,'CSS3',2,700,'pending'),(3498,'JavaScript',3,700,'pending'),(3499,'React.js',4,700,'pending'),(3500,'Git',5,700,'pending'),(3501,'Client Communication',1,701,'pending'),(3502,'Project Management',2,701,'pending'),(3503,'Time Management',3,701,'pending'),(3504,'Negotiation',4,701,'pending'),(3505,'Problem Solving',5,701,'pending'),(3506,'Collaboration',1,702,'pending'),(3507,'Version Control',2,702,'pending'),(3508,'Code Review',3,702,'pending'),(3509,'Documentation',4,702,'pending'),(3510,'Community Engagement',5,702,'pending'),(3511,'Content Creation',1,703,'pending'),(3512,'SEO',2,703,'pending'),(3513,'Social Media Marketing',3,703,'pending'),(3514,'Writing Skills',4,703,'pending'),(3515,'Networking',5,703,'pending'),(3516,'Public Speaking',1,704,'pending'),(3517,'Curriculum Design',2,704,'pending'),(3518,'Audience Engagement',3,704,'pending'),(3519,'Feedback Analysis',4,704,'pending'),(3520,'Instructional Design',5,704,'pending'),(3521,'Leadership',1,705,'pending'),(3522,'Conflict Resolution',2,705,'pending'),(3523,'Strategic Planning',3,705,'pending'),(3524,'Performance Evaluation',4,705,'pending'),(3525,'Resource Allocation',5,705,'pending'),(3526,'Project Scheduling',1,706,'pending'),(3527,'Risk Management',2,706,'pending'),(3528,'Budgeting',3,706,'pending'),(3529,'Stakeholder Management',4,706,'pending'),(3530,'Quality Assurance',5,706,'pending'),(3531,'Market Research',1,707,'pending'),(3532,'Product Roadmapping',2,707,'pending'),(3533,'User Experience',3,707,'pending'),(3534,'Competitive Analysis',4,707,'pending'),(3535,'Agile Methodologies',5,707,'pending'),(3536,'Executive Leadership',1,708,'pending'),(3537,'Organizational Development',2,708,'pending'),(3538,'Cross-functional Collaboration',3,708,'pending'),(3539,'Innovation Management',4,708,'pending'),(3540,'Corporate Strategy',5,708,'pending'),(3541,'Advanced JavaScript',1,709,'pending'),(3542,'Performance Optimization',2,709,'pending'),(3543,'Code Architecture',3,709,'pending'),(3544,'Testing and Debugging',4,709,'pending'),(3545,'Mentorship',5,709,'pending'),(3546,'Node.js',1,710,'pending'),(3547,'Express.js',2,710,'pending'),(3548,'MongoDB',3,710,'pending'),(3549,'RESTful APIs',4,710,'pending'),(3550,'DevOps',5,710,'pending'),(3551,'System Design',1,711,'pending'),(3552,'Scalability',2,711,'pending'),(3553,'Security',3,711,'pending'),(3554,'Cloud Computing',4,711,'pending'),(3555,'Integration',5,711,'pending'),(3556,'Visionary Leadership',1,712,'pending'),(3557,'Technology Strategy',2,712,'pending'),(3558,'Innovation',3,712,'pending'),(3559,'Business Acumen',4,712,'pending'),(3560,'Industry Networking',5,712,'pending'),(3561,'Redux Toolkit',1,713,'pending'),(3562,'Next.js',2,713,'pending'),(3563,'Material UI',3,713,'pending'),(3564,'Tailwind CSS',4,713,'pending'),(3565,'API Integration',5,713,'pending'),(3566,'UI/UX Design',1,714,'pending'),(3567,'Responsive Design',2,714,'pending'),(3568,'Cross-Browser Compatibility',3,714,'pending'),(3569,'Performance Tuning',4,714,'pending'),(3570,'Accessibility',5,714,'pending'),(3571,'Team Leadership',1,715,'pending'),(3572,'Project Management',2,715,'pending'),(3573,'Technical Mentoring',3,715,'pending'),(3574,'Design Systems',4,715,'pending'),(3575,'User-Centered Design',5,715,'pending'),(3576,'Architectural Design',1,716,'pending'),(3577,'Technical Strategy',2,716,'pending'),(3578,'Innovation',3,716,'pending'),(3579,'Scalability',4,716,'pending'),(3580,'Technical Leadership',5,716,'pending'),(3581,'Basic Mechanical Skills',1,717,'pending'),(3582,'Problem Solving',2,717,'pending'),(3583,'Customer Service',3,717,'pending'),(3584,'Tool Handling',4,717,'pending'),(3585,'Time Management',5,717,'pending'),(3586,'Electrical Systems',1,718,'pending'),(3587,'Battery Maintenance',2,718,'pending'),(3588,'Sustainability Awareness',3,718,'pending'),(3589,'Innovation',4,718,'pending'),(3590,'Technical Writing',5,718,'pending'),(3591,'Public Speaking',1,719,'pending'),(3592,'Environmental Policy',2,719,'pending'),(3593,'Networking',3,719,'pending'),(3594,'Marketing',4,719,'pending'),(3595,'Project Management',5,719,'pending'),(3596,'Research',1,720,'pending'),(3597,'Writing',2,720,'pending'),(3598,'Interviewing',3,720,'pending'),(3599,'Content Creation',4,720,'pending'),(3600,'SEO',5,720,'pending'),(3601,'Consulting',1,721,'pending'),(3602,'Market Analysis',2,721,'pending'),(3603,'Strategic Planning',3,721,'pending'),(3604,'Client Relations',4,721,'pending'),(3605,'Negotiation',5,721,'pending'),(3606,'Leadership',1,722,'pending'),(3607,'Innovation Management',2,722,'pending'),(3608,'Cross-functional Team Leadership',3,722,'pending'),(3609,'Visionary Thinking',4,722,'pending'),(3610,'Product Development',5,722,'pending'),(3611,'Team Leadership',1,723,'pending'),(3612,'Conflict Resolution',2,723,'pending'),(3613,'Scheduling',3,723,'pending'),(3614,'Quality Control',4,723,'pending'),(3615,'Communication',5,723,'pending'),(3616,'Operations Management',1,724,'pending'),(3617,'Customer Relationship Management',2,724,'pending'),(3618,'Budgeting',3,724,'pending'),(3619,'Performance Monitoring',4,724,'pending'),(3620,'Strategic Planning',5,724,'pending'),(3621,'Multi-site Management',1,725,'pending'),(3622,'Process Improvement',2,725,'pending'),(3623,'Leadership',3,725,'pending'),(3624,'Data Analysis',4,725,'pending'),(3625,'Change Management',5,725,'pending'),(3626,'Executive Leadership',1,726,'pending'),(3627,'Business Strategy',2,726,'pending'),(3628,'Financial Acumen',3,726,'pending'),(3629,'Stakeholder Engagement',4,726,'pending'),(3630,'Organizational Development',5,726,'pending'),(3631,'Executive Decision Making',1,727,'pending'),(3632,'Corporate Governance',2,727,'pending'),(3633,'Visionary Leadership',3,727,'pending'),(3634,'Global Operations',4,727,'pending'),(3635,'Innovation Strategy',5,727,'pending'),(3636,'Automotive Systems',1,728,'pending'),(3637,'Diagnostics',2,728,'pending'),(3638,'Technical Proficiency',3,728,'pending'),(3639,'Safety Protocols',4,728,'pending'),(3640,'Customer Interaction',5,728,'pending'),(3641,'CAD Software',1,729,'pending'),(3642,'Engineering Principles',2,729,'pending'),(3643,'Problem Solving',3,729,'pending'),(3644,'Project Collaboration',4,729,'pending'),(3645,'Technical Documentation',5,729,'pending'),(3646,'System Design',1,730,'pending'),(3647,'Prototype Testing',2,730,'pending'),(3648,'Materials Science',3,730,'pending'),(3649,'Regulatory Compliance',4,730,'pending'),(3650,'Innovation',5,730,'pending'),(3651,'Project Leadership',1,731,'pending'),(3652,'Advanced Engineering',2,731,'pending'),(3653,'Mentoring',3,731,'pending'),(3654,'Cross-functional Collaboration',4,731,'pending'),(3655,'Strategic Thinking',5,731,'pending'),(3656,'Executive Engineering Leadership',1,732,'pending'),(3657,'Innovation Strategy',2,732,'pending'),(3658,'Global Engineering',3,732,'pending'),(3659,'Research and Development',4,732,'pending'),(3660,'Technical Vision',5,732,'pending'),(3661,'Certification Knowledge',1,733,'pending'),(3662,'Technical Skills',2,733,'pending'),(3663,'Regulatory Understanding',3,733,'pending'),(3664,'Industry Standards',4,733,'pending'),(3665,'Technical Communication',5,733,'pending'),(3666,'Automotive Theory',1,734,'pending'),(3667,'Technical Writing',2,734,'pending'),(3668,'Teamwork',3,734,'pending'),(3669,'Analytical Skills',4,734,'pending'),(3670,'Time Management',5,734,'pending'),(3671,'Practical Experience',1,735,'pending'),(3672,'Networking',2,735,'pending'),(3673,'Hands-on Skills',3,735,'pending'),(3674,'Professional Development',4,735,'pending'),(3675,'Industry Insight',5,735,'pending'),(3676,'Engineering Fundamentals',1,736,'pending'),(3677,'Advanced Mathematics',2,736,'pending'),(3678,'Research Skills',3,736,'pending'),(3679,'Technical Expertise',4,736,'pending'),(3680,'Critical Thinking',5,736,'pending'),(3681,'Vehicle Design',1,737,'pending'),(3682,'Engineering Leadership',2,737,'pending'),(3683,'Innovation',3,737,'pending'),(3684,'Project Management',4,737,'pending'),(3685,'Industry Expertise',5,737,'pending'),(3686,'HTML5',1,738,'pending'),(3687,'CSS3',2,738,'pending'),(3688,'JavaScript',3,738,'pending'),(3689,'React.js',4,738,'pending'),(3690,'Git Version Control',5,738,'pending'),(3691,'Client Communication',1,739,'pending'),(3692,'Project Management',2,739,'pending'),(3693,'Time Management',3,739,'pending'),(3694,'Problem Solving',4,739,'pending'),(3695,'Portfolio Development',5,739,'pending'),(3696,'Collaboration',1,740,'pending'),(3697,'Code Review',2,740,'pending'),(3698,'Community Engagement',3,740,'pending'),(3699,'Version Control',4,740,'pending'),(3700,'Technical Writing',5,740,'pending'),(3701,'Content Creation',1,741,'pending'),(3702,'SEO',2,741,'pending'),(3703,'Audience Engagement',3,741,'pending'),(3704,'Research',4,741,'pending'),(3705,'Writing Skills',5,741,'pending'),(3706,'Public Speaking',1,742,'pending'),(3707,'Networking',2,742,'pending'),(3708,'Presentation Skills',3,742,'pending'),(3709,'Industry Knowledge',4,742,'pending'),(3710,'Confidence',5,742,'pending'),(3711,'Leadership',1,743,'pending'),(3712,'Project Management',2,743,'pending'),(3713,'Conflict Resolution',3,743,'pending'),(3714,'Mentoring',4,743,'pending'),(3715,'Strategic Planning',5,743,'pending'),(3716,'Resource Allocation',1,744,'pending'),(3717,'Budget Management',2,744,'pending'),(3718,'Stakeholder Communication',3,744,'pending'),(3719,'Performance Evaluation',4,744,'pending'),(3720,'Risk Management',5,744,'pending'),(3721,'Visionary Leadership',1,745,'pending'),(3722,'Cross-functional Collaboration',2,745,'pending'),(3723,'Change Management',3,745,'pending'),(3724,'Technical Strategy',4,745,'pending'),(3725,'Organizational Development',5,745,'pending'),(3726,'Executive Leadership',1,746,'pending'),(3727,'Business Acumen',2,746,'pending'),(3728,'Technology Innovation',3,746,'pending'),(3729,'Corporate Governance',4,746,'pending'),(3730,'Industry Networking',5,746,'pending'),(3731,'Advanced React.js',1,747,'pending'),(3732,'Code Optimization',2,747,'pending'),(3733,'Mentoring',3,747,'pending'),(3734,'Design Patterns',4,747,'pending'),(3735,'Testing and Debugging',5,747,'pending'),(3736,'Node.js',1,748,'pending'),(3737,'Express.js',2,748,'pending'),(3738,'MongoDB',3,748,'pending'),(3739,'RESTful APIs',4,748,'pending'),(3740,'Database Design',5,748,'pending'),(3741,'System Architecture',1,749,'pending'),(3742,'Scalability',2,749,'pending'),(3743,'Security Best Practices',3,749,'pending'),(3744,'Cloud Computing',4,749,'pending'),(3745,'Integration',5,749,'pending'),(3746,'Technical Leadership',1,750,'pending'),(3747,'Innovation',2,750,'pending'),(3748,'Problem Solving',3,750,'pending'),(3749,'Cross-Department Collaboration',4,750,'pending'),(3750,'Technical Mentorship',5,750,'pending'),(3751,'React.js',1,751,'pending'),(3752,'Redux Toolkit',2,751,'pending'),(3753,'Next.js',3,751,'pending'),(3754,'Material UI',4,751,'pending'),(3755,'Tailwind CSS',5,751,'pending'),(3756,'Advanced JavaScript',1,752,'pending'),(3757,'UI/UX Design',2,752,'pending'),(3758,'Performance Optimization',3,752,'pending'),(3759,'Responsive Design',4,752,'pending'),(3760,'Accessibility',5,752,'pending'),(3761,'System Design',1,753,'pending'),(3762,'Scalability',2,753,'pending'),(3763,'Component Architecture',3,753,'pending'),(3764,'Performance Tuning',4,753,'pending'),(3765,'User Experience',5,753,'pending'),(3766,'Leadership',1,754,'pending'),(3767,'Team Building',2,754,'pending'),(3768,'Strategic Planning',3,754,'pending'),(3769,'Technical Vision',4,754,'pending'),(3770,'Industry Trends',5,754,'pending'),(3771,'Data Analysis',1,755,'pending'),(3772,'Report Writing',2,755,'pending'),(3773,'Excel Proficiency',3,755,'pending'),(3774,'Attention to Detail',4,755,'pending'),(3775,'Communication Skills',5,755,'pending'),(3776,'Research Methodologies',1,756,'pending'),(3777,'Data Collection',2,756,'pending'),(3778,'Statistical Analysis',3,756,'pending'),(3779,'Critical Thinking',4,756,'pending'),(3780,'Technical Writing',5,756,'pending'),(3781,'Market Analysis',1,757,'pending'),(3782,'Consumer Behavior',2,757,'pending'),(3783,'Survey Design',3,757,'pending'),(3784,'Data Interpretation',4,757,'pending'),(3785,'Presentation Skills',5,757,'pending'),(3786,'Product Development',1,758,'pending'),(3787,'Innovation Strategies',2,758,'pending'),(3788,'Project Management',3,758,'pending'),(3789,'Cross-functional Collaboration',4,758,'pending'),(3790,'Problem Solving',5,758,'pending'),(3791,'Strategic Planning',1,759,'pending'),(3792,'Business Analysis',2,759,'pending'),(3793,'Client Management',3,759,'pending'),(3794,'Negotiation Skills',4,759,'pending'),(3795,'Financial Acumen',5,759,'pending'),(3796,'Innovation Management',1,760,'pending'),(3797,'Creative Thinking',2,760,'pending'),(3798,'Leadership',3,760,'pending'),(3799,'Change Management',4,760,'pending'),(3800,'Stakeholder Engagement',5,760,'pending'),(3801,'Team Leadership',1,761,'pending'),(3802,'Operational Management',2,761,'pending'),(3803,'Conflict Resolution',3,761,'pending'),(3804,'Time Management',4,761,'pending'),(3805,'Performance Evaluation',5,761,'pending'),(3806,'Departmental Oversight',1,762,'pending'),(3807,'Strategic Alignment',2,762,'pending'),(3808,'Budget Management',3,762,'pending'),(3809,'Resource Allocation',4,762,'pending'),(3810,'Decision Making',5,762,'pending'),(3811,'Operational Strategy',1,763,'pending'),(3812,'Process Improvement',2,763,'pending'),(3813,'Risk Management',3,763,'pending'),(3814,'Leadership Development',4,763,'pending'),(3815,'Organizational Communication',5,763,'pending'),(3816,'Executive Leadership',1,764,'pending'),(3817,'Strategic Vision',2,764,'pending'),(3818,'Change Leadership',3,764,'pending'),(3819,'Corporate Governance',4,764,'pending'),(3820,'Stakeholder Management',5,764,'pending'),(3821,'Executive Management',1,765,'pending'),(3822,'Strategic Execution',2,765,'pending'),(3823,'Corporate Strategy',3,765,'pending'),(3824,'Business Transformation',4,765,'pending'),(3825,'Leadership Excellence',5,765,'pending'),(3826,'Machine Learning',1,766,'pending'),(3827,'Data Modeling',2,766,'pending'),(3828,'Python Programming',3,766,'pending'),(3829,'Big Data Technologies',4,766,'pending'),(3830,'Statistical Analysis',5,766,'pending'),(3831,'Data Architecture',1,767,'pending'),(3832,'ETL Processes',2,767,'pending'),(3833,'Cloud Computing',3,767,'pending'),(3834,'Database Management',4,767,'pending'),(3835,'Data Warehousing',5,767,'pending'),(3836,'Artificial Intelligence',1,768,'pending'),(3837,'Deep Learning',2,768,'pending'),(3838,'Natural Language Processing',3,768,'pending'),(3839,'Algorithm Development',4,768,'pending'),(3840,'Research and Development',5,768,'pending'),(3841,'Data Architecture Leadership',1,769,'pending'),(3842,'Solution Design',2,769,'pending'),(3843,'Technical Strategy',3,769,'pending'),(3844,'Innovation in Technology',4,769,'pending'),(3845,'Cross-functional Collaboration',5,769,'pending'),(3846,'Technology Leadership',1,770,'pending'),(3847,'Innovation Strategy',2,770,'pending'),(3848,'Technical Vision',3,770,'pending'),(3849,'Digital Transformation',4,770,'pending'),(3850,'Executive Communication',5,770,'pending'),(3851,'Advanced Data Analysis',1,771,'pending'),(3852,'Project Management',2,771,'pending'),(3853,'SQL Proficiency',3,771,'pending'),(3854,'Data Visualization',4,771,'pending'),(3855,'Problem Solving',5,771,'pending'),(3856,'Leadership',1,772,'pending'),(3857,'Mentoring',2,772,'pending'),(3858,'Advanced Excel',3,772,'pending'),(3859,'Business Intelligence',4,772,'pending'),(3860,'Strategic Thinking',5,772,'pending'),(3861,'Team Management',1,773,'pending'),(3862,'Project Oversight',2,773,'pending'),(3863,'Performance Management',3,773,'pending'),(3864,'Budgeting',4,773,'pending'),(3865,'Stakeholder Communication',5,773,'pending'),(3866,'Strategic Leadership',1,774,'pending'),(3867,'Business Alignment',2,774,'pending'),(3868,'Data Strategy',3,774,'pending'),(3869,'Executive Reporting',4,774,'pending'),(3870,'Innovation in Data',5,774,'pending'),(3871,'Executive Leadership',1,775,'pending'),(3872,'Data Governance',2,775,'pending'),(3873,'Strategic Vision',3,775,'pending'),(3874,'Change Management',4,775,'pending'),(3875,'Organizational Influence',5,775,'pending'),(3981,'Communication',1,797,'pending'),(3982,'Team Collaboration',2,797,'pending'),(3983,'Problem Solving',3,797,'pending'),(3984,'Time Management',4,797,'pending'),(3985,'Adaptability',5,797,'pending'),(3986,'Research Methodologies',1,798,'pending'),(3987,'Data Analysis',2,798,'pending'),(3988,'Critical Thinking',3,798,'pending'),(3989,'Creative Problem Solving',4,798,'pending'),(3990,'Networking',5,798,'pending'),(3991,'Innovation Management',1,799,'pending'),(3992,'Design Thinking',2,799,'pending'),(3993,'Project Management',3,799,'pending'),(3994,'Strategic Planning',4,799,'pending'),(3995,'Market Analysis',5,799,'pending'),(3996,'Consulting',1,800,'pending'),(3997,'Cross-Functional Collaboration',2,800,'pending'),(3998,'Stakeholder Management',3,800,'pending'),(3999,'Business Acumen',4,800,'pending'),(4000,'Change Management',5,800,'pending'),(4001,'Leadership',1,801,'pending'),(4002,'Innovation Strategy',2,801,'pending'),(4003,'Team Building',3,801,'pending'),(4004,'Budget Management',4,801,'pending'),(4005,'Risk Management',5,801,'pending'),(4006,'Executive Leadership',1,802,'pending'),(4007,'Corporate Strategy',2,802,'pending'),(4008,'Visionary Thinking',3,802,'pending'),(4009,'Organizational Development',4,802,'pending'),(4010,'Global Networking',5,802,'pending'),(4011,'Leadership',1,803,'pending'),(4012,'Conflict Resolution',2,803,'pending'),(4013,'Performance Management',3,803,'pending'),(4014,'Coaching',4,803,'pending'),(4015,'Decision Making',5,803,'pending'),(4016,'Project Planning',1,804,'pending'),(4017,'Resource Management',2,804,'pending'),(4018,'Risk Assessment',3,804,'pending'),(4019,'Budgeting',4,804,'pending'),(4020,'Stakeholder Engagement',5,804,'pending'),(4021,'Operational Excellence',1,805,'pending'),(4022,'Process Improvement',2,805,'pending'),(4023,'Supply Chain Management',3,805,'pending'),(4024,'Quality Assurance',4,805,'pending'),(4025,'Cost Control',5,805,'pending'),(4026,'Strategic Planning',1,806,'pending'),(4027,'Leadership',2,806,'pending'),(4028,'Financial Acumen',3,806,'pending'),(4029,'Change Management',4,806,'pending'),(4030,'Performance Metrics',5,806,'pending'),(4031,'Executive Leadership',1,807,'pending'),(4032,'Corporate Governance',2,807,'pending'),(4033,'Business Strategy',3,807,'pending'),(4034,'Organizational Leadership',4,807,'pending'),(4035,'Crisis Management',5,807,'pending'),(4036,'Technical Expertise',1,808,'pending'),(4037,'Problem Solving',2,808,'pending'),(4038,'Analytical Thinking',3,808,'pending'),(4039,'Technical Writing',4,808,'pending'),(4040,'Software Proficiency',5,808,'pending'),(4041,'Advanced Programming',1,809,'pending'),(4042,'System Architecture',2,809,'pending'),(4043,'Code Review',3,809,'pending'),(4044,'Agile Methodologies',4,809,'pending'),(4045,'Continuous Integration',5,809,'pending'),(4046,'Leadership',1,810,'pending'),(4047,'Technical Strategy',2,810,'pending'),(4048,'Project Management',3,810,'pending'),(4049,'Client Interaction',4,810,'pending'),(4050,'Quality Assurance',5,810,'pending'),(4051,'Team Leadership',1,811,'pending'),(4052,'Resource Allocation',2,811,'pending'),(4053,'Innovation Management',3,811,'pending'),(4054,'Budget Management',4,811,'pending'),(4055,'Risk Assessment',5,811,'pending'),(4056,'Executive Leadership',1,812,'pending'),(4057,'Technology Vision',2,812,'pending'),(4058,'Strategic Planning',3,812,'pending'),(4059,'Innovation',4,812,'pending'),(4060,'Industry Networking',5,812,'pending'),(4061,'Advanced Communication',1,813,'pending'),(4062,'Strategic Thinking',2,813,'pending'),(4063,'Project Management',3,813,'pending'),(4064,'Technical Proficiency',4,813,'pending'),(4065,'Leadership Potential',5,813,'pending'),(4066,'Leadership',1,814,'pending'),(4067,'Advanced Problem Solving',2,814,'pending'),(4068,'Mentorship',3,814,'pending'),(4069,'Strategic Planning',4,814,'pending'),(4070,'Cross-Functional Collaboration',5,814,'pending'),(4071,'Executive Leadership',1,815,'pending'),(4072,'Strategic Vision',2,815,'pending'),(4073,'Organizational Development',3,815,'pending'),(4074,'Performance Management',4,815,'pending'),(4075,'Budgeting',5,815,'pending'),(4076,'Corporate Strategy',1,816,'pending'),(4077,'Executive Decision Making',2,816,'pending'),(4078,'Leadership',3,816,'pending'),(4079,'Change Management',4,816,'pending'),(4080,'Global Networking',5,816,'pending'),(4081,'Visionary Leadership',1,817,'pending'),(4082,'Corporate Governance',2,817,'pending'),(4083,'Strategic Planning',3,817,'pending'),(4084,'Crisis Management',4,817,'pending'),(4085,'Stakeholder Engagement',5,817,'pending'),(4191,'Machine Learning',1,839,'pending'),(4192,'Deep Learning',2,839,'pending'),(4193,'Data Mining',3,839,'pending'),(4194,'SQL',4,839,'pending'),(4195,'Image Processing',5,839,'pending'),(4196,'Research Methodology',1,840,'pending'),(4197,'Generative AI',2,840,'pending'),(4198,'Python Programming',3,840,'pending'),(4199,'Data Analysis',4,840,'pending'),(4200,'Scientific Writing',5,840,'pending'),(4201,'Statistical Analysis',1,841,'pending'),(4202,'Data Visualization',2,841,'pending'),(4203,'Big Data',3,841,'pending'),(4204,'R Programming',4,841,'pending'),(4205,'SQL',5,841,'pending'),(4206,'Consulting',1,842,'pending'),(4207,'Strategic Planning',2,842,'pending'),(4208,'Business Analysis',3,842,'pending'),(4209,'Communication',4,842,'pending'),(4210,'AI Implementation',5,842,'pending'),(4211,'Product Management',1,843,'pending'),(4212,'Project Coordination',2,843,'pending'),(4213,'Market Analysis',3,843,'pending'),(4214,'Team Leadership',4,843,'pending'),(4215,'User Experience',5,843,'pending'),(4216,'Leadership',1,844,'pending'),(4217,'AI Strategy',2,844,'pending'),(4218,'Business Development',3,844,'pending'),(4219,'Innovation',4,844,'pending'),(4220,'Corporate Strategy',5,844,'pending'),(4221,'Team Leadership',1,845,'pending'),(4222,'Project Management',2,845,'pending'),(4223,'Conflict Resolution',3,845,'pending'),(4224,'Mentoring',4,845,'pending'),(4225,'Time Management',5,845,'pending'),(4226,'Project Planning',1,846,'pending'),(4227,'Risk Management',2,846,'pending'),(4228,'Budgeting',3,846,'pending'),(4229,'Stakeholder Management',4,846,'pending'),(4230,'Communication',5,846,'pending'),(4231,'Strategic Planning',1,847,'pending'),(4232,'Resource Allocation',2,847,'pending'),(4233,'Cross-Functional Leadership',3,847,'pending'),(4234,'Visionary Thinking',4,847,'pending'),(4235,'Change Management',5,847,'pending'),(4236,'Executive Leadership',1,848,'pending'),(4237,'Business Acumen',2,848,'pending'),(4238,'AI Strategy',3,848,'pending'),(4239,'Innovation',4,848,'pending'),(4240,'Networking',5,848,'pending'),(4241,'Technology Leadership',1,849,'pending'),(4242,'Innovation Management',2,849,'pending'),(4243,'Strategic Vision',3,849,'pending'),(4244,'Team Building',4,849,'pending'),(4245,'Operational Excellence',5,849,'pending'),(4246,'Advanced Machine Learning',1,850,'pending'),(4247,'Deep Learning Architectures',2,850,'pending'),(4248,'Big Data Processing',3,850,'pending'),(4249,'AI Model Optimization',4,850,'pending'),(4250,'AI Deployment',5,850,'pending'),(4251,'System Architecture',1,851,'pending'),(4252,'Cloud Computing',2,851,'pending'),(4253,'AI Frameworks',3,851,'pending'),(4254,'Scalability',4,851,'pending'),(4255,'Integration',5,851,'pending'),(4256,'Specialized AI Domains',1,852,'pending'),(4257,'Cutting-edge Technologies',2,852,'pending'),(4258,'Research & Development',3,852,'pending'),(4259,'Problem Solving',4,852,'pending'),(4260,'Innovation',5,852,'pending'),(4261,'Leadership in Development',1,853,'pending'),(4262,'Technical Expertise',2,853,'pending'),(4263,'Project Leadership',3,853,'pending'),(4264,'Cross-Domain Knowledge',4,853,'pending'),(4265,'Technical Communication',5,853,'pending'),(4266,'Technical Leadership',1,854,'pending'),(4267,'Innovation Direction',2,854,'pending'),(4268,'AI Research',3,854,'pending'),(4269,'Mentorship',4,854,'pending'),(4270,'Strategic Decision Making',5,854,'pending'),(4271,'Advanced Machine Learning',1,855,'pending'),(4272,'Deep Neural Networks',2,855,'pending'),(4273,'Data Engineering',3,855,'pending'),(4274,'AI Model Deployment',4,855,'pending'),(4275,'Collaborative Problem Solving',5,855,'pending'),(4276,'Project Management',1,856,'pending'),(4277,'Mentoring',2,856,'pending'),(4278,'AI Solution Design',3,856,'pending'),(4279,'Big Data Analytics',4,856,'pending'),(4280,'Performance Optimization',5,856,'pending'),(4281,'Leadership',1,857,'pending'),(4282,'Technical Direction',2,857,'pending'),(4283,'Cross-Functional Collaboration',3,857,'pending'),(4284,'Strategic Planning',4,857,'pending'),(4285,'Innovation',5,857,'pending'),(4286,'Strategic Leadership',1,858,'pending'),(4287,'AI Strategy Development',2,858,'pending'),(4288,'Operational Management',3,858,'pending'),(4289,'Team Development',4,858,'pending'),(4290,'Industry Networking',5,858,'pending'),(4291,'Executive Leadership',1,859,'pending'),(4292,'Visionary Thinking',2,859,'pending'),(4293,'AI Policy Development',3,859,'pending'),(4294,'Corporate Strategy',4,859,'pending'),(4295,'Global AI Trends',5,859,'pending'),(4296,'Machine Learning',1,860,'pending'),(4297,'Python',2,860,'pending'),(4298,'Data Analysis',3,860,'pending'),(4299,'Deep Learning',4,860,'pending'),(4300,'SQL',5,860,'pending'),(4301,'Research Methodologies',1,861,'pending'),(4302,'Academic Writing',2,861,'pending'),(4303,'Data Visualization',3,861,'pending'),(4304,'Statistical Analysis',4,861,'pending'),(4305,'Critical Thinking',5,861,'pending'),(4306,'Product Design',1,862,'pending'),(4307,'Market Analysis',2,862,'pending'),(4308,'Creativity',3,862,'pending'),(4309,'Prototyping',4,862,'pending'),(4310,'User Experience',5,862,'pending'),(4311,'Consulting',1,863,'pending'),(4312,'Client Management',2,863,'pending'),(4313,'Strategic Planning',3,863,'pending'),(4314,'Problem Solving',4,863,'pending'),(4315,'Communication',5,863,'pending'),(4316,'Leadership',1,864,'pending'),(4317,'Innovation Management',2,864,'pending'),(4318,'Team Building',3,864,'pending'),(4319,'Strategic Vision',4,864,'pending'),(4320,'Project Management',5,864,'pending'),(4321,'Project Management',1,865,'pending'),(4322,'Team Coordination',2,865,'pending'),(4323,'Risk Management',3,865,'pending'),(4324,'Budgeting',4,865,'pending'),(4325,'Stakeholder Communication',5,865,'pending'),(4326,'Leadership',1,866,'pending'),(4327,'Strategic Planning',2,866,'pending'),(4328,'Operational Management',3,866,'pending'),(4329,'Decision Making',4,866,'pending'),(4330,'Conflict Resolution',5,866,'pending'),(4331,'Executive Leadership',1,867,'pending'),(4332,'Innovation Strategy',2,867,'pending'),(4333,'Organizational Development',3,867,'pending'),(4334,'Executive Communication',4,867,'pending'),(4335,'Change Management',5,867,'pending'),(4336,'Visionary Leadership',1,868,'pending'),(4337,'Corporate Strategy',2,868,'pending'),(4338,'AI Ethics',3,868,'pending'),(4339,'Industry Networking',4,868,'pending'),(4340,'Global Strategy',5,868,'pending'),(4341,'Model Deployment',1,869,'pending'),(4342,'Algorithm Design',2,869,'pending'),(4343,'Software Engineering',3,869,'pending'),(4344,'Data Engineering',4,869,'pending'),(4345,'Performance Optimization',5,869,'pending'),(4346,'Advanced Algorithms',1,870,'pending'),(4347,'System Architecture',2,870,'pending'),(4348,'Mentorship',3,870,'pending'),(4349,'Scalability',4,870,'pending'),(4350,'Code Review',5,870,'pending'),(4351,'System Design',1,871,'pending'),(4352,'AI Frameworks',2,871,'pending'),(4353,'Integration',3,871,'pending'),(4354,'Technical Leadership',4,871,'pending'),(4355,'Innovation',5,871,'pending'),(4356,'Thought Leadership',1,872,'pending'),(4357,'Industry Standards',2,872,'pending'),(4358,'Expertise Sharing',3,872,'pending'),(4359,'Publication',4,872,'pending'),(4360,'Community Building',5,872,'pending'),(4361,'AI Implementation',1,873,'pending'),(4362,'Data Preprocessing',2,873,'pending'),(4363,'Model Training',3,873,'pending'),(4364,'Problem Solving',4,873,'pending'),(4365,'Collaboration',5,873,'pending'),(4366,'Project Leadership',1,874,'pending'),(4367,'Advanced ML Techniques',2,874,'pending'),(4368,'Data Strategy',3,874,'pending'),(4369,'Cross-Functional Collaboration',4,874,'pending'),(4370,'Continuous Learning',5,874,'pending'),(4371,'Team Leadership',1,875,'pending'),(4372,'Innovation',2,875,'pending'),(4373,'Technical Expertise',3,875,'pending'),(4374,'System Integration',4,875,'pending'),(4375,'Strategic Thinking',5,875,'pending'),(4376,'Technical Vision',1,876,'pending'),(4377,'Mentorship',2,876,'pending'),(4378,'Research and Development',3,876,'pending'),(4379,'Strategic Initiatives',4,876,'pending'),(4380,'Industry Expertise',5,876,'pending'),(4381,'Executive Leadership',1,877,'pending'),(4382,'Organizational Strategy',2,877,'pending'),(4383,'AI Governance',3,877,'pending'),(4384,'Innovation Management',4,877,'pending'),(4385,'Global Collaboration',5,877,'pending'),(4491,'Machine Learning',1,899,'pending'),(4492,'Deep Learning',2,899,'pending'),(4493,'Data Mining',3,899,'pending'),(4494,'SQL',4,899,'pending'),(4495,'PySpark',5,899,'pending'),(4496,'Research Methodology',1,900,'pending'),(4497,'Scientific Writing',2,900,'pending'),(4498,'Data Analysis',3,900,'pending'),(4499,'Python',4,900,'pending'),(4500,'TensorFlow',5,900,'pending'),(4501,'Consulting',1,901,'pending'),(4502,'Problem Solving',2,901,'pending'),(4503,'Client Communication',3,901,'pending'),(4504,'AI Strategy',4,901,'pending'),(4505,'Project Management',5,901,'pending'),(4506,'Product Management',1,902,'pending'),(4507,'Market Analysis',2,902,'pending'),(4508,'User Experience',3,902,'pending'),(4509,'Agile Methodologies',4,902,'pending'),(4510,'Leadership',5,902,'pending'),(4511,'Entrepreneurship',1,903,'pending'),(4512,'Business Development',2,903,'pending'),(4513,'Networking',3,903,'pending'),(4514,'Innovation',4,903,'pending'),(4515,'Risk Management',5,903,'pending'),(4516,'Leadership',1,904,'pending'),(4517,'Strategic Planning',2,904,'pending'),(4518,'AI Governance',3,904,'pending'),(4519,'Ethical AI',4,904,'pending'),(4520,'Cross-Functional Collaboration',5,904,'pending'),(4521,'Team Management',1,905,'pending'),(4522,'Project Coordination',2,905,'pending'),(4523,'Conflict Resolution',3,905,'pending'),(4524,'Mentoring',4,905,'pending'),(4525,'Performance Evaluation',5,905,'pending'),(4526,'Program Management',1,906,'pending'),(4527,'Stakeholder Management',2,906,'pending'),(4528,'Budgeting',3,906,'pending'),(4529,'Scheduling',4,906,'pending'),(4530,'Resource Allocation',5,906,'pending'),(4531,'Strategic Leadership',1,907,'pending'),(4532,'Operational Management',2,907,'pending'),(4533,'AI Strategy',3,907,'pending'),(4534,'Change Management',4,907,'pending'),(4535,'Corporate Communication',5,907,'pending'),(4536,'Executive Leadership',1,908,'pending'),(4537,'Visionary Thinking',2,908,'pending'),(4538,'Corporate Strategy',3,908,'pending'),(4539,'AI Innovation',4,908,'pending'),(4540,'Industry Networking',5,908,'pending'),(4541,'Executive Leadership',1,909,'pending'),(4542,'Business Strategy',2,909,'pending'),(4543,'Corporate Governance',3,909,'pending'),(4544,'Investor Relations',4,909,'pending'),(4545,'Global Expansion',5,909,'pending'),(4546,'Advanced Machine Learning',1,910,'pending'),(4547,'Deep Learning Architectures',2,910,'pending'),(4548,'Big Data Processing',3,910,'pending'),(4549,'Algorithm Development',4,910,'pending'),(4550,'System Design',5,910,'pending'),(4551,'System Architecture',1,911,'pending'),(4552,'Cloud Computing',2,911,'pending'),(4553,'Scalability',3,911,'pending'),(4554,'Integration',4,911,'pending'),(4555,'Security',5,911,'pending'),(4556,'Technical Leadership',1,912,'pending'),(4557,'Research and Development',2,912,'pending'),(4558,'Innovation',3,912,'pending'),(4559,'Technical Mentoring',4,912,'pending'),(4560,'Cross-Disciplinary Collaboration',5,912,'pending'),(4561,'Technology Strategy',1,913,'pending'),(4562,'Infrastructure Management',2,913,'pending'),(4563,'Innovation Leadership',3,913,'pending'),(4564,'Risk Management',4,913,'pending'),(4565,'Corporate Strategy',5,913,'pending'),(4566,'Thought Leadership',1,914,'pending'),(4567,'Industry Influence',2,914,'pending'),(4568,'Technical Vision',3,914,'pending'),(4569,'Innovation',4,914,'pending'),(4570,'Mentorship',5,914,'pending'),(4571,'Leadership',1,915,'pending'),(4572,'Project Management',2,915,'pending'),(4573,'Mentoring',3,915,'pending'),(4574,'Advanced AI Techniques',4,915,'pending'),(4575,'Communication',5,915,'pending'),(4576,'System Design',1,916,'pending'),(4577,'Cloud Architecture',2,916,'pending'),(4578,'Scalability',3,916,'pending'),(4579,'Integration',4,916,'pending'),(4580,'Security',5,916,'pending'),(4581,'Product Management',1,917,'pending'),(4582,'User Experience',2,917,'pending'),(4583,'Market Analysis',3,917,'pending'),(4584,'Agile Methodologies',4,917,'pending'),(4585,'Leadership',5,917,'pending'),(4586,'Strategic Leadership',1,918,'pending'),(4587,'AI Strategy',2,918,'pending'),(4588,'Change Management',3,918,'pending'),(4589,'Operational Management',4,918,'pending'),(4590,'Corporate Communication',5,918,'pending'),(4591,'Data Collection',1,919,'pending'),(4592,'Basic Statistical Analysis',2,919,'pending'),(4593,'Excel Proficiency',3,919,'pending'),(4594,'Report Writing',4,919,'pending'),(4595,'Attention to Detail',5,919,'pending'),(4596,'Qualitative Research',1,920,'pending'),(4597,'Trend Analysis',2,920,'pending'),(4598,'Creative Thinking',3,920,'pending'),(4599,'Presentation Skills',4,920,'pending'),(4600,'Networking',5,920,'pending'),(4601,'Innovation Management',1,921,'pending'),(4602,'Design Thinking',2,921,'pending'),(4603,'Prototyping',3,921,'pending'),(4604,'Collaboration',4,921,'pending'),(4605,'Market Analysis',5,921,'pending'),(4606,'Strategic Thinking',1,922,'pending'),(4607,'SWOT Analysis',2,922,'pending'),(4608,'Risk Management',3,922,'pending'),(4609,'Decision Making',4,922,'pending'),(4610,'Leadership',5,922,'pending'),(4611,'Team Leadership',1,923,'pending'),(4612,'Project Management',2,923,'pending'),(4613,'Resource Allocation',3,923,'pending'),(4614,'Conflict Resolution',4,923,'pending'),(4615,'Performance Tracking',5,923,'pending'),(4616,'Change Management',1,924,'pending'),(4617,'Visionary Leadership',2,924,'pending'),(4618,'Strategic Partnerships',3,924,'pending'),(4619,'Budgeting',4,924,'pending'),(4620,'Public Speaking',5,924,'pending'),(4621,'Team Management',1,925,'pending'),(4622,'Communication',2,925,'pending'),(4623,'Time Management',3,925,'pending'),(4624,'Problem Solving',4,925,'pending'),(4625,'Motivation',5,925,'pending'),(4626,'Project Planning',1,926,'pending'),(4627,'Budget Management',2,926,'pending'),(4628,'Stakeholder Engagement',3,926,'pending'),(4629,'Risk Assessment',4,926,'pending'),(4630,'Quality Assurance',5,926,'pending'),(4631,'Operational Efficiency',1,927,'pending'),(4632,'Process Improvement',2,927,'pending'),(4633,'Resource Management',3,927,'pending'),(4634,'KPI Analysis',4,927,'pending'),(4635,'Cost Control',5,927,'pending'),(4636,'Strategic Leadership',1,928,'pending'),(4637,'Cross-functional Collaboration',2,928,'pending'),(4638,'Advanced Negotiation',3,928,'pending'),(4639,'Performance Management',4,928,'pending'),(4640,'Organizational Development',5,928,'pending'),(4641,'Executive Leadership',1,929,'pending'),(4642,'Corporate Strategy',2,929,'pending'),(4643,'Financial Acumen',3,929,'pending'),(4644,'Crisis Management',4,929,'pending'),(4645,'Visionary Planning',5,929,'pending'),(4646,'Technical Expertise',1,930,'pending'),(4647,'Problem Solving',2,930,'pending'),(4648,'System Analysis',3,930,'pending'),(4649,'Technical Documentation',4,930,'pending'),(4650,'Troubleshooting',5,930,'pending'),(4651,'Advanced Data Analysis',1,931,'pending'),(4652,'System Optimization',2,931,'pending'),(4653,'Technical Leadership',3,931,'pending'),(4654,'Innovation',4,931,'pending'),(4655,'Mentoring',5,931,'pending'),(4656,'Project Leadership',1,932,'pending'),(4657,'Technical Strategy',2,932,'pending'),(4658,'Team Coordination',3,932,'pending'),(4659,'Resource Management',4,932,'pending'),(4660,'Quality Control',5,932,'pending'),(4661,'Technical Vision',1,933,'pending'),(4662,'Innovation Strategy',2,933,'pending'),(4663,'Technology Roadmapping',3,933,'pending'),(4664,'Enterprise Architecture',4,933,'pending'),(4665,'Industry Networking',5,933,'pending'),(4666,'Consulting Skills',1,934,'pending'),(4667,'Client Engagement',2,934,'pending'),(4668,'Solution Design',3,934,'pending'),(4669,'Technical Writing',4,934,'pending'),(4670,'Market Analysis',5,934,'pending'),(4671,'Data Modeling',1,935,'pending'),(4672,'Advanced Excel',2,935,'pending'),(4673,'SQL Proficiency',3,935,'pending'),(4674,'Critical Thinking',4,935,'pending'),(4675,'Project Management',5,935,'pending'),(4676,'Leadership',1,936,'pending'),(4677,'Advanced Data Analysis',2,936,'pending'),(4678,'Mentoring',3,936,'pending'),(4679,'Strategic Planning',4,936,'pending'),(4680,'Problem Solving',5,936,'pending'),(4681,'Machine Learning',1,937,'pending'),(4682,'Data Visualization',2,937,'pending'),(4683,'Python/R Programming',3,937,'pending'),(4684,'Big Data Technologies',4,937,'pending'),(4685,'Team Leadership',5,937,'pending'),(4686,'Executive Leadership',1,938,'pending'),(4687,'Data Governance',2,938,'pending'),(4688,'Strategic Vision',3,938,'pending'),(4689,'Change Management',4,938,'pending'),(4690,'Industry Expertise',5,938,'pending'),(4901,'Machine Learning',1,981,'pending'),(4902,'Data Analysis',2,981,'pending'),(4903,'Python',3,981,'pending'),(4904,'TensorFlow',4,981,'pending'),(4905,'Data Visualization',5,981,'pending'),(4906,'Research Methodologies',1,982,'pending'),(4907,'AI Ethics',2,982,'pending'),(4908,'Deep Learning',3,982,'pending'),(4909,'NLP',4,982,'pending'),(4910,'Scientific Writing',5,982,'pending'),(4911,'Consulting Skills',1,983,'pending'),(4912,'Industry Knowledge',2,983,'pending'),(4913,'AI Implementation',3,983,'pending'),(4914,'Client Communication',4,983,'pending'),(4915,'Problem Solving',5,983,'pending'),(4916,'Product Management',1,984,'pending'),(4917,'Market Analysis',2,984,'pending'),(4918,'User Experience',3,984,'pending'),(4919,'AI Technologies',4,984,'pending'),(4920,'Project Management',5,984,'pending'),(4921,'Entrepreneurship',1,985,'pending'),(4922,'Business Development',2,985,'pending'),(4923,'Innovation',3,985,'pending'),(4924,'AI Solutions',4,985,'pending'),(4925,'Leadership',5,985,'pending'),(4926,'Strategic Planning',1,986,'pending'),(4927,'Leadership',2,986,'pending'),(4928,'AI Strategy',3,986,'pending'),(4929,'Team Management',4,986,'pending'),(4930,'Innovation Leadership',5,986,'pending'),(4931,'Leadership',1,987,'pending'),(4932,'Team Management',2,987,'pending'),(4933,'Project Coordination',3,987,'pending'),(4934,'Communication',4,987,'pending'),(4935,'AI Project Management',5,987,'pending'),(4936,'Project Management',1,988,'pending'),(4937,'AI Knowledge',2,988,'pending'),(4938,'Stakeholder Management',3,988,'pending'),(4939,'Risk Management',4,988,'pending'),(4940,'Budget Management',5,988,'pending'),(4941,'Strategic Leadership',1,989,'pending'),(4942,'AI Strategy',2,989,'pending'),(4943,'Organizational Leadership',3,989,'pending'),(4944,'Innovation',4,989,'pending'),(4945,'Cross-Functional Leadership',5,989,'pending'),(4946,'Executive Leadership',1,990,'pending'),(4947,'Technology Strategy',2,990,'pending'),(4948,'AI Innovation',3,990,'pending'),(4949,'Business Acumen',4,990,'pending'),(4950,'Organizational Development',5,990,'pending'),(4951,'CTO Leadership',1,991,'pending'),(4952,'Technology Vision',2,991,'pending'),(4953,'AI Integration',3,991,'pending'),(4954,'Corporate Strategy',4,991,'pending'),(4955,'Innovation Leadership',5,991,'pending'),(4956,'Advanced Machine Learning',1,992,'pending'),(4957,'Data Engineering',2,992,'pending'),(4958,'Model Optimization',3,992,'pending'),(4959,'Big Data Technologies',4,992,'pending'),(4960,'Technical Leadership',5,992,'pending'),(4961,'ML Engineering',1,993,'pending'),(4962,'Model Deployment',2,993,'pending'),(4963,'Cloud Computing',3,993,'pending'),(4964,'Software Development',4,993,'pending'),(4965,'APIs and Microservices',5,993,'pending'),(4966,'System Architecture',1,994,'pending'),(4967,'AI System Design',2,994,'pending'),(4968,'Scalability',3,994,'pending'),(4969,'Integration',4,994,'pending'),(4970,'Technical Strategy',5,994,'pending'),(4971,'Principal Engineering',1,995,'pending'),(4972,'AI Innovation',2,995,'pending'),(4973,'Technical Leadership',3,995,'pending'),(4974,'R&D',4,995,'pending'),(4975,'Mentorship',5,995,'pending'),(4976,'Technical Expertise',1,996,'pending'),(4977,'Innovation Leadership',2,996,'pending'),(4978,'Industry Recognition',3,996,'pending'),(4979,'Thought Leadership',4,996,'pending'),(4980,'Mentorship and Guidance',5,996,'pending'),(4981,'Leadership',1,997,'pending'),(4982,'Advanced Analytics',2,997,'pending'),(4983,'Model Deployment',3,997,'pending'),(4984,'Data Strategy',4,997,'pending'),(4985,'Team Collaboration',5,997,'pending'),(4986,'Team Leadership',1,998,'pending'),(4987,'Strategic Planning',2,998,'pending'),(4988,'AI Innovation',3,998,'pending'),(4989,'Cross-Functional Collaboration',4,998,'pending'),(4990,'Project Management',5,998,'pending'),(4991,'Executive Leadership',1,999,'pending'),(4992,'Data Strategy',2,999,'pending'),(4993,'Business Alignment',3,999,'pending'),(4994,'Innovation',4,999,'pending'),(4995,'Organizational Leadership',5,999,'pending'),(4996,'Data Governance',1,1000,'pending'),(4997,'Strategic Leadership',2,1000,'pending'),(4998,'Data-Driven Decision Making',3,1000,'pending'),(4999,'Innovation',4,1000,'pending'),(5000,'Corporate Strategy',5,1000,'pending'),(5001,'Vocal Techniques',1,1001,'pending'),(5002,'Stage Presence',2,1001,'pending'),(5003,'Music Theory',3,1001,'pending'),(5004,'Performance Skills',4,1001,'pending'),(5005,'Audience Engagement',5,1001,'pending'),(5006,'Sound Editing',1,1002,'pending'),(5007,'Audio Mixing',2,1002,'pending'),(5008,'Digital Audio Workstations (DAWs)',3,1002,'pending'),(5009,'Music Composition',4,1002,'pending'),(5010,'Creative Collaboration',5,1002,'pending'),(5011,'Project Management',1,1003,'pending'),(5012,'Team Collaboration',2,1003,'pending'),(5013,'Basic Coding Skills',3,1003,'pending'),(5014,'Digital Marketing',4,1003,'pending'),(5015,'Communication Skills',5,1003,'pending'),(5016,'HTML',1,1004,'pending'),(5017,'CSS',2,1004,'pending'),(5018,'JavaScript',3,1004,'pending'),(5019,'Responsive Design',4,1004,'pending'),(5020,'Web Design Principles',5,1004,'pending'),(5021,'Content Management',1,1005,'pending'),(5022,'SEO',2,1005,'pending'),(5023,'Graphic Design',3,1005,'pending'),(5024,'User Experience (UX)',4,1005,'pending'),(5025,'Web Hosting',5,1005,'pending'),(5026,'Innovation Analysis',1,1006,'pending'),(5027,'Tech Trends',2,1006,'pending'),(5028,'Networking',3,1006,'pending'),(5029,'Industry Research',4,1006,'pending'),(5030,'Adaptability',5,1006,'pending'),(5031,'Leadership',1,1007,'pending'),(5032,'Team Building',2,1007,'pending'),(5033,'Conflict Resolution',3,1007,'pending'),(5034,'Strategic Planning',4,1007,'pending'),(5035,'Decision Making',5,1007,'pending'),(5036,'Budget Management',1,1008,'pending'),(5037,'Event Planning',2,1008,'pending'),(5038,'Risk Management',3,1008,'pending'),(5039,'Vendor Negotiation',4,1008,'pending'),(5040,'Stakeholder Communication',5,1008,'pending'),(5041,'Operational Management',1,1009,'pending'),(5042,'Financial Acumen',2,1009,'pending'),(5043,'Performance Evaluation',3,1009,'pending'),(5044,'Organizational Leadership',4,1009,'pending'),(5045,'Change Management',5,1009,'pending'),(5046,'Digital Strategy',1,1010,'pending'),(5047,'Cross-functional Leadership',2,1010,'pending'),(5048,'Innovation Management',3,1010,'pending'),(5049,'Market Analysis',4,1010,'pending'),(5050,'Brand Development',5,1010,'pending'),(5051,'Visionary Leadership',1,1011,'pending'),(5052,'Entrepreneurial Skills',2,1011,'pending'),(5053,'Global Strategy',3,1011,'pending'),(5054,'Corporate Governance',4,1011,'pending'),(5055,'Industry Influence',5,1011,'pending'),(5056,'React',1,1012,'pending'),(5057,'Node.js',2,1012,'pending'),(5058,'APIs',3,1012,'pending'),(5059,'Version Control (Git)',4,1012,'pending'),(5060,'Database Management',5,1012,'pending'),(5061,'User Interface (UI) Design',1,1013,'pending'),(5062,'Cross-Browser Compatibility',2,1013,'pending'),(5063,'Performance Optimization',3,1013,'pending'),(5064,'Testing and Debugging',4,1013,'pending'),(5065,'Responsive Design',5,1013,'pending'),(5066,'Server Management',1,1014,'pending'),(5067,'Database Integration',2,1014,'pending'),(5068,'API Development',3,1014,'pending'),(5069,'Security Best Practices',4,1014,'pending'),(5070,'Cloud Services',5,1014,'pending'),(5071,'Full-Stack Frameworks',1,1015,'pending'),(5072,'DevOps',2,1015,'pending'),(5073,'Agile Methodologies',3,1015,'pending'),(5074,'Continuous Integration',4,1015,'pending'),(5075,'System Architecture',5,1015,'pending'),(5076,'Technical Leadership',1,1016,'pending'),(5077,'Team Mentoring',2,1016,'pending'),(5078,'Project Architecture',3,1016,'pending'),(5079,'Client Interaction',4,1016,'pending'),(5080,'Quality Assurance',5,1016,'pending'),(5081,'HTML',1,1017,'pending'),(5082,'CSS',2,1017,'pending'),(5083,'JavaScript',3,1017,'pending'),(5084,'Basic Programming Logic',4,1017,'pending'),(5085,'Problem Solving',5,1017,'pending'),(5086,'Full-Stack Development',1,1018,'pending'),(5087,'Coding Best Practices',2,1018,'pending'),(5088,'Project Management',3,1018,'pending'),(5089,'Collaboration',4,1018,'pending'),(5090,'Time Management',5,1018,'pending'),(5091,'Project Planning',1,1019,'pending'),(5092,'UI/UX Design',2,1019,'pending'),(5093,'Git and GitHub',3,1019,'pending'),(5094,'API Integration',4,1019,'pending'),(5095,'Debugging',5,1019,'pending'),(5096,'Real-world Coding',1,1020,'pending'),(5097,'Team Collaboration',2,1020,'pending'),(5098,'Professional Communication',3,1020,'pending'),(5099,'Feedback Implementation',4,1020,'pending'),(5100,'Time Management',5,1020,'pending'),(5101,'Front-End Development',1,1021,'pending'),(5102,'Back-End Basics',2,1021,'pending'),(5103,'Responsive Design',3,1021,'pending'),(5104,'Version Control',4,1021,'pending'),(5105,'Code Review',5,1021,'pending'),(5106,'Advanced JavaScript',1,1022,'pending'),(5107,'Frameworks (React, Angular)',2,1022,'pending'),(5108,'Database Management',3,1022,'pending'),(5109,'Security Best Practices',4,1022,'pending'),(5110,'Performance Optimization',5,1022,'pending'),(5111,'Technical Leadership',1,1023,'pending'),(5112,'Advanced Problem Solving',2,1023,'pending'),(5113,'System Design',3,1023,'pending'),(5114,'Client Communication',4,1023,'pending'),(5115,'Continuous Learning',5,1023,'pending'),(5116,'Full-Stack Mastery',1,1024,'pending'),(5117,'Innovative Solutions',2,1024,'pending'),(5118,'Technical Strategy',3,1024,'pending'),(5119,'Industry Leadership',4,1024,'pending'),(5120,'Mentorship',5,1024,'pending'),(5121,'React.js',1,1025,'pending'),(5122,'JavaScript',2,1025,'pending'),(5123,'HTML/CSS',3,1025,'pending'),(5124,'Redux',4,1025,'pending'),(5125,'Git',5,1025,'pending'),(5126,'Node.js',1,1026,'pending'),(5127,'Express.js',2,1026,'pending'),(5128,'MongoDB',3,1026,'pending'),(5129,'RESTful APIs',4,1026,'pending'),(5130,'GraphQL',5,1026,'pending'),(5131,'AWS',1,1027,'pending'),(5132,'Docker',2,1027,'pending'),(5133,'Kubernetes',3,1027,'pending'),(5134,'CI/CD',4,1027,'pending'),(5135,'Terraform',5,1027,'pending'),(5136,'Python',1,1028,'pending'),(5137,'Pandas',2,1028,'pending'),(5138,'SQL',3,1028,'pending'),(5139,'Data Visualization',4,1028,'pending'),(5140,'Statistics',5,1028,'pending'),(5141,'Agile Methodologies',1,1029,'pending'),(5142,'Roadmapping',2,1029,'pending'),(5143,'Stakeholder Management',3,1029,'pending'),(5144,'Market Analysis',4,1029,'pending'),(5145,'UX/UI Design',5,1029,'pending'),(5146,'Business Strategy',1,1030,'pending'),(5147,'Fundraising',2,1030,'pending'),(5148,'Networking',3,1030,'pending'),(5149,'Marketing',4,1030,'pending'),(5150,'Leadership',5,1030,'pending'),(5151,'Leadership',1,1031,'pending'),(5152,'Communication',2,1031,'pending'),(5153,'Project Management',3,1031,'pending'),(5154,'Conflict Resolution',4,1031,'pending'),(5155,'Mentorship',5,1031,'pending'),(5156,'Strategic Planning',1,1032,'pending'),(5157,'Resource Allocation',2,1032,'pending'),(5158,'Performance Evaluation',3,1032,'pending'),(5159,'Budget Management',4,1032,'pending'),(5160,'Cross-functional Collaboration',5,1032,'pending'),(5161,'Corporate Strategy',1,1033,'pending'),(5162,'Leadership Development',2,1033,'pending'),(5163,'Innovation Management',3,1033,'pending'),(5164,'Risk Management',4,1033,'pending'),(5165,'Stakeholder Engagement',5,1033,'pending'),(5166,'Executive Leadership',1,1034,'pending'),(5167,'Organizational Development',2,1034,'pending'),(5168,'Visionary Thinking',3,1034,'pending'),(5169,'Change Management',4,1034,'pending'),(5170,'Investor Relations',5,1034,'pending'),(5171,'Technical Vision',1,1035,'pending'),(5172,'Technological Expertise',2,1035,'pending'),(5173,'Industry Influence',3,1035,'pending'),(5174,'Corporate Governance',4,1035,'pending'),(5175,'Global Strategy',5,1035,'pending'),(5176,'Machine Learning',1,1036,'pending'),(5177,'Python',2,1036,'pending'),(5178,'Data Analysis',3,1036,'pending'),(5179,'Numpy',4,1036,'pending'),(5180,'Scikit-learn',5,1036,'pending'),(5181,'TensorFlow',1,1037,'pending'),(5182,'Keras',2,1037,'pending'),(5183,'Deep Learning',3,1037,'pending'),(5184,'Natural Language Processing',4,1037,'pending'),(5185,'Computer Vision',5,1037,'pending'),(5186,'Model Deployment',1,1038,'pending'),(5187,'MLOps',2,1038,'pending'),(5188,'AWS SageMaker',3,1038,'pending'),(5189,'Docker',4,1038,'pending'),(5190,'Hyperparameter Tuning',5,1038,'pending'),(5191,'Reinforcement Learning',1,1039,'pending'),(5192,'Generative Adversarial Networks',2,1039,'pending'),(5193,'AI Ethics',3,1039,'pending'),(5194,'AI Strategy',4,1039,'pending'),(5195,'Research & Development',5,1039,'pending'),(5196,'AI System Architecture',1,1040,'pending'),(5197,'Algorithm Development',2,1040,'pending'),(5198,'Big Data Technologies',3,1040,'pending'),(5199,'Cloud AI Services',4,1040,'pending'),(5200,'Advanced Robotics',5,1040,'pending'),(5201,'System Design',1,1041,'pending'),(5202,'Performance Optimization',2,1041,'pending'),(5203,'Security Best Practices',3,1041,'pending'),(5204,'Scalability',4,1041,'pending'),(5205,'Micro Frontends',5,1041,'pending'),(5206,'Technical Leadership',1,1042,'pending'),(5207,'Code Review',2,1042,'pending'),(5208,'Mentoring',3,1042,'pending'),(5209,'Architecture Design',4,1042,'pending'),(5210,'DevOps Integration',5,1042,'pending'),(5211,'Python Programming',1,1043,'pending'),(5212,'Linear Algebra',2,1043,'pending'),(5213,'Probability',3,1043,'pending'),(5214,'Data Preprocessing',4,1043,'pending'),(5215,'Machine Learning Basics',5,1043,'pending'),(5216,'Supervised Learning',1,1044,'pending'),(5217,'Unsupervised Learning',2,1044,'pending'),(5218,'Data Cleaning',3,1044,'pending'),(5219,'Model Evaluation',4,1044,'pending'),(5220,'Feature Engineering',5,1044,'pending'),(5221,'AI Integration',1,1045,'pending'),(5222,'Cross-Disciplinary Collaboration',2,1045,'pending'),(5223,'Solution Design',3,1045,'pending'),(5224,'Continuous Learning',4,1045,'pending'),(5225,'Industry Trends Analysis',5,1045,'pending'),(5226,'React.js',1,1046,'pending'),(5227,'APIs Integration',2,1046,'pending'),(5228,'JavaScript',3,1046,'pending'),(5229,'HTML5',4,1046,'pending'),(5230,'CSS3',5,1046,'pending'),(5231,'Client Communication',1,1047,'pending'),(5232,'Project Management',2,1047,'pending'),(5233,'Time Management',3,1047,'pending'),(5234,'Problem Solving',4,1047,'pending'),(5235,'Version Control with Git',5,1047,'pending'),(5236,'Code Collaboration',1,1048,'pending'),(5237,'Community Engagement',2,1048,'pending'),(5238,'Documentation',3,1048,'pending'),(5239,'Code Review',4,1048,'pending'),(5240,'Continuous Integration',5,1048,'pending'),(5241,'Entrepreneurship',1,1049,'pending'),(5242,'Business Strategy',2,1049,'pending'),(5243,'Leadership',3,1049,'pending'),(5244,'Networking',4,1049,'pending'),(5245,'Financial Management',5,1049,'pending'),(5246,'Public Speaking',1,1050,'pending'),(5247,'Technical Writing',2,1050,'pending'),(5248,'Social Media Engagement',3,1050,'pending'),(5249,'Event Organization',4,1050,'pending'),(5250,'Content Creation',5,1050,'pending'),(5251,'Consulting',1,1051,'pending'),(5252,'Innovation Strategy',2,1051,'pending'),(5253,'Market Research',3,1051,'pending'),(5254,'Trend Analysis',4,1051,'pending'),(5255,'Change Management',5,1051,'pending'),(5256,'Team Management',1,1052,'pending'),(5257,'Project Coordination',2,1052,'pending'),(5258,'Conflict Resolution',3,1052,'pending'),(5259,'Mentoring',4,1052,'pending'),(5260,'Agile Methodologies',5,1052,'pending'),(5261,'Strategic Planning',1,1053,'pending'),(5262,'Budget Management',2,1053,'pending'),(5263,'Cross-Functional Leadership',3,1053,'pending'),(5264,'Performance Evaluation',4,1053,'pending'),(5265,'Stakeholder Communication',5,1053,'pending'),(5266,'Vision Setting',1,1054,'pending'),(5267,'Technical Roadmapping',2,1054,'pending'),(5268,'Resource Allocation',3,1054,'pending'),(5269,'Risk Management',4,1054,'pending'),(5270,'Executive Communication',5,1054,'pending'),(5271,'Technology Strategy',1,1055,'pending'),(5272,'Innovation Leadership',2,1055,'pending'),(5273,'Corporate Governance',3,1055,'pending'),(5274,'Partnership Development',4,1055,'pending'),(5275,'Industry Insight',5,1055,'pending'),(5276,'Executive Leadership',1,1056,'pending'),(5277,'Corporate Strategy',2,1056,'pending'),(5278,'Innovation Management',3,1056,'pending'),(5279,'Technology Advocacy',4,1056,'pending'),(5280,'Digital Transformation',5,1056,'pending'),(5281,'Advanced React.js',1,1057,'pending'),(5282,'State Management',2,1057,'pending'),(5283,'Performance Optimization',3,1057,'pending'),(5284,'Code Refactoring',4,1057,'pending'),(5285,'Unit Testing',5,1057,'pending'),(5286,'Node.js',1,1058,'pending'),(5287,'Express.js',2,1058,'pending'),(5288,'MongoDB',3,1058,'pending'),(5289,'RESTful APIs',4,1058,'pending'),(5290,'Responsive Design',5,1058,'pending'),(5291,'Technical Leadership',1,1059,'pending'),(5292,'Code Architecture',2,1059,'pending'),(5293,'Design Patterns',3,1059,'pending'),(5294,'System Integration',4,1059,'pending'),(5295,'Continuous Deployment',5,1059,'pending'),(5296,'Technical Vision',1,1060,'pending'),(5297,'Innovation',2,1060,'pending'),(5298,'Advanced Problem Solving',3,1060,'pending'),(5299,'Mentoring',4,1060,'pending'),(5300,'Research & Development',5,1060,'pending'),(5301,'Thought Leadership',1,1061,'pending'),(5302,'Industry Expertise',2,1061,'pending'),(5303,'Innovation Strategy',3,1061,'pending'),(5304,'Technical Evangelism',4,1061,'pending'),(5305,'Advanced Systems Design',5,1061,'pending'),(5306,'MERN Stack',1,1062,'pending'),(5307,'Database Design',2,1062,'pending'),(5308,'API Development',3,1062,'pending'),(5309,'UI/UX Design',4,1062,'pending'),(5310,'Version Control',5,1062,'pending'),(5311,'Advanced JavaScript',1,1063,'pending'),(5312,'Scalable Architecture',2,1063,'pending'),(5313,'Security Best Practices',3,1063,'pending'),(5314,'Performance Tuning',4,1063,'pending'),(5315,'Code Review',5,1063,'pending'),(5316,'System Architecture',1,1064,'pending'),(5317,'Technical Design',2,1064,'pending'),(5318,'Scalability',3,1064,'pending'),(5319,'Cloud Services',4,1064,'pending'),(5320,'Microservices',5,1064,'pending'),(5321,'Team Leadership',1,1065,'pending'),(5322,'Technical Mentorship',2,1065,'pending'),(5323,'Project Management',3,1065,'pending'),(5324,'Quality Assurance',4,1065,'pending'),(5325,'Client Interaction',5,1065,'pending'),(5326,'Team Building',1,1066,'pending'),(5327,'Resource Management',2,1066,'pending'),(5328,'Strategic Planning',3,1066,'pending'),(5329,'Budgeting',4,1066,'pending'),(5330,'Stakeholder Engagement',5,1066,'pending'),(5331,'Technology Leadership',1,1067,'pending'),(5332,'Corporate Strategy',2,1067,'pending'),(5333,'Innovation Management',3,1067,'pending'),(5334,'Industry Networking',4,1067,'pending'),(5335,'Digital Transformation',5,1067,'pending');
-/*!40000 ALTER TABLE `skills` ENABLE KEYS */;
-UNLOCK TABLES;
+CREATE TABLE `skill_gap_analysis` (
+  `id` bigint(20) NOT NULL,
+  `plan_id` bigint(20) NOT NULL,
+  `title` text NOT NULL,
+  `priority` enum('High','Medium','Low') DEFAULT NULL,
+  `status` enum('pending','completed') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skill_gap_analysis_resources`
+--
+
+CREATE TABLE `skill_gap_analysis_resources` (
+  `id` bigint(20) NOT NULL,
+  `skill_gap_analysis_id` bigint(20) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `platform` varchar(255) NOT NULL,
+  `link` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `steps`
 --
 
-DROP TABLE IF EXISTS `steps`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `steps` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `sort` tinyint NOT NULL,
-  `path_id` bigint DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sort` tinyint(4) NOT NULL,
+  `path_id` bigint(20) DEFAULT NULL,
   `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `branch_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `path_id` (`path_id`),
-  KEY `fk_steps_branch_id` (`branch_id`),
-  CONSTRAINT `fk_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`),
-  CONSTRAINT `fk_steps_branch_id` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `steps_ibfk_1` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1068 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `branch_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `steps`
---
-
-LOCK TABLES `steps` WRITE;
-/*!40000 ALTER TABLE `steps` DISABLE KEYS */;
-INSERT INTO `steps` VALUES (22,'Entry-Level Analyst','Begin your career as an analyst, focusing on data collection and basic analysis.',1,1,'pending',5),(23,'Market Research Specialist','Explore market trends and consumer behavior to provide insights for strategic decisions.',1,1,'pending',6),(24,'Product Development Consultant','Advise on product development based on market research findings.',2,1,'pending',6),(25,'Business Development Manager','Identify new business opportunities and develop strategies to expand market presence.',3,1,'pending',6),(26,'Chief Strategy Officer','Oversee the development and execution of corporate strategies to drive growth.',4,1,'pending',6),(27,'Team Lead','Lead a small team of analysts, managing projects and mentoring team members.',1,1,'pending',7),(28,'Project Manager','Oversee multiple projects, ensuring they are completed on time and within budget.',2,1,'pending',7),(29,'Operations Manager','Manage day-to-day operations and improve processes to enhance efficiency.',3,1,'pending',7),(30,'Director of Operations','Direct operations across multiple departments, aligning them with strategic goals.',4,1,'pending',7),(31,'Chief Operating Officer','Lead the organization’s operational strategies to achieve business objectives.',5,1,'pending',7),(32,'Data Analyst','Perform detailed data analysis to provide actionable insights.',1,1,'pending',8),(33,'Data Scientist','Develop predictive models and algorithms to solve complex problems.',2,1,'pending',8),(34,'Senior Data Scientist','Lead data science projects and mentor junior analysts.',3,1,'pending',8),(35,'Technical Lead','Guide the technical direction of data-driven projects and initiatives.',4,1,'pending',8),(36,'Chief Technology Officer','Oversee the technological infrastructure and strategy of the company.',5,1,'pending',8),(37,'Mid-Level Analyst','Advance to a mid-level position, handling more complex data analysis tasks.',2,1,'pending',5),(38,'Senior Analyst','Lead projects and mentor junior analysts, providing strategic insights.',3,1,'pending',5),(39,'Principal Analyst','Take on a leadership role in analysis, influencing business strategy.',4,1,'pending',5),(40,'Director of Analytics','Oversee the analytics department, driving data strategy and innovation.',5,1,'pending',5),(41,'Chief Data Officer','Lead the organization’s data initiatives, ensuring data-driven decision making.',6,1,'pending',5),(146,'Complete Law School','Finish your degree in law to gain foundational legal knowledge.',1,2,'pending',29),(147,'Explore Legal Journalism','Combine your legal expertise with journalism to report on legal issues.',1,2,'pending',30),(148,'Become a Legal Analyst','Provide analysis on legal issues for media outlets.',2,2,'pending',30),(149,'Pursue a Career in Legal Publishing','Work with publishers to produce legal texts and journals.',3,2,'pending',30),(150,'Advance to Legal Consultancy','Offer consultancy services to media companies on legal matters.',4,2,'pending',30),(151,'Reach the Role of Chief Legal Correspondent','Lead and manage a team of legal correspondents for a media organization.',5,2,'pending',30),(152,'Enter Legal Management Training','Gain managerial skills specific to legal environments.',1,2,'pending',31),(153,'Become an Associate Manager','Manage small teams within a legal firm.',2,2,'pending',31),(154,'Progress to Legal Manager','Oversee the operations of legal departments.',3,2,'pending',31),(155,'Advance to Director of Legal Affairs','Direct and coordinate legal operations across multiple departments.',4,2,'pending',31),(156,'Achieve Position of Chief Legal Officer','Lead the entire legal strategy of an organization.',5,2,'pending',31),(157,'Gain Technical Legal Skills','Develop expertise in legal technology and systems.',1,2,'pending',32),(158,'Become a Legal Technologist','Implement and manage legal tech solutions.',2,2,'pending',32),(159,'Advance to Legal Technology Manager','Oversee legal technology projects and teams.',3,2,'pending',32),(160,'Progress to Head of Legal Technology','Lead the strategy and implementation of legal technology solutions.',4,2,'pending',32),(161,'Attain Position of Chief Legal Technology Officer','Strategically direct the legal technology initiatives of an organization.',5,2,'pending',32),(162,'Complete Legal Practice Course (LPC)','Undertake the LPC to gain practical skills and knowledge for legal practice.',2,2,'pending',29),(163,'Secure a Training Contract','Obtain a training contract with a law firm to gain hands-on experience.',3,2,'pending',29),(164,'Complete Professional Skills Course (PSC)','Finish the PSC to enhance your skills in legal practice.',4,2,'pending',29),(165,'Qualify as a Solicitor','Pass the Solicitors Qualifying Exam (SQE) to become a fully qualified solicitor.',5,2,'pending',29),(166,'Gain Experience and Specialize','Develop expertise in a specific area of law to enhance your career.',6,2,'pending',29),(167,'Apprentice Pipefitter','Start as an apprentice pipefitter, learning the trade under the supervision of experienced professionals.',1,3,'pending',33),(168,'Plumbing Inspector','Transition to a role focused on inspecting plumbing systems for compliance with codes.',1,3,'pending',34),(169,'Safety Officer','Ensure workplace safety and adherence to safety regulations.',2,3,'pending',34),(170,'Project Estimator','Calculate costs and labor required for projects.',3,3,'pending',34),(171,'Construction Manager','Oversee construction projects from start to finish.',4,3,'pending',34),(172,'Industry Consultant','Provide expert advice on construction and pipefitting projects.',5,3,'pending',34),(173,'Pipefitting Supervisor','Supervise a team of pipefitters, ensuring quality and safety.',1,3,'pending',35),(174,'Site Manager','Manage day-to-day operations on construction sites.',2,3,'pending',35),(175,'Project Manager','Plan, execute, and finalize projects within deadlines and budgets.',3,3,'pending',35),(176,'Operations Manager','Oversee the overall operations of construction projects and teams.',4,3,'pending',35),(177,'General Superintendent','Manage multiple projects, ensuring alignment with company goals.',5,3,'pending',35),(178,'Certified Pipefitter','Achieve certification to demonstrate advanced skills and knowledge.',1,3,'pending',36),(179,'Pipefitting Specialist','Specialize in a specific type of pipefitting, such as high-pressure systems.',2,3,'pending',36),(180,'Technical Trainer','Train new recruits and apprentices in pipefitting techniques.',3,3,'pending',36),(181,'Technical Consultant','Provide technical advice and solutions for complex pipefitting projects.',4,3,'pending',36),(182,'Chief Technical Officer','Lead the technical direction of projects and innovations.',5,3,'pending',36),(183,'Journeyman Pipefitter','Gain experience and skills as a certified journeyman pipefitter.',2,3,'pending',33),(184,'Lead Pipefitter','Take on leadership roles within pipefitting projects, guiding junior staff.',3,3,'pending',33),(185,'Foreman','Supervise and coordinate the activities of a team of pipefitters.',4,3,'pending',33),(186,'Superintendent','Oversee the entire construction process, ensuring projects meet specifications and deadlines.',5,3,'pending',33),(187,'Complete Law Degree','Finish your law degree to establish a foundation in legal principles and practices.',1,4,'pending',37),(188,'Legal Consultant','Provide legal advice and expertise to organizations or individuals.',1,4,'pending',38),(189,'Policy Advisor','Influence and guide policy decisions for government or NGOs.',2,4,'pending',38),(190,'Mediator','Facilitate negotiations and conflict resolution between parties.',3,4,'pending',38),(191,'Human Rights Advocate','Work to protect and promote human rights on a local or global scale.',4,4,'pending',38),(192,'Legal Entrepreneur','Start and manage a legal tech company or consultancy.',5,4,'pending',38),(193,'Team Lead - Legal Department','Manage a team of junior lawyers and oversee legal projects.',1,4,'pending',39),(194,'Legal Manager','Oversee legal operations and compliance within an organization.',2,4,'pending',39),(195,'Director of Legal Affairs','Direct the legal strategy and policy for a company.',3,4,'pending',39),(196,'Chief Legal Officer','Lead the legal department and advise senior leadership on legal matters.',4,4,'pending',39),(197,'CEO','Oversee the entire operations of the company, including legal strategies.',5,4,'pending',39),(198,'Legal Researcher','Conduct in-depth research on legal topics and emerging issues.',1,4,'pending',40),(199,'Legal Analyst','Analyze legal data and trends to provide insights and recommendations.',2,4,'pending',40),(200,'Legal Tech Specialist','Develop and implement technology solutions for legal processes.',3,4,'pending',40),(201,'AI Legal Consultant','Advise on the integration and use of AI in legal settings.',4,4,'pending',40),(202,'CTO of Legal Tech Firm','Lead the technical strategy and development of legal technology solutions.',5,4,'pending',40),(203,'Pass the Bar Exam','Successfully pass the bar exam to become a licensed attorney.',2,4,'pending',37),(204,'Associate Attorney','Work as an associate attorney to gain practical experience in legal practice.',3,4,'pending',37),(205,'Senior Attorney','Handle more complex legal cases and mentor junior lawyers.',4,4,'pending',37),(206,'Partner','Become a partner in a law firm, sharing in the ownership and management.',5,4,'pending',37),(207,'Judge','Preside over court proceedings, ensuring justice is served.',6,4,'pending',37),(208,'Complete Law Degree','Graduate with a law degree from a recognized UK university.',1,5,'pending',41),(209,'Legal Consultant','Advise businesses or individuals on legal matters.',1,5,'pending',42),(210,'In-House Legal Advisor','Provide legal guidance within a corporation.',2,5,'pending',42),(211,'Legal Journalist','Write and report on legal issues and cases.',3,5,'pending',42),(212,'Legal Educator','Teach law at universities or colleges.',4,5,'pending',42),(213,'Policy Advisor','Influence and develop public policy.',5,5,'pending',42),(214,'Legal Team Lead','Lead a team of legal professionals in a firm.',1,5,'pending',43),(215,'Head of Legal Department','Oversee the legal operations within an organization.',2,5,'pending',43),(216,'Chief Legal Officer','Manage all legal aspects of a corporation.',3,5,'pending',43),(217,'Director of Legal Affairs','Direct legal strategy and policy for a large entity.',4,5,'pending',43),(218,'Managing Partner','Lead a law firm and manage its operations.',5,5,'pending',43),(219,'Legal Technology Specialist','Implement and manage legal tech solutions.',1,5,'pending',44),(220,'E-Discovery Specialist','Manage electronic discovery processes in legal cases.',2,5,'pending',44),(221,'Legal Data Analyst','Analyze legal data to provide insights and support decisions.',3,5,'pending',44),(222,'Legal Software Developer','Develop software solutions for legal applications.',4,5,'pending',44),(223,'Chief Technology Officer (Legal Tech)','Oversee technology strategy and implementation in a legal context.',5,5,'pending',44),(224,'Complete Legal Practice Course (LPC)','Finish the LPC to gain practical skills and knowledge for legal practice.',2,5,'pending',41),(225,'Secure a Training Contract','Obtain a training contract with a law firm to gain hands-on experience.',3,5,'pending',41),(226,'Qualify as a Solicitor','Complete the training contract and qualify as a solicitor.',4,5,'pending',41),(227,'Specialize in a Legal Field','Choose a specialization such as family law, criminal law, or corporate law.',5,5,'pending',41),(228,'Partner in a Law Firm','Aim to become a partner in a law firm, leading cases and teams.',6,5,'pending',41),(229,'Current Role: JavaScript Developer','Enhance your core JavaScript skills and get acquainted with modern JavaScript frameworks.',1,6,'pending',45),(230,'Explore Frontend Frameworks','Dive into various frontend frameworks to broaden your understanding.',1,6,'pending',46),(231,'Explore Backend Technologies','Understand backend development through different technologies.',2,6,'pending',46),(232,'Explore DevOps Basics','Learn the basics of DevOps to manage deployments and CI/CD.',3,6,'pending',46),(233,'Explore Mobile Development','Gain insights into mobile app development.',4,6,'pending',46),(234,'Full Stack Exploration','Integrate your knowledge from various technologies into full stack projects.',5,6,'pending',46),(235,'Team Lead','Begin leading a small team to gain leadership experience.',1,6,'pending',47),(236,'Engineering Manager','Manage multiple teams and oversee project delivery.',2,6,'pending',47),(237,'Director of Engineering','Oversee the engineering department and align technical strategies with business goals.',3,6,'pending',47),(238,'VP of Technology','Define the technological vision and drive innovation across the company.',4,6,'pending',47),(239,'CTO','Lead the technological direction of the entire organization.',5,6,'pending',47),(240,'Backend Developer','Specialize in backend development and server-side technologies.',1,6,'pending',48),(241,'DevOps Engineer','Focus on the integration of development, operations, and quality assurance.',2,6,'pending',48),(242,'Systems Architect','Design and implement complex systems architectures.',3,6,'pending',48),(243,'Principal Engineer','Lead the technical direction for complex projects and mentor other engineers.',4,6,'pending',48),(244,'Chief Architect','Oversee all technical aspects and architectural decisions within an organization.',5,6,'pending',48),(245,'Learn Backend Basics','Start learning backend development fundamentals.',2,6,'pending',45),(246,'Deepen Frontend Skills','Enhance your knowledge of frontend frameworks and libraries.',3,6,'pending',45),(247,'Build Full Stack Projects','Create full stack applications to solidify your understanding.',4,6,'pending',45),(248,'Advanced Full Stack Developer','Master advanced full stack development concepts and practices.',5,6,'pending',45),(249,'Full Stack Developer','Achieve proficiency as a full stack developer, capable of handling end-to-end development.',6,6,'pending',45),(250,'IT Support Specialist','Provide technical support and assistance to users and organizations.',1,7,'pending',49),(251,'IT Consultant','Advise organizations on how to use IT to meet their business objectives.',1,7,'pending',50),(252,'Business Analyst','Analyze business needs and propose IT solutions.',2,7,'pending',50),(253,'Product Manager','Oversee the development and delivery of products.',3,7,'pending',50),(254,'Innovation Manager','Drive innovation initiatives within the organization.',4,7,'pending',50),(255,'Chief Technology Officer (CTO)','Lead the technology direction of the organization.',5,7,'pending',50),(256,'Team Leader','Coordinate a team of IT professionals.',1,7,'pending',51),(257,'IT Manager','Oversee IT operations and strategy.',2,7,'pending',51),(258,'Senior IT Manager','Lead multiple IT teams towards achieving strategic goals.',3,7,'pending',51),(259,'Director of IT','Formulate IT strategy to align with business objectives.',4,7,'pending',51),(260,'Chief Information Officer (CIO)','Direct the IT strategy and operations across the organization.',5,7,'pending',51),(261,'System Administrator','Manage and maintain IT systems and infrastructure.',1,7,'pending',52),(262,'Network Engineer','Design and maintain network systems.',2,7,'pending',52),(263,'Cloud Architect','Design and implement cloud-based solutions.',3,7,'pending',52),(264,'DevOps Engineer','Facilitate the collaboration between development and operations.',4,7,'pending',52),(265,'Technical Architect','Design high-level solutions and ensure alignment with strategic goals.',5,7,'pending',52),(266,'Network Administrator','Manage and support network systems within an organization.',2,7,'pending',49),(267,'Systems Analyst','Analyze and design IT solutions to solve business problems.',3,7,'pending',49),(268,'IT Project Manager','Plan and execute IT projects within scope, time, and budget.',4,7,'pending',49),(269,'IT Operations Manager','Lead the IT operations team to ensure smooth and efficient IT services.',5,7,'pending',49),(270,'Head of IT','Oversee all IT functions within the organization, aligning them with business goals.',6,7,'pending',49),(555,'Python Developer','Current role focusing on developing applications using Python.',1,9,'pending',109),(556,'Data Analyst','Explore data analysis using Python libraries.',1,9,'pending',110),(557,'Data Scientist','Apply machine learning techniques to extract insights.',2,9,'pending',110),(558,'AI Researcher','Conduct research to advance AI technologies.',3,9,'pending',110),(559,'AI Consultant','Provide AI solutions to businesses.',4,9,'pending',110),(560,'Chief AI Officer','Lead AI initiatives at the organizational level.',5,9,'pending',110),(561,'Team Lead','Lead a team of developers in project execution.',1,9,'pending',111),(562,'Project Manager','Oversee project timelines and deliverables.',2,9,'pending',111),(563,'Program Manager','Manage multiple related projects.',3,9,'pending',111),(564,'Director of Engineering','Oversee engineering teams and technical strategy.',4,9,'pending',111),(565,'VP of Technology','Lead technology vision and strategy at the executive level.',5,9,'pending',111),(566,'Machine Learning Engineer','Develop machine learning models and pipelines.',1,9,'pending',112),(567,'Deep Learning Specialist','Focus on deep learning architectures and applications.',2,9,'pending',112),(568,'AI Architect','Design AI systems and infrastructure.',3,9,'pending',112),(569,'AI Solutions Architect','Develop AI solutions tailored to business needs.',4,9,'pending',112),(570,'Chief Technology Officer','Lead technology strategy and innovation.',5,9,'pending',112),(571,'AI Enthusiast','Begin exploring AI concepts and applications.',2,9,'pending',109),(572,'AI Practitioner','Gain hands-on experience with AI tools and frameworks.',3,9,'pending',109),(573,'AI Specialist','Specialize in AI techniques and methodologies.',4,9,'pending',109),(574,'AI Engineer','Achieve the goal of becoming an AI Engineer.',5,9,'pending',109),(679,'Data Scientist at UdhaarBook','Current role focusing on data analysis and model development.',1,11,'pending',133),(680,'AI Researcher','Conduct research in AI to develop innovative solutions.',1,11,'pending',134),(681,'AI Product Innovator','Design and innovate AI products for various industries.',2,11,'pending',134),(682,'AI Consultant','Provide expert advice on AI implementation and strategy.',3,11,'pending',134),(683,'AI Entrepreneur','Start and grow a business focused on AI solutions.',4,11,'pending',134),(684,'AI Thought Leader','Become a recognized expert and speaker in the AI field.',5,11,'pending',134),(685,'Team Lead','Lead a team of data scientists and AI specialists.',1,11,'pending',135),(686,'AI Project Manager','Oversee AI projects from conception to completion.',2,11,'pending',135),(687,'AI Program Director','Direct multiple AI projects and ensure alignment with company goals.',3,11,'pending',135),(688,'Chief AI Officer','Lead AI initiatives at the executive level in an organization.',4,11,'pending',135),(689,'AI Industry Leader','Become a prominent figure in the AI industry, influencing trends and policies.',5,11,'pending',135),(690,'Senior Data Scientist','Advance technical expertise in data science and AI.',1,11,'pending',136),(691,'AI Architect','Design AI systems and architectures for complex projects.',2,11,'pending',136),(692,'Machine Learning Engineer','Focus on deploying and maintaining AI models in production.',3,11,'pending',136),(693,'AI Specialist','Specialize in a niche area of AI, such as NLP or computer vision.',4,11,'pending',136),(694,'AI Innovator','Lead technical innovation and breakthroughs in AI.',5,11,'pending',136),(695,'Senior Data Scientist','Enhance expertise and lead data science projects.',2,11,'pending',133),(696,'AI Specialist','Specialize in a specific AI domain, such as NLP or computer vision.',3,11,'pending',133),(697,'AI Architect','Design and implement AI architectures for scalable solutions.',4,11,'pending',133),(698,'Chief AI Officer','Lead AI strategy and implementation at the organizational level.',5,11,'pending',133),(699,'AI Industry Leader','Become a leading figure in the AI industry, influencing trends and policies.',6,11,'pending',133),(700,'Junior React.js Developer','Begin your career as a Junior React.js Developer, focusing on building user interfaces and understanding component-based architecture.',1,18,'pending',137),(701,'Freelance Web Developer','Explore freelancing opportunities to work on diverse projects, enhancing your portfolio and client interaction skills.',1,18,'pending',138),(702,'Open Source Contributor','Contribute to open source projects to gain experience and recognition in the developer community.',2,18,'pending',138),(703,'Tech Blogger','Start a tech blog to share knowledge and insights, building a personal brand in the tech community.',3,18,'pending',138),(704,'Workshop Facilitator','Conduct workshops and training sessions to educate others and refine your teaching skills.',4,18,'pending',138),(705,'Team Lead','Transition to a Team Lead role, managing a small team of developers and overseeing project delivery.',1,18,'pending',139),(706,'Project Manager','Advance to Project Manager, responsible for planning, executing, and closing projects.',2,18,'pending',139),(707,'Product Manager','Become a Product Manager, focusing on product strategy, development, and lifecycle management.',3,18,'pending',139),(708,'Director of Engineering','Reach the position of Director of Engineering, overseeing multiple teams and driving technical strategy.',4,18,'pending',139),(709,'Senior React.js Developer','Advance to a Senior React.js Developer, taking on complex projects and mentoring junior developers.',1,18,'pending',140),(710,'Full Stack Developer','Expand your skill set to become a Full Stack Developer, working with both front-end and back-end technologies.',2,18,'pending',140),(711,'Technical Architect','Transition to a Technical Architect, designing scalable systems and leading technical decision-making.',3,18,'pending',140),(712,'CTO','Achieve the role of Chief Technology Officer, setting the company\'s technical vision and strategy.',4,18,'pending',140),(713,'Mid-Level React.js Developer','Continue developing as a Mid-Level React.js Developer, taking on more responsibility and complex projects.',2,18,'pending',137),(714,'Senior Frontend Developer','Progress to a Senior Frontend Developer, leading frontend projects and ensuring high-quality user experiences.',3,18,'pending',137),(715,'Lead Frontend Developer','Become a Lead Frontend Developer, managing frontend teams and driving innovation in user interface design.',4,18,'pending',137),(716,'Frontend Architect','Achieve the position of Frontend Architect, responsible for the overall frontend architecture and technology strategy.',5,18,'pending',137),(717,'Bike Mechanic','Begin as a bike mechanic, gaining foundational mechanical skills.',1,17,'pending',141),(718,'Explore Electric Bikes','Learn about electric bike systems and technology.',1,17,'pending',142),(719,'Sustainable Transportation Advocate','Promote sustainable transportation solutions.',2,17,'pending',142),(720,'Automotive Journalist','Write and report on automotive industry trends.',3,17,'pending',142),(721,'Automotive Industry Consultant','Advise companies on industry trends and innovations.',4,17,'pending',142),(722,'Automotive Innovation Leader','Lead initiatives in automotive innovation and technology.',5,17,'pending',142),(723,'Workshop Supervisor','Supervise a team of mechanics in a workshop setting.',1,17,'pending',143),(724,'Service Manager','Manage service operations and ensure customer satisfaction.',2,17,'pending',143),(725,'Operations Director','Oversee multiple service centers and streamline operations.',3,17,'pending',143),(726,'General Manager','Lead the overall business operations and strategy.',4,17,'pending',143),(727,'Vice President of Operations','Drive strategic initiatives and operational excellence.',5,17,'pending',143),(728,'Automotive Technician','Transition to working on automotive systems.',1,17,'pending',144),(729,'Junior Automotive Engineer','Assist in engineering tasks and learn advanced automotive technologies.',2,17,'pending',144),(730,'Automotive Engineer','Design and develop automotive components and systems.',3,17,'pending',144),(731,'Senior Automotive Engineer','Lead engineering projects and mentor junior engineers.',4,17,'pending',144),(732,'Chief Automotive Engineer','Oversee all engineering operations and strategic development.',5,17,'pending',144),(733,'Automotive Technician Certification','Obtain certification to work on automotive vehicles.',2,17,'pending',141),(734,'Associate Degree in Automotive Technology','Pursue an associate degree to gain formal education in automotive technology.',3,17,'pending',141),(735,'Internship in Automotive Engineering','Gain practical experience through an internship in automotive engineering.',4,17,'pending',141),(736,'Bachelor\'s Degree in Mechanical Engineering','Complete a bachelor\'s degree in mechanical engineering with a focus on automotive systems.',5,17,'pending',141),(737,'Automobile Engineer','Achieve the goal of becoming an automobile engineer, designing and developing vehicles.',6,17,'pending',141),(738,'Junior React.js Developer','Started career as a Junior React.js Developer, focusing on building responsive web applications.',1,15,'pending',145),(739,'Freelance Web Developer','Explore freelance opportunities to work on diverse projects and enhance portfolio.',1,15,'pending',146),(740,'Open Source Contributor','Contribute to open source projects to gain experience and recognition in the developer community.',2,15,'pending',146),(741,'Tech Blogger','Start a tech blog to share knowledge and insights on web development trends.',3,15,'pending',146),(742,'Tech Conference Speaker','Speak at tech conferences to build a professional network and establish expertise.',4,15,'pending',146),(743,'Team Lead','Transition into a leadership role, managing a team of developers and overseeing projects.',1,15,'pending',147),(744,'Development Manager','Manage multiple teams and projects, ensuring alignment with business goals.',2,15,'pending',147),(745,'Director of Engineering','Oversee the entire engineering department, driving innovation and efficiency.',3,15,'pending',147),(746,'Chief Technology Officer (CTO)','Lead the company\'s technology vision and strategy, ensuring competitive advantage.',4,15,'pending',147),(747,'Senior React.js Developer','Advance to a senior developer role, taking on complex projects and mentoring juniors.',1,15,'pending',148),(748,'Full Stack Developer','Expand skills to include backend development, becoming proficient in the MERN stack.',2,15,'pending',148),(749,'Technical Architect','Design and oversee the implementation of complex software systems.',3,15,'pending',148),(750,'Principal Engineer','Serve as a technical leader, providing guidance and direction for major projects.',4,15,'pending',148),(751,'Mid-Level React.js Developer','Currently working as a Mid-Level React.js Developer, enhancing skills in modern web technologies.',2,15,'pending',145),(752,'Senior Frontend Developer','Aim to become a Senior Frontend Developer, leading frontend projects and teams.',3,15,'pending',145),(753,'Frontend Architect','Transition to a Frontend Architect role, focusing on designing scalable frontend systems.',4,15,'pending',145),(754,'Head of Frontend Development','Lead the frontend development team, driving innovation and best practices.',5,15,'pending',145),(755,'Current Position: Junior Analyst','Starting point in the career path, focusing on data analysis and reporting.',1,13,'pending',149),(756,'Exploratory Step: Research Assistant','Supporting research projects and exploring new methodologies.',1,13,'pending',150),(757,'Exploratory Step: Market Research Analyst','Analyzing market trends and consumer behavior.',2,13,'pending',150),(758,'Exploratory Step: Product Development Specialist','Contributing to product development and innovation.',3,13,'pending',150),(759,'Exploratory Step: Business Consultant','Providing strategic advice to improve business performance.',4,13,'pending',150),(760,'Exploratory Step: Innovation Manager','Leading innovation projects and fostering a culture of creativity.',5,13,'pending',150),(761,'Managerial Step: Team Lead','Leading a team of analysts and managing daily operations.',1,13,'pending',151),(762,'Managerial Step: Department Manager','Overseeing department functions and aligning with organizational goals.',2,13,'pending',151),(763,'Managerial Step: Operations Director','Directing operations and ensuring efficiency across the organization.',3,13,'pending',151),(764,'Managerial Step: Vice President of Operations','Leading the operations division and driving strategic initiatives.',4,13,'pending',151),(765,'Managerial Step: Chief Operations Officer','Overseeing company operations and implementing strategic plans.',5,13,'pending',151),(766,'Technical Step: Data Scientist','Utilizing data science techniques to derive insights and solutions.',1,13,'pending',152),(767,'Technical Step: Senior Data Engineer','Designing and optimizing data pipelines and architectures.',2,13,'pending',152),(768,'Technical Step: AI Specialist','Developing and implementing AI solutions for business challenges.',3,13,'pending',152),(769,'Technical Step: Lead Data Architect','Leading the design and implementation of data architecture solutions.',4,13,'pending',152),(770,'Technical Step: Chief Technology Officer','Driving technological innovation and overseeing the technology strategy.',5,13,'pending',152),(771,'Mid-Level Analyst','Advancing skills in data analysis and taking on more complex projects.',2,13,'pending',149),(772,'Senior Analyst','Leading analysis projects and mentoring junior analysts.',3,13,'pending',149),(773,'Data Analysis Manager','Managing a team of analysts and overseeing data projects.',4,13,'pending',149),(774,'Director of Data Analysis','Setting strategic direction for data analysis and ensuring alignment with business goals.',5,13,'pending',149),(775,'Chief Data Officer','Leading the data strategy and driving data-driven decision-making across the organization.',6,13,'pending',149),(797,'Initial Position','Starting point in the current career path.',1,12,'pending',157),(798,'Exploratory Researcher','Engage in diverse research projects to broaden knowledge.',1,12,'pending',158),(799,'Innovation Specialist','Focus on innovative solutions and creative problem solving.',2,12,'pending',158),(800,'Cross-Functional Consultant','Provide insights across various departments to enhance efficiency.',3,12,'pending',158),(801,'Innovation Director','Lead innovation initiatives and manage creative teams.',4,12,'pending',158),(802,'Chief Innovation Officer','Oversee the organization\'s innovation strategy and implementation.',5,12,'pending',158),(803,'Team Leader','Lead a small team to achieve project goals.',1,12,'pending',159),(804,'Project Manager','Manage projects from inception to completion.',2,12,'pending',159),(805,'Operations Manager','Oversee daily operations and improve efficiency.',3,12,'pending',159),(806,'Director of Operations','Strategically manage and direct operational activities.',4,12,'pending',159),(807,'Chief Operating Officer','Responsible for the overall operations of the company.',5,12,'pending',159),(808,'Technical Specialist','Develop specialized technical skills in a specific domain.',1,12,'pending',160),(809,'Senior Developer','Lead development projects and mentor junior developers.',2,12,'pending',160),(810,'Technical Lead','Oversee technical teams and ensure project success.',3,12,'pending',160),(811,'Engineering Manager','Manage engineering teams and drive technical innovation.',4,12,'pending',160),(812,'Chief Technology Officer','Lead the company\'s technological development and strategy.',5,12,'pending',160),(813,'Mid-Level Professional','Gain experience and refine skills in the current field.',2,12,'pending',157),(814,'Senior Professional','Take on more responsibilities and lead projects.',3,12,'pending',157),(815,'Department Head','Lead a department and drive strategic initiatives.',4,12,'pending',157),(816,'Vice President','Oversee multiple departments and contribute to corporate strategy.',5,12,'pending',157),(817,'Chief Executive Officer','Lead the organization towards achieving its mission and vision.',6,12,'pending',157),(839,'AI Engineer','Begin your career as an AI Engineer, focusing on machine learning and deep learning projects.',1,21,'pending',165),(840,'AI Researcher','Engage in AI research to explore new methodologies in generative AI.',1,21,'pending',166),(841,'Data Scientist','Transition to a Data Scientist role focusing on data-driven decision making.',2,21,'pending',166),(842,'AI Consultant','Provide consulting services to companies on AI strategies and implementation.',3,21,'pending',166),(843,'AI Product Manager','Manage AI product development and lifecycle.',4,21,'pending',166),(844,'Chief AI Officer','Lead the AI strategy and innovation for the organization.',5,21,'pending',166),(845,'Team Lead','Lead a team of AI engineers to deliver projects.',1,21,'pending',167),(846,'AI Project Manager','Oversee AI project planning and execution.',2,21,'pending',167),(847,'Director of AI','Direct AI initiatives across multiple departments.',3,21,'pending',167),(848,'Vice President of AI','Drive the AI vision and align it with business goals.',4,21,'pending',167),(849,'Chief Technology Officer (CTO)','Lead the company\'s technological vision and development.',5,21,'pending',167),(850,'Senior AI Engineer','Advance to a senior role focusing on complex AI solutions.',1,21,'pending',168),(851,'AI Architect','Design and oversee AI architecture for scalable solutions.',2,21,'pending',168),(852,'AI Specialist','Specialize in niche AI technologies and solutions.',3,21,'pending',168),(853,'Lead AI Developer','Lead AI development projects across various industries.',4,21,'pending',168),(854,'Principal AI Engineer','Achieve the pinnacle of technical expertise in AI engineering.',5,21,'pending',168),(855,'Mid-Level AI Engineer','Progress to a mid-level AI engineer role, focusing on advanced AI projects.',2,21,'pending',165),(856,'Senior AI Engineer','Advance to a senior AI engineer position, managing AI projects and mentoring juniors.',3,21,'pending',165),(857,'AI Technical Lead','Lead AI technical teams and oversee AI solution development.',4,21,'pending',165),(858,'AI Director','Direct the AI strategy and operations within the organization.',5,21,'pending',165),(859,'Chief AI Officer','Achieve the role of Chief AI Officer, leading AI initiatives at the corporate level.',6,21,'pending',165),(860,'AI Intern','Begin as an AI Intern at a tech company, focusing on machine learning projects.',1,20,'pending',169),(861,'AI Research Assistant','Explore research opportunities in AI, contributing to academic papers.',1,20,'pending',170),(862,'AI Product Innovator','Develop innovative AI products, focusing on generative AI applications.',2,20,'pending',170),(863,'AI Consultant','Provide expert advice on AI integration for businesses.',3,20,'pending',170),(864,'AI Innovation Leader','Lead AI innovation teams in exploring new AI technologies.',4,20,'pending',170),(865,'AI Project Manager','Manage AI projects, ensuring timely delivery and quality assurance.',1,20,'pending',171),(866,'AI Department Head','Lead the AI department, setting strategic goals and overseeing operations.',2,20,'pending',171),(867,'VP of AI','Oversee all AI initiatives within the organization, driving innovation.',3,20,'pending',171),(868,'Chief AI Officer','Serve as the top AI executive, guiding the organization’s AI vision.',4,20,'pending',171),(869,'Machine Learning Engineer','Develop and deploy machine learning models and systems.',1,20,'pending',172),(870,'Senior AI Engineer','Lead AI projects, focusing on advanced machine learning techniques.',2,20,'pending',172),(871,'AI Architect','Design AI systems, ensuring alignment with business goals.',3,20,'pending',172),(872,'AI Fellow','Achieve recognition as an AI expert, contributing to industry standards.',4,20,'pending',172),(873,'Junior AI Engineer','Work as a Junior AI Engineer, implementing AI solutions in projects.',2,20,'pending',169),(874,'AI Engineer','Advance to AI Engineer, taking lead roles in AI projects.',3,20,'pending',169),(875,'Lead AI Engineer','Lead AI engineering teams, focusing on innovative AI solutions.',4,20,'pending',169),(876,'Principal AI Engineer','Serve as a Principal AI Engineer, guiding the technical direction of AI projects.',5,20,'pending',169),(877,'Director of AI','Reach the position of Director of AI, overseeing all AI initiatives.',6,20,'pending',169),(899,'AI Engineer','Begin your career as an AI Engineer, focusing on practical applications of AI technologies.',1,10,'pending',177),(900,'AI Researcher','Explore new AI methodologies and contribute to academic papers.',1,10,'pending',178),(901,'AI Consultant','Provide AI solutions and strategies to various industries.',2,10,'pending',178),(902,'AI Product Manager','Manage AI products from conception to launch.',3,10,'pending',178),(903,'AI Entrepreneur','Start your own AI-focused company.',4,10,'pending',178),(904,'Chief AI Officer','Lead AI initiatives at an organizational level.',5,10,'pending',178),(905,'Team Lead','Lead a team of AI engineers and manage projects.',1,10,'pending',179),(906,'AI Program Manager','Oversee multiple AI projects and ensure alignment with business goals.',2,10,'pending',179),(907,'Director of AI','Direct AI strategy and operations within a company.',3,10,'pending',179),(908,'VP of AI','Drive AI innovation and growth at the executive level.',4,10,'pending',179),(909,'CEO','Lead the entire organization with a focus on AI-driven growth.',5,10,'pending',179),(910,'Senior AI Engineer','Advance technical skills and lead complex AI projects.',1,10,'pending',180),(911,'AI Architect','Design and implement AI systems and frameworks.',2,10,'pending',180),(912,'Principal AI Engineer','Lead technical direction and innovation in AI projects.',3,10,'pending',180),(913,'Chief Technology Officer','Oversee technology strategy and infrastructure.',4,10,'pending',180),(914,'Technical Fellow','Achieve the highest level of technical expertise and influence.',5,10,'pending',180),(915,'Senior AI Engineer','Progress to a senior role, leading AI projects and mentoring junior engineers.',2,10,'pending',177),(916,'AI Architect','Design and oversee AI system architectures and frameworks.',3,10,'pending',177),(917,'AI Product Manager','Manage AI products from conception to deployment.',4,10,'pending',177),(918,'Director of AI','Lead AI initiatives and strategy at the organizational level.',5,10,'pending',177),(919,'Entry-Level Analyst','Begin your career as an analyst, focusing on data collection and initial analysis.',1,8,'pending',181),(920,'Exploratory Researcher','Conduct exploratory research to identify new trends and insights.',1,8,'pending',182),(921,'Innovation Specialist','Focus on developing innovative solutions and strategies.',2,8,'pending',182),(922,'Strategic Planner','Develop strategic plans to guide organizational growth.',3,8,'pending',182),(923,'Exploratory Manager','Lead a team focused on exploring new business opportunities.',4,8,'pending',182),(924,'Director of Innovation','Oversee innovation initiatives and drive organizational change.',5,8,'pending',182),(925,'Team Lead','Lead a small team to achieve project goals.',1,8,'pending',183),(926,'Project Manager','Manage projects from inception to completion, ensuring timelines and budgets are met.',2,8,'pending',183),(927,'Operations Manager','Oversee daily operations and improve efficiency.',3,8,'pending',183),(928,'Senior Manager','Lead multiple teams and manage large-scale projects.',4,8,'pending',183),(929,'Vice President of Operations','Oversee all operational aspects of the organization.',5,8,'pending',183),(930,'Technical Specialist','Develop specialized technical skills in your field.',1,8,'pending',184),(931,'Senior Technical Analyst','Provide advanced technical analysis and solutions.',2,8,'pending',184),(932,'Technical Project Lead','Lead technical projects and manage technical teams.',3,8,'pending',184),(933,'Chief Technical Officer','Oversee the technical direction of the company.',4,8,'pending',184),(934,'Technical Consultant','Provide expert technical advice and solutions to clients.',5,8,'pending',184),(935,'Mid-Level Analyst','Advance to a mid-level analyst position, taking on more complex projects.',2,8,'pending',181),(936,'Senior Analyst','Become a senior analyst, leading analysis projects and mentoring junior staff.',3,8,'pending',181),(937,'Lead Data Scientist','Transition to a lead data scientist role, overseeing data science projects.',4,8,'pending',181),(938,'Chief Data Officer','Reach the pinnacle of your career as a Chief Data Officer, responsible for data strategy.',5,8,'pending',181),(981,'Data Scientist at UdhaarBook','Currently working as a Data Scientist, focusing on developing machine learning models and data-driven solutions.',1,22,'pending',193),(982,'AI Researcher','Explore the field of AI research, focusing on innovative solutions and publishing research papers.',1,22,'pending',194),(983,'AI Consultant','Provide AI consulting services to various industries, helping them integrate AI solutions.',2,22,'pending',194),(984,'AI Product Manager','Manage AI product development, focusing on market needs and user experience.',3,22,'pending',194),(985,'AI Entrepreneur','Start an AI-focused company, developing innovative solutions for real-world problems.',4,22,'pending',194),(986,'Chief AI Officer','Lead AI strategy and implementation at an organizational level.',5,22,'pending',194),(987,'Team Lead','Lead a team of data scientists and engineers to deliver AI projects.',1,22,'pending',195),(988,'AI Project Manager','Oversee AI projects, ensuring timely delivery and alignment with business goals.',2,22,'pending',195),(989,'Director of AI','Direct AI initiatives and strategies across the organization.',3,22,'pending',195),(990,'VP of Technology','Lead the technology division, focusing on AI and innovation.',4,22,'pending',195),(991,'Chief Technology Officer','Oversee the company\'s technological vision and direction.',5,22,'pending',195),(992,'Senior Data Scientist','Advance to a senior role, leading complex data science projects.',1,22,'pending',196),(993,'Machine Learning Engineer','Focus on building and deploying scalable machine learning models.',2,22,'pending',196),(994,'AI Architect','Design AI systems and architecture for large-scale applications.',3,22,'pending',196),(995,'Principal AI Engineer','Lead AI engineering efforts, focusing on innovation and excellence.',4,22,'pending',196),(996,'Distinguished Engineer','Achieve the highest technical position, recognized for expertise and contributions.',5,22,'pending',196),(997,'Senior Data Scientist','Progress to a senior data scientist role, leading projects and mentoring junior team members.',2,22,'pending',193),(998,'Lead Data Scientist','Lead the data science team, focusing on strategic initiatives and innovation.',3,22,'pending',193),(999,'Director of Data Science','Direct data science initiatives, aligning them with business objectives.',4,22,'pending',193),(1000,'Chief Data Officer','Oversee the organization\'s data strategy and governance.',5,22,'pending',193),(1001,'Passion for Music','Start as a singer, honing performance and vocal skills.',1,19,'pending',197),(1002,'Explore Music Production','Learn about music production to expand your skill set.',1,19,'pending',198),(1003,'Collaborate with Tech Teams','Work with tech teams to integrate music into digital platforms.',2,19,'pending',198),(1004,'Learn Basic Web Development','Start learning basic web development to understand the digital space.',3,19,'pending',198),(1005,'Create a Personal Website','Develop a personal website to showcase your music portfolio.',4,19,'pending',198),(1006,'Explore Music Tech Innovations','Stay updated with innovations in music technology and web development.',5,19,'pending',198),(1007,'Team Lead in Music Projects','Lead teams in music projects to develop managerial skills.',1,19,'pending',199),(1008,'Project Manager for Music Events','Manage music events to gain experience in project management.',2,19,'pending',199),(1009,'Manager in a Music Production Company','Advance to a managerial role within a music production company.',3,19,'pending',199),(1010,'Director of Digital Music Platforms','Direct digital music platforms, combining music and tech management.',4,19,'pending',199),(1011,'CEO of a Music Tech Company','Reach the pinnacle by becoming the CEO of a company at the intersection of music and technology.',5,19,'pending',199),(1012,'Learn Advanced Web Development','Advance your web development skills with more complex technologies.',1,19,'pending',200),(1013,'Front-End Developer','Work as a front-end developer to gain practical experience.',2,19,'pending',200),(1014,'Back-End Developer','Transition to a back-end developer role to enhance your technical expertise.',3,19,'pending',200),(1015,'Full-Stack Developer','Become a full-stack developer, mastering both front-end and back-end technologies.',4,19,'pending',200),(1016,'Lead Web Developer','Advance to a lead web developer position, guiding projects and teams.',5,19,'pending',200),(1017,'Basic Coding Skills','Start learning basic coding languages like HTML, CSS, and JavaScript.',2,19,'pending',197),(1018,'Web Development Bootcamp','Enroll in a web development bootcamp to gain structured learning.',3,19,'pending',197),(1019,'Build Portfolio Projects','Create a portfolio of web development projects to showcase your skills.',4,19,'pending',197),(1020,'Internship as a Web Developer','Gain practical experience by interning at a tech company.',5,19,'pending',197),(1021,'Junior Web Developer','Secure a position as a junior web developer.',6,19,'pending',197),(1022,'Progress to Web Developer','Advance to a full web developer role, taking on more complex projects.',7,19,'pending',197),(1023,'Senior Web Developer','Achieve a senior web developer position, leading projects and mentoring juniors.',8,19,'pending',197),(1024,'Goal: Expert Web Developer','Reach your goal of becoming an expert web developer, capable of handling diverse and advanced web projects.',9,19,'pending',197),(1025,'React Developer','Enhance proficiency in React and JavaScript frameworks.',1,16,'pending',201),(1026,'Full Stack Developer','Expand skillset to include backend technologies.',1,16,'pending',202),(1027,'Cloud Engineer','Learn cloud technologies and deployment practices.',2,16,'pending',202),(1028,'Data Analyst','Acquire skills to analyze and interpret complex data.',3,16,'pending',202),(1029,'Product Manager','Develop leadership and product management skills.',4,16,'pending',202),(1030,'Entrepreneur','Start your own tech venture.',5,16,'pending',202),(1031,'Team Lead','Lead a team of developers in project execution.',1,16,'pending',203),(1032,'Engineering Manager','Oversee engineering teams and drive technical projects.',2,16,'pending',203),(1033,'Director of Engineering','Manage multiple engineering teams and align them with company goals.',3,16,'pending',203),(1034,'VP of Engineering','Oversee the entire engineering department and contribute to executive decisions.',4,16,'pending',203),(1035,'CTO','Lead the technology strategy and innovation at the highest level.',5,16,'pending',203),(1036,'AI/ML Enthusiast','Begin exploring AI and Machine Learning concepts.',1,16,'pending',204),(1037,'AI Developer','Develop AI models and integrate them into applications.',2,16,'pending',204),(1038,'Machine Learning Engineer','Optimize and deploy scalable machine learning models.',3,16,'pending',204),(1039,'AI Specialist','Specialize in advanced AI techniques and solutions.',4,16,'pending',204),(1040,'AI Engineer','Design and implement cutting-edge AI systems.',5,16,'pending',204),(1041,'Frontend Architect','Design and lead the implementation of the frontend architecture.',2,16,'pending',201),(1042,'Tech Lead','Guide the technical direction of projects and mentor team members.',3,16,'pending',201),(1043,'AI Enthusiast','Start learning AI fundamentals and basic machine learning concepts.',4,16,'pending',201),(1044,'Junior AI Developer','Work on AI projects with supervision to gain practical experience.',5,16,'pending',201),(1045,'AI Engineer','Achieve the role of AI Engineer, integrating AI solutions across projects.',6,16,'pending',201),(1046,'Junior React.js Developer','Current position focusing on developing user interfaces using React.js and integrating APIs.',1,14,'pending',205),(1047,'Freelance Web Developer','Explore freelancing opportunities to work on diverse projects and expand skill set.',1,14,'pending',206),(1048,'Open Source Contributor','Contribute to open source projects to gain experience and recognition in the developer community.',2,14,'pending',206),(1049,'Startup Co-Founder','Start a tech company focusing on innovative web solutions.',3,14,'pending',206),(1050,'Tech Evangelist','Promote new technologies and represent the company at conferences and events.',4,14,'pending',206),(1051,'Innovation Consultant','Advise companies on tech innovations and digital transformation.',5,14,'pending',206),(1052,'Team Lead','Lead a team of developers, manage projects and ensure quality delivery.',1,14,'pending',207),(1053,'Development Manager','Oversee multiple development teams and coordinate with other departments.',2,14,'pending',207),(1054,'Director of Engineering','Direct the engineering department, focusing on long-term technical goals.',3,14,'pending',207),(1055,'VP of Technology','Formulate and implement the technological vision of the company.',4,14,'pending',207),(1056,'Chief Technology Officer (CTO)','Lead the company\'s technology strategy and innovation efforts at the executive level.',5,14,'pending',207),(1057,'Senior React.js Developer','Enhance expertise in React.js and take on more complex projects.',1,14,'pending',208),(1058,'Full Stack Developer','Develop both client and server software, working with the full stack.',2,14,'pending',208),(1059,'Lead Software Engineer','Lead technical projects and guide junior developers.',3,14,'pending',208),(1060,'Principal Engineer','Provide technical direction and innovation for the company’s products.',4,14,'pending',208),(1061,'Distinguished Engineer','Serve as a recognized leader in technology and innovation.',5,14,'pending',208),(1062,'MERN Stack Developer','Develop full-stack applications using MongoDB, Express.js, React.js, and Node.js.',2,14,'pending',205),(1063,'Senior MERN Stack Developer','Enhance skills in the MERN stack and lead development projects.',3,14,'pending',205),(1064,'Full Stack Architect','Design the architecture for full-stack solutions and oversee implementation.',4,14,'pending',205),(1065,'Technical Lead','Lead a team of developers to deliver high-quality software solutions.',5,14,'pending',205),(1066,'Software Development Manager','Manage software development teams and ensure alignment with business goals.',6,14,'pending',205),(1067,'Chief Technology Officer (CTO)','Drive the company’s technology strategy and innovation at the highest level.',7,14,'pending',205);
-/*!40000 ALTER TABLE `steps` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `subscriptions`
 --
 
-DROP TABLE IF EXISTS `subscriptions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subscriptions` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `valid_till` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `valid_till` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `subscriptions`
 --
 
-LOCK TABLES `subscriptions` WRITE;
-/*!40000 ALTER TABLE `subscriptions` DISABLE KEYS */;
-INSERT INTO `subscriptions` VALUES (8,'Gold Plan',20.99,10),(9,'Platnium Plan',20.99,10),(10,'Bronze Plan',13.22,20);
-/*!40000 ALTER TABLE `subscriptions` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `subscriptions` (`id`, `name`, `price`, `valid_till`) VALUES
+(8, 'Gold Plan', '20.99', 10),
+(9, 'Platnium Plan', '20.99', 10),
+(10, 'Bronze Plan', '13.22', 20);
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `user_subscription`
+-- Table structure for table `training_activities`
 --
 
-DROP TABLE IF EXISTS `user_subscription`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user_subscription` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `subscription_id` int NOT NULL,
-  `user_id` int NOT NULL,
-  `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `subscription_id` (`subscription_id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `user_subscription_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`id`),
-  CONSTRAINT `user_subscription_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+CREATE TABLE `training_activities` (
+  `id` bigint(20) NOT NULL,
+  `plan_id` bigint(20) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `expected_outcomes` text NOT NULL,
+  `progress_measurement` varchar(255) NOT NULL,
+  `duration` varchar(255) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `responsible` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `user_subscription`
+-- Table structure for table `trainning_plan`
 --
 
-LOCK TABLES `user_subscription` WRITE;
-/*!40000 ALTER TABLE `user_subscription` DISABLE KEYS */;
-INSERT INTO `user_subscription` VALUES (9,8,30,'2024-08-30 00:00:00','pi_3PprfnIILuhliL1z00EGL4bm','2024-08-20 13:00:35','2024-08-20 13:00:35'),(11,10,29,'2024-09-10 00:00:00','pi_3Pq8dfIILuhliL1z1pFtpte9','2024-08-21 07:07:31','2024-08-21 07:07:31'),(13,10,29,'2024-09-10 00:00:00','pi_3PqEplIILuhliL1z0hxEU6sZ','2024-08-21 13:44:24','2024-08-21 13:44:24'),(14,10,29,'2024-09-10 00:00:00','pi_3PqEplIILuhliL1z0hxEU6sZ','2024-08-21 13:44:24','2024-08-21 13:44:24');
-/*!40000 ALTER TABLE `user_subscription` ENABLE KEYS */;
-UNLOCK TABLES;
+CREATE TABLE `trainning_plan` (
+  `id` bigint(20) NOT NULL,
+  `plan_recommendation` text NOT NULL,
+  `branch_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `otp` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `otp_expiration` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `otp_expiration` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'hussain21x','hussain12@gmail.com','8b117546c9cdd79b2f88159fd94e1195623f7f8b53b54a2bb3b7675ecd834a93',NULL,NULL,NULL),(2,'faris21x','faris12@gmail.com','8a91dbf39a7d58400d17676648461e8d9895a7a48ea02e6a641de439b402a656',NULL,NULL,NULL),(3,'talha17x','talha@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(4,'aiman12','aiman@gmail.com','1a62b2b12c469335995cced03433260373e0b975344059e1a1fbdc66e6aca914',NULL,NULL,NULL),(5,'haris12','haris12@gmail.com','cffd26c9ddbb65b048a0f714b704a5ed9a5ad7a66130b7a43963899528a97928',NULL,NULL,NULL),(6,'test1','test12@gmail.com','c42bd77fb632be76f683bc427943fb3f848170dc33c14b7d5dc1b771db078c84',NULL,NULL,NULL),(7,'one71x','one@gmail.com','4d312d42968237ea5e754e39580b0f7fbb906dbf8608847310df370ed45828dd',NULL,NULL,NULL),(8,'syed71x','syed@gmail.com','73f72fcd6f1108782be74a62f817922edfc021a5d6a68513ec8aa9af4fad3b45',NULL,NULL,NULL),(9,'mustafa69x','mustafa@gmail.com','8e352b24effd2b624844f3d5d0fb2a0960903bf8aee759c2226a98993329c702',NULL,NULL,NULL),(10,'shayan71x','shayan@gmail.com','506c78e44f2184e46a6467bb17cf6b5937821be63a6170a8b8a07331b1660e13',NULL,NULL,NULL),(11,'Two69x$','two@gmail.com','2e1d7dfa4ca32532c7d453db04da86afcf38f0cc4008e1f577854b32c51115a7','https://images.pexels.com/photos/2310713/pexels-photo-2310713.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',NULL,NULL),(13,'hunain69x','hunain@gmail.com','840dc021cf333401c6b8f854939c7065058c6468843a37610071ded8569902b6',NULL,NULL,NULL),(14,'three12','three12@gmail.com','b7af263584bc6e827fa262dd8eb99d8bb3b1b43d045d3643acc8d975e49d30a3',NULL,NULL,NULL),(15,'hassan','hassan123@gmail.com','5c80b9535206b56dc8d78543de507d3e3fe08636dc6a9d12deb1dac0e7e5bb87',NULL,'gQXel3','2024-08-19 14:40:39'),(19,'poka123','poka123@gmail.com','22306f9ad37b7be1e823c6a1ccbc2cb944e6c9962f8f9da5103dc3f70b622c77',NULL,NULL,NULL),(21,'anas71x','anas@gmail.com','5410327224be6b772e71705ef1c6e8f87d8d253754c56f1521f642cef16b3898',NULL,NULL,NULL),(22,'areeba12','areeba@gmail.com','8d080c78cd9eb424ad93536b6b4faf3e521661a1bab4068cdc5e902ac623651f',NULL,NULL,NULL),(23,'tassaract','tassaract@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(24,'tassaract1','tassaract1@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(27,'ahmed','ahmed@gmail.com','77a2e452cc950bddfa44fe8c61db107305166800b489adf97f31fad9e2ba72f6',NULL,NULL,NULL),(28,'hassan123','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,'puVzLQ','2024-10-08 13:13:09'),(29,'talha_83x','pc16777.syedtalhahussain@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(30,'syed899x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL),(31,'amna','amna@gmail.com','a24738c27f7a51a6079b03d7149a5c12e4608a356c4d17e316b71941d819c346',NULL,NULL,NULL),(32,'noor','noor@gmail.com','6913c81ff94fc68e7b04d1de8b226fcd528fcb3c939cacce6bb5859c7a6157b4',NULL,NULL,NULL),(33,'faizan_18x','faizan@gmail.com','49f606bc2b2239194f22b0f301ff6aec2860e636f5eed176e308f6fd2c55fcde',NULL,NULL,NULL),(34,'khan','khan@gmail.com','cad3fe7aae4d46b047d0164e64aed2b1a98b74bf45d0fc23be076005504bace6',NULL,NULL,NULL),(35,'hadi','hadi@gmail.com','b87622c28e68762bc12fd2e4fddc2daae09a09679d54b4e8d4de7814ec8207c4',NULL,NULL,NULL),(36,'Alroylewis','Alroylewis@hotmail.co.uk','f95a6ba11d2cdcfcf9a073ea603492139bd05f71709af61b73dc4594f3f4866d',NULL,NULL,NULL),(37,'hassan321','unitedfurniture75@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL),(38,'zaidworks515','zaid_works515@outlook.com','d4598a2752541ac5de8ebc3b1923b57f9052ede3f40ae572957b5fe9b984cb83',NULL,NULL,NULL);
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `profile_picture`, `otp`, `otp_expiration`) VALUES
+(1, 'hussain21x', 'hussain12@gmail.com', '8b117546c9cdd79b2f88159fd94e1195623f7f8b53b54a2bb3b7675ecd834a93', NULL, NULL, NULL),
+(2, 'faris21x', 'faris12@gmail.com', '8a91dbf39a7d58400d17676648461e8d9895a7a48ea02e6a641de439b402a656', NULL, NULL, NULL),
+(3, 'talha17x', 'talha@gmail.com', '866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232', NULL, NULL, NULL),
+(4, 'aiman12', 'aiman@gmail.com', '1a62b2b12c469335995cced03433260373e0b975344059e1a1fbdc66e6aca914', NULL, NULL, NULL),
+(5, 'haris12', 'haris12@gmail.com', 'cffd26c9ddbb65b048a0f714b704a5ed9a5ad7a66130b7a43963899528a97928', NULL, NULL, NULL),
+(6, 'test1', 'test12@gmail.com', 'c42bd77fb632be76f683bc427943fb3f848170dc33c14b7d5dc1b771db078c84', NULL, NULL, NULL),
+(7, 'one71x', 'one@gmail.com', '4d312d42968237ea5e754e39580b0f7fbb906dbf8608847310df370ed45828dd', NULL, NULL, NULL),
+(8, 'syed71x', 'syed@gmail.com', '73f72fcd6f1108782be74a62f817922edfc021a5d6a68513ec8aa9af4fad3b45', NULL, NULL, NULL),
+(9, 'mustafa69x', 'mustafa@gmail.com', '8e352b24effd2b624844f3d5d0fb2a0960903bf8aee759c2226a98993329c702', NULL, NULL, NULL),
+(10, 'shayan71x', 'shayan@gmail.com', '506c78e44f2184e46a6467bb17cf6b5937821be63a6170a8b8a07331b1660e13', NULL, NULL, NULL),
+(11, 'Two69x$', 'two@gmail.com', '2e1d7dfa4ca32532c7d453db04da86afcf38f0cc4008e1f577854b32c51115a7', 'https://images.pexels.com/photos/2310713/pexels-photo-2310713.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', NULL, NULL),
+(13, 'hunain69x', 'hunain@gmail.com', '840dc021cf333401c6b8f854939c7065058c6468843a37610071ded8569902b6', NULL, NULL, NULL),
+(14, 'three12', 'three12@gmail.com', 'b7af263584bc6e827fa262dd8eb99d8bb3b1b43d045d3643acc8d975e49d30a3', NULL, NULL, NULL),
+(15, 'hassan', 'hassan123@gmail.com', '5c80b9535206b56dc8d78543de507d3e3fe08636dc6a9d12deb1dac0e7e5bb87', NULL, 'gQXel3', '2024-08-19 14:40:39'),
+(19, 'poka123', 'poka123@gmail.com', '22306f9ad37b7be1e823c6a1ccbc2cb944e6c9962f8f9da5103dc3f70b622c77', NULL, NULL, NULL),
+(21, 'anas71x', 'anas@gmail.com', '5410327224be6b772e71705ef1c6e8f87d8d253754c56f1521f642cef16b3898', NULL, NULL, NULL),
+(22, 'areeba12', 'areeba@gmail.com', '8d080c78cd9eb424ad93536b6b4faf3e521661a1bab4068cdc5e902ac623651f', NULL, NULL, NULL),
+(23, 'tassaract', 'tassaract@gmail.com', 'e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039', NULL, NULL, NULL),
+(24, 'tassaract1', 'tassaract1@gmail.com', 'e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039', NULL, NULL, NULL),
+(27, 'ahmed', 'ahmed@gmail.com', '77a2e452cc950bddfa44fe8c61db107305166800b489adf97f31fad9e2ba72f6', NULL, NULL, NULL),
+(28, 'hassan123', 'hassanalirajput2004@gmail.com', 'f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd', NULL, 'puVzLQ', '2024-10-08 13:13:09'),
+(29, 'talha_83x', 'pc16777.syedtalhahussain@gmail.com', '866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232', NULL, NULL, NULL),
+(30, 'syed899x', 'syedtalha71x@gmail.com', 'ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4', NULL, NULL, NULL),
+(31, 'amna', 'amna@gmail.com', 'a24738c27f7a51a6079b03d7149a5c12e4608a356c4d17e316b71941d819c346', NULL, NULL, NULL),
+(32, 'noor', 'noor@gmail.com', '6913c81ff94fc68e7b04d1de8b226fcd528fcb3c939cacce6bb5859c7a6157b4', NULL, NULL, NULL),
+(33, 'faizan_18x', 'faizan@gmail.com', '49f606bc2b2239194f22b0f301ff6aec2860e636f5eed176e308f6fd2c55fcde', NULL, NULL, NULL),
+(34, 'khan', 'khan@gmail.com', 'cad3fe7aae4d46b047d0164e64aed2b1a98b74bf45d0fc23be076005504bace6', NULL, NULL, NULL),
+(35, 'hadi', 'hadi@gmail.com', 'b87622c28e68762bc12fd2e4fddc2daae09a09679d54b4e8d4de7814ec8207c4', NULL, NULL, NULL),
+(36, 'Alroylewis', 'Alroylewis@hotmail.co.uk', 'f95a6ba11d2cdcfcf9a073ea603492139bd05f71709af61b73dc4594f3f4866d', NULL, NULL, NULL),
+(37, 'hassan321', 'unitedfurniture75@gmail.com', 'f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd', NULL, NULL, NULL),
+(38, 'zaidworks515', 'zaid_works515@outlook.com', 'd4598a2752541ac5de8ebc3b1923b57f9052ede3f40ae572957b5fe9b984cb83', NULL, NULL, NULL);
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_subscription`
+--
+
+CREATE TABLE `user_subscription` (
+  `id` int(11) NOT NULL,
+  `subscription_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `expiry_date` datetime NOT NULL,
+  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `user_subscription`
+--
+
+INSERT INTO `user_subscription` (`id`, `subscription_id`, `user_id`, `expiry_date`, `payment_id`, `created_at`, `updated_at`) VALUES
+(9, 8, 30, '2024-08-30 00:00:00', 'pi_3PprfnIILuhliL1z00EGL4bm', '2024-08-20 13:00:35', '2024-08-20 13:00:35'),
+(11, 10, 29, '2024-09-10 00:00:00', 'pi_3Pq8dfIILuhliL1z1pFtpte9', '2024-08-21 07:07:31', '2024-08-21 07:07:31'),
+(13, 10, 29, '2024-09-10 00:00:00', 'pi_3PqEplIILuhliL1z0hxEU6sZ', '2024-08-21 13:44:24', '2024-08-21 13:44:24'),
+(14, 10, 29, '2024-09-10 00:00:00', 'pi_3PqEplIILuhliL1z0hxEU6sZ', '2024-08-21 13:44:24', '2024-08-21 13:44:24');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `action_plan_summary`
+--
+ALTER TABLE `action_plan_summary`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `plan_id` (`plan_id`);
+
+--
+-- Indexes for table `branch`
+--
+ALTER TABLE `branch`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `path_id` (`step_id`),
+  ADD KEY `fk_branch_path_id` (`path_id`);
+
+--
+-- Indexes for table `career_goals_overview`
+--
+ALTER TABLE `career_goals_overview`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `plan_id` (`plan_id`);
+
+--
+-- Indexes for table `career_path_progression_map`
+--
+ALTER TABLE `career_path_progression_map`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `plan_id` (`plan_id`);
+
+--
+-- Indexes for table `facebook_login`
+--
+ALTER TABLE `facebook_login`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `facebook_id` (`facebook_id`);
+
+--
+-- Indexes for table `google_login`
+--
+ALTER TABLE `google_login`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `google_id` (`google_id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `instagram_login`
+--
+ALTER TABLE `instagram_login`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `instagram_id` (`instagram_id`);
+
+--
+-- Indexes for table `linkedin_login`
+--
+ALTER TABLE `linkedin_login`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `linkedin_id` (`linkedin_id`);
+
+--
+-- Indexes for table `model_subscription`
+--
+ALTER TABLE `model_subscription`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `modules`
+--
+ALTER TABLE `modules`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `next_steps_recommendations`
+--
+ALTER TABLE `next_steps_recommendations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `plan_id` (`plan_id`);
+
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `outlook_login`
+--
+ALTER TABLE `outlook_login`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `outlook_id` (`outlook_id`);
+
+--
+-- Indexes for table `path`
+--
+ALTER TABLE `path`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `permission_modules`
+--
+ALTER TABLE `permission_modules`
+  ADD KEY `permission_id` (`permission_id`),
+  ADD KEY `module_id` (`module_id`);
+
+--
+-- Indexes for table `permission_to_role`
+--
+ALTER TABLE `permission_to_role`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `role_id` (`role_id`),
+  ADD KEY `permission_id` (`permission_id`);
+
+--
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
+
+--
+-- Indexes for table `role_to_users`
+--
+ALTER TABLE `role_to_users`
+  ADD KEY `role_id` (`role_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `skills`
+--
+ALTER TABLE `skills`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `step_id` (`step_id`);
+
+--
+-- Indexes for table `skill_gap_analysis`
+--
+ALTER TABLE `skill_gap_analysis`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `plan_id` (`plan_id`);
+
+--
+-- Indexes for table `skill_gap_analysis_resources`
+--
+ALTER TABLE `skill_gap_analysis_resources`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `steps`
+--
+ALTER TABLE `steps`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `path_id` (`path_id`),
+  ADD KEY `fk_steps_branch_id` (`branch_id`);
+
+--
+-- Indexes for table `subscriptions`
+--
+ALTER TABLE `subscriptions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `training_activities`
+--
+ALTER TABLE `training_activities`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `plan_id` (`plan_id`);
+
+--
+-- Indexes for table `trainning_plan`
+--
+ALTER TABLE `trainning_plan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `user_subscription`
+--
+ALTER TABLE `user_subscription`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `subscription_id` (`subscription_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `action_plan_summary`
+--
+ALTER TABLE `action_plan_summary`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `branch`
+--
+ALTER TABLE `branch`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `career_goals_overview`
+--
+ALTER TABLE `career_goals_overview`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `career_path_progression_map`
+--
+ALTER TABLE `career_path_progression_map`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `facebook_login`
+--
+ALTER TABLE `facebook_login`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `google_login`
+--
+ALTER TABLE `google_login`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `instagram_login`
+--
+ALTER TABLE `instagram_login`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `linkedin_login`
+--
+ALTER TABLE `linkedin_login`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `model_subscription`
+--
+ALTER TABLE `model_subscription`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `modules`
+--
+ALTER TABLE `modules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `next_steps_recommendations`
+--
+ALTER TABLE `next_steps_recommendations`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+
+--
+-- AUTO_INCREMENT for table `outlook_login`
+--
+ALTER TABLE `outlook_login`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `path`
+--
+ALTER TABLE `path`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `permission_to_role`
+--
+ALTER TABLE `permission_to_role`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `skills`
+--
+ALTER TABLE `skills`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `skill_gap_analysis`
+--
+ALTER TABLE `skill_gap_analysis`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `skill_gap_analysis_resources`
+--
+ALTER TABLE `skill_gap_analysis_resources`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `steps`
+--
+ALTER TABLE `steps`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `subscriptions`
+--
+ALTER TABLE `subscriptions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `training_activities`
+--
+ALTER TABLE `training_activities`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `trainning_plan`
+--
+ALTER TABLE `trainning_plan`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT for table `user_subscription`
+--
+ALTER TABLE `user_subscription`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `action_plan_summary`
+--
+ALTER TABLE `action_plan_summary`
+  ADD CONSTRAINT `action_plan_summary_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`);
+
+--
+-- Constraints for table `branch`
+--
+ALTER TABLE `branch`
+  ADD CONSTRAINT `fk_branch_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_branch_step_id` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `career_goals_overview`
+--
+ALTER TABLE `career_goals_overview`
+  ADD CONSTRAINT `career_goals_overview_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`);
+
+--
+-- Constraints for table `career_path_progression_map`
+--
+ALTER TABLE `career_path_progression_map`
+  ADD CONSTRAINT `career_path_progression_map_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`);
+
+--
+-- Constraints for table `next_steps_recommendations`
+--
+ALTER TABLE `next_steps_recommendations`
+  ADD CONSTRAINT `next_steps_recommendations_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`);
+
+--
+-- Constraints for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `path`
+--
+ALTER TABLE `path`
+  ADD CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `permission_modules`
+--
+ALTER TABLE `permission_modules`
+  ADD CONSTRAINT `permission_modules_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`),
+  ADD CONSTRAINT `permission_modules_ibfk_2` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`);
+
+--
+-- Constraints for table `permission_to_role`
+--
+ALTER TABLE `permission_to_role`
+  ADD CONSTRAINT `permission_to_role_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `permission_to_role_ibfk_2` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `role_to_users`
+--
+ALTER TABLE `role_to_users`
+  ADD CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
+  ADD CONSTRAINT `role_to_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `skills`
+--
+ALTER TABLE `skills`
+  ADD CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `skill_gap_analysis`
+--
+ALTER TABLE `skill_gap_analysis`
+  ADD CONSTRAINT `skill_gap_analysis_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`);
+
+--
+-- Constraints for table `steps`
+--
+ALTER TABLE `steps`
+  ADD CONSTRAINT `fk_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`),
+  ADD CONSTRAINT `fk_steps_branch_id` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `steps_ibfk_1` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `training_activities`
+--
+ALTER TABLE `training_activities`
+  ADD CONSTRAINT `training_activities_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`);
+
+--
+-- Constraints for table `user_subscription`
+--
+ALTER TABLE `user_subscription`
+  ADD CONSTRAINT `user_subscription_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`id`),
+  ADD CONSTRAINT `user_subscription_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2024-10-16 12:48:39
