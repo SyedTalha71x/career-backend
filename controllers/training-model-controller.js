@@ -105,10 +105,12 @@ export const redirectStripe = async (req, res) => {
 // 2. Confirm Subscription after Payment Success
 export const confirmModelSubscription = async (req, res) => {
     try {
-        const { sessionId } = req.body;
+        const { sessionId, branchId } = req.body;
 
-        if (!sessionId) {
-            return res.status(422).json(failureResponse({ error: 'Session ID is required' }, 'Failed to confirm Subscription'));
+        if (!sessionId || !branchId) {
+            return res.status(422).json(
+                failureResponse({ error: 'Session ID and Branch ID are required' }, 'Failed to confirm Subscription')
+            );
         }
 
         const session = await stripe.checkout.sessions.retrieve(sessionId);
@@ -117,25 +119,23 @@ export const confirmModelSubscription = async (req, res) => {
             return res.status(400).json(failureResponse({ error: 'Payment not completed' }, 'Failed to confirm Subscription'));
         }
 
-        const subscriptionId = session.client_reference_id;
         const paymentIntentId = session.payment_intent;
         const expiryDate = moment().add(30, 'days').format('YYYY-MM-DD'); // Assuming 30 days for subscription period
 
         const saveUserSubscription = () => {
             return new Promise((resolve, reject) => {
                 const insertUserSubscriptionQuery = `
-                INSERT INTO model_subscription (user_id, branch_id, amount, payment_id, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, NOW())
-            `;            
-            pool.query(
-                insertUserSubscriptionQuery,
-                [req.user.userId, subscriptionId, session.amount_total / 100, paymentIntentId, expiryDate],
-                (err, result) => {
-                    if (err) return reject(err);
-                    resolve(result);
-                }
-            );
-            
+                    INSERT INTO model_subscription (user_id, branch_id, amount, payment_id, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, NOW(), NOW())
+                `;
+                pool.query(
+                    insertUserSubscriptionQuery,
+                    [req.user.userId, branchId, session.amount_total / 100, paymentIntentId],
+                    (err, result) => {
+                        if (err) return reject(err);
+                        resolve(result);
+                    }
+                );
             });
         };
 
@@ -146,7 +146,6 @@ export const confirmModelSubscription = async (req, res) => {
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to confirm Subscription'));
     }
 };
-
 
 
 export const getModelSubscription = async (req, res) => {

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 28, 2024 at 07:19 AM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 8.1.6
+-- Generation Time: Oct 28, 2024 at 12:58 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,7 +32,7 @@ CREATE TABLE `action_plan_summary` (
   `action` varchar(255) NOT NULL,
   `responsiblity` enum('self','mentor','self/mentor') NOT NULL,
   `plan_id` bigint(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -43,7 +43,7 @@ CREATE TABLE `action_plan_summary` (
 CREATE TABLE `branch` (
   `id` bigint(20) NOT NULL,
   `step_id` bigint(20) DEFAULT NULL,
-  `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `color` varchar(255) NOT NULL,
   `path_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -59,7 +59,7 @@ CREATE TABLE `career_goals_overview` (
   `title` text NOT NULL,
   `type` enum('s','l') NOT NULL,
   `completion_date` date NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -72,7 +72,7 @@ CREATE TABLE `career_path_progression_map` (
   `plan_id` bigint(20) NOT NULL,
   `role` varchar(255) NOT NULL,
   `suggested_timing` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -82,10 +82,10 @@ CREATE TABLE `career_path_progression_map` (
 
 CREATE TABLE `facebook_login` (
   `id` int(11) NOT NULL,
-  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `facebook_id` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -98,10 +98,10 @@ CREATE TABLE `facebook_login` (
 
 CREATE TABLE `google_login` (
   `id` int(11) NOT NULL,
-  `google_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `google_id` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `profile_picture` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -123,9 +123,9 @@ INSERT INTO `google_login` (`id`, `google_id`, `email`, `name`, `profile_picture
 
 CREATE TABLE `instagram_login` (
   `id` int(11) NOT NULL,
-  `instagram_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `instagram_id` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -138,10 +138,10 @@ CREATE TABLE `instagram_login` (
 
 CREATE TABLE `linkedin_login` (
   `id` int(11) NOT NULL,
-  `linkedin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `linkedin_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -155,13 +155,12 @@ CREATE TABLE `linkedin_login` (
 CREATE TABLE `model_subscription` (
   `id` bigint(20) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `subscription_id` int(11) NOT NULL,
   `payment_id` bigint(255) DEFAULT NULL,
   `branch_id` int(11) NOT NULL,
   `amount` int(20) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -171,7 +170,7 @@ CREATE TABLE `model_subscription` (
 
 CREATE TABLE `modules` (
   `id` int(11) NOT NULL,
-  `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+  `module_name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -193,7 +192,7 @@ CREATE TABLE `next_steps_recommendations` (
   `id` bigint(20) NOT NULL,
   `plan_id` bigint(20) NOT NULL,
   `recommendations` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -204,9 +203,9 @@ CREATE TABLE `next_steps_recommendations` (
 CREATE TABLE `notifications` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `title` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(350) NOT NULL,
+  `description` varchar(350) NOT NULL,
+  `link` varchar(255) DEFAULT NULL,
   `read` tinyint(4) NOT NULL DEFAULT 0,
   `seen` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -280,10 +279,10 @@ INSERT INTO `notifications` (`id`, `user_id`, `title`, `description`, `link`, `r
 
 CREATE TABLE `outlook_login` (
   `id` int(11) NOT NULL,
-  `outlook_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `outlook_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -296,12 +295,12 @@ CREATE TABLE `outlook_login` (
 
 CREATE TABLE `path` (
   `id` bigint(20) NOT NULL,
-  `prompt` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('pending','analysed','analysing') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `prompt` longtext DEFAULT NULL,
+  `file` varchar(255) DEFAULT NULL,
+  `status` enum('pending','analysed','analysing') DEFAULT 'pending',
   `user_id` int(11) DEFAULT NULL,
-  `title` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `title` varchar(250) DEFAULT NULL,
+  `gpt_id` varchar(350) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -312,10 +311,10 @@ CREATE TABLE `path` (
 
 CREATE TABLE `permissions` (
   `id` int(11) NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `slug` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -346,6 +345,9 @@ CREATE TABLE `permission_modules` (
 --
 
 INSERT INTO `permission_modules` (`permission_id`, `module_id`) VALUES
+(13, 6),
+(14, 7),
+(15, 7),
 (13, 6),
 (14, 7),
 (15, 7);
@@ -380,7 +382,7 @@ INSERT INTO `permission_to_role` (`id`, `role_id`, `permission_id`, `created_at`
 
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -410,6 +412,8 @@ CREATE TABLE `role_to_users` (
 
 INSERT INTO `role_to_users` (`role_id`, `user_id`) VALUES
 (1, 30),
+(2, 35),
+(1, 30),
 (2, 35);
 
 -- --------------------------------------------------------
@@ -420,10 +424,10 @@ INSERT INTO `role_to_users` (`role_id`, `user_id`) VALUES
 
 CREATE TABLE `skills` (
   `id` bigint(20) NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) NOT NULL,
   `sort` tinyint(1) NOT NULL,
   `step_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending'
+  `status` enum('pending','completed') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -438,7 +442,7 @@ CREATE TABLE `skill_gap_analysis` (
   `title` text NOT NULL,
   `priority` enum('High','Medium','Low') DEFAULT NULL,
   `status` enum('pending','completed') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -452,7 +456,7 @@ CREATE TABLE `skill_gap_analysis_resources` (
   `title` varchar(255) NOT NULL,
   `platform` varchar(255) NOT NULL,
   `link` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -462,11 +466,11 @@ CREATE TABLE `skill_gap_analysis_resources` (
 
 CREATE TABLE `steps` (
   `id` bigint(20) NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
   `sort` tinyint(4) NOT NULL,
   `path_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `status` enum('pending','completed') DEFAULT 'pending',
   `branch_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -478,7 +482,7 @@ CREATE TABLE `steps` (
 
 CREATE TABLE `subscriptions` (
   `id` int(11) NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `valid_till` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -488,9 +492,9 @@ CREATE TABLE `subscriptions` (
 --
 
 INSERT INTO `subscriptions` (`id`, `name`, `price`, `valid_till`) VALUES
-(8, 'Gold Plan', '20.99', 10),
-(9, 'Platnium Plan', '20.99', 10),
-(10, 'Bronze Plan', '13.22', 20);
+(8, 'Gold Plan', 20.99, 10),
+(9, 'Platnium Plan', 20.99, 10),
+(10, 'Bronze Plan', 13.22, 20);
 
 -- --------------------------------------------------------
 
@@ -507,7 +511,7 @@ CREATE TABLE `training_activities` (
   `duration` varchar(255) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `responsible` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -519,7 +523,7 @@ CREATE TABLE `trainning_plan` (
   `id` bigint(20) NOT NULL,
   `plan_recommendation` text NOT NULL,
   `branch_id` bigint(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -529,11 +533,11 @@ CREATE TABLE `trainning_plan` (
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `otp` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `otp` varchar(6) DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -585,7 +589,7 @@ CREATE TABLE `user_subscription` (
   `subscription_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_id` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
