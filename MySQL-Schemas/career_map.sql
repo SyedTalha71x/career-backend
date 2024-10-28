@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 28, 2024 at 12:58 PM
+-- Generation Time: Oct 28, 2024 at 01:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -155,12 +155,22 @@ CREATE TABLE `linkedin_login` (
 CREATE TABLE `model_subscription` (
   `id` bigint(20) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `payment_id` bigint(255) DEFAULT NULL,
+  `payment_id` varchar(255) DEFAULT NULL,
   `branch_id` int(11) NOT NULL,
   `amount` int(20) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `model_subscription`
+--
+
+INSERT INTO `model_subscription` (`id`, `user_id`, `payment_id`, `branch_id`, `amount`, `created_at`, `updated_at`) VALUES
+(1, 28, '0', 3, 10, '2024-10-28 12:07:53', '2024-10-28 12:07:53'),
+(2, 28, '0', 3, 10, '2024-10-28 12:11:29', '2024-10-28 12:11:29'),
+(3, 28, '0', 5, 10, '2024-10-28 12:11:47', '2024-10-28 12:11:47'),
+(4, 28, '0', 5, 10, '2024-10-28 12:17:55', '2024-10-28 12:17:55');
 
 -- --------------------------------------------------------
 
@@ -860,7 +870,7 @@ ALTER TABLE `linkedin_login`
 -- AUTO_INCREMENT for table `model_subscription`
 --
 ALTER TABLE `model_subscription`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `modules`
