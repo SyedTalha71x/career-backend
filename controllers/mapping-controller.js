@@ -204,7 +204,7 @@ export const getPathsWithDetails = async (req, res) => {
       SELECT id, status, title 
       FROM path 
       WHERE user_id = ? AND status = 'analysed'
-      ORDER BY status DESC
+      ORDER BY id DESC
     `;
     const pathsResult = await query(pathsQuery, [userId]);
 
@@ -846,7 +846,7 @@ export const sendMessage = async (req, res) => {
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
-          model: "gpt-4o-mini",
+          model: "gpt-4o-mini", 
           messages: [{ role: "user", content }],
           max_tokens: 100,
         },
@@ -861,80 +861,38 @@ export const sendMessage = async (req, res) => {
     };
 
     const userResponse = await getChatGPTResponse(message);
-    const gpt_id = userResponse.id;
     const result = userResponse.choices[0].message.content;
 
     const systemResponse = await getChatGPTResponse(systemMessage);
-
-    const responseData = {
-      systemMessage: {
-        id: systemResponse.id,
-        object: systemResponse.object,
-        created: systemResponse.created,
-        model: systemResponse.model,
-        choices: [
-          {
-            index: 0,
-            message: {
-              role: "system",
-              content: systemResponse.choices[0].message.content,
-              refusal: null,
-            },
-            logprobs: null,
-            finish_reason: systemResponse.choices[0].finish_reason,
-          },
-        ],
-        usage: systemResponse.usage,
-        system_fingerprint: systemResponse.system_fingerprint,
-      },
-      userMessage: {
-        id: userResponse.id,
-        object: userResponse.object,
-        created: userResponse.created,
-        model: userResponse.model,
-        choices: [
-          {
-            index: 0,
-            message: {
-              role: "user",
-              content: userResponse.choices[0].message.content,
-              refusal: null,
-            },
-            logprobs: null,
-            finish_reason: userResponse.choices[0].finish_reason,
-          },
-        ],
-        usage: userResponse.usage,
-        system_fingerprint: userResponse.system_fingerprint,
-      },
-    };
-
+    
     // Check if there is a previous record to use as a parent
     const previousRecordQuery = `
-      SELECT gpt_id FROM gpt_data 
+      SELECT id FROM gpt_data 
       WHERE step_id = ? 
       ORDER BY created DESC 
       LIMIT 1
     `;
 
     const previousRecord = await query(previousRecordQuery, [step_id]);
-    const parentId = previousRecord.length > 0 ? previousRecord[0].gpt_id : null; // Get the gpt_id of the last record
+    const parentId = previousRecord.length > 0 ? previousRecord[0].id : null; // Get the ID of the last record
 
     const insertQuery = `
-    INSERT INTO gpt_data (gpt_id, result, step_id${parentId ? ', prompt, parent_gpt_id' : ', prompt'})
-    VALUES (?, ?, ?, ?${parentId ? ', ?' : ''})
-  `;
+      INSERT INTO gpt_data (result, step_id, prompt${parentId ? ', parent_gpt_id' : ''})
+      VALUES (?, ?, ?${parentId ? ', ?' : ''})
+    `;
   
-  const queryParams = [gpt_id, result, step_id, message]; 
-  if (parentId) queryParams.push(parentId); 
+    const queryParams = [result, step_id, message]; 
+    if (parentId) queryParams.push(parentId); 
+
     await query(insertQuery, queryParams);
 
     return res.status(200).json({ status: true });
   } catch (error) {
     console.error("Error in sendMessage API:", error);
-    return res.status(500).json({ status: false,  error: "Internal Server Error" });
+    return res.status(500).json({ status: false, error: "Internal Server Error" });
   }
 };
+
 
 export const getMessage = async (req, res) => {
   try {
@@ -950,14 +908,115 @@ export const getMessage = async (req, res) => {
     const records = await query(getQry, [step_id]);
 
     if (records.length === 0) {
-      return res.status(404).json({ message: 'No records found for the provided step ID' });
+      return res
+        .status(404)
+        .json({ message: "No records found for the provided step ID" });
     }
     return res.status(200).json({ data: records });
   } catch (error) {
     console.error("Error in getMessage API:", error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+export const addSkill = async (req, res) => {
+  console.log("addSkill API called");
+  try {
+    const { title, sort, step_id, status } = req.body;
 
+    if(!step_id){
+      return res.status(400).json({error: 'StepId should be provided'})
+    }
+    console.log(title, sort, step_id, status);
+    
+    const insertQuery = `
+      INSERT INTO skills (title, sort, step_id, status)
+      VALUES (?, ?, ?, ?)
+    `;
+    const results = await query(insertQuery, [title, sort, step_id, status]);
+    console.log(results);
+    
+    return res.status(200).json({message: 'Skill created Successfully'})
+  } catch (error) {
+    console.error('Database error:', error);
+   return res.status(500).json({error: 'Internal Server Error'})
+  }
+};
+export const updateSkill = async (req, res) => {
+  console.log("updateSkill API called");
+  try {
+    const skillId = req.params.id;
 
+    if(!skillId){
+      return res.status(400).json({error: 'SkillIs should be provided'})
+    }
+    const { title, sort, step_id, status } = req.body;
 
+    const fieldsToUpdate = [];
+    const values = [];
+
+    if (title !== undefined) {
+      fieldsToUpdate.push("title = ?");
+      values.push(title);
+    }
+    if (sort !== undefined) {
+      fieldsToUpdate.push("sort = ?");
+      values.push(sort);
+    }
+    if (step_id !== undefined) {
+      fieldsToUpdate.push("step_id = ?");
+      values.push(step_id);
+    }
+    if (status !== undefined) {
+      fieldsToUpdate.push("status = ?");
+      values.push(status);
+    }
+
+    if (fieldsToUpdate.length === 0) {
+      return res.status(400).json({error: 'No field are provided to update'})
+    }
+
+    const updateQuery = `
+      UPDATE skills
+      SET ${fieldsToUpdate.join(', ')}
+      WHERE id = ?
+    `;
+
+    values.push(skillId);
+    const result = await query(updateQuery, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({error: 'skill not found'})
+    }
+
+    return res.status(200).json({message: 'skill has been updated'})
+  } catch (error) {
+    console.error('Error in updateSkill API:', error);
+    return res.status(500).json({error: 'Internal Server Error'})
+  }
+};
+export const deleteSkill = async (req, res) => {
+  console.log("deleteSkill API called");
+  try {
+    const skillId = req.params.id;
+
+    if(!skillId){
+      return res.status(400).json({error: 'SkillIs should be provided'})
+    }
+
+    const deleteQuery = `
+      DELETE FROM skills
+      WHERE id = ?
+    `;
+
+    const result = await query(deleteQuery, [skillId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({error: 'Skill not found'})
+    }
+
+    return res.status(200).json({message: 'Skill has been deleted'})
+    } catch (error) {
+    console.error('Error in deleteSkill API:', error);
+    return res.status(500).json({error: 'Internal Server Error'})
+  }
+};

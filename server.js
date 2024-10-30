@@ -11,6 +11,7 @@ import rolePermissionRoutes from './routes/role-permission-routes.js';
 import subscriptionRoutes from './routes/subscription-routes.js';
 import modelSubscriptionRoutes from './routes/model-subscription-routes.js';
 import NotificationRoutes from './routes/notification-routes.js'
+import PdfGenerator from './routes/pdf-generator-routes.js'
 import path from 'path';
 import MappingRoutes from './routes/mapping-routes.js';
 import { fileURLToPath } from 'url';
@@ -30,7 +31,7 @@ const app = express();
 app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(express.json()); // Handles JSON payloads
+app.use(express.json()); 
 
 // Serve static files from 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -46,6 +47,7 @@ app.use('/api', rolePermissionRoutes);
 app.use('/api', MappingRoutes);
 app.use('/api', NotificationRoutes)
 app.use('/api', modelSubscriptionRoutes);
+app.use('/api', PdfGenerator);
 
 // SERVER ACTION
 const PORT = process.env.PORT || 3000;
