@@ -94,6 +94,35 @@ export const confirmModelSubscription = async (req, res) => {
 };
 
 
+// 3. checking download status
+export const checkDownloadStatus = async (req, res) => {
+    try {
+        const { branchId } = req.body;
+
+        if (!branchId) {
+            return res.status(422).json(failureResponse({ error: 'branchId is required' }, 'Failed to check download status'));
+        }
+
+        const query = 'SELECT id FROM model_subscription WHERE branch_id = ?';
+        pool.query(query, [branchId], (err, results) => {
+            if (err) {
+                console.log('Database error:', err);
+                return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to check download status'));
+            }
+
+            if (results.length > 0) {
+                return res.status(200).json(successResponse({ downloadStatus: true }, 'Branch ID found, download status is true'));
+            }
+
+            return res.status(404).json(failureResponse({ downloadStatus: false }, 'Branch ID not found'));
+        });
+    } catch (error) {
+        console.error('Error checking download status:', error);
+        return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to check download status'));
+    }
+};
+
+// 4. getting all model subscription
 export const getModelSubscription = async (req, res) => {
     try {
         const query = 'SELECT id, amount, payment_id, branch_id FROM model_subscription';
