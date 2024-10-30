@@ -1,57 +1,3 @@
-// import { connectToDB } from "../utils/db/db.js";
-// import { successResponse, failureResponse } from "../Helper/helper.js";
-// import Stripe from "stripe";
-
-// const pool = connectToDB();
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-
-// export const redirectStripe = async (req, res) => {
-//     const { branchId } = req.body;
-
-//     if (!branchId) {
-//         return res.status(422).json(failureResponse({ error: 'branchId is required' }, 'Failed to purchase Subscription'));
-//     }
-
-//     // Checking if user is authenticated
-//     const userId = req.user?.userId;
-//     if (!userId) {
-//         return res.status(401).json(failureResponse({ error: 'User not authenticated' }, 'Failed to purchase Subscription'));
-//     }
-
-//     try {
-//         const session = await stripe.checkout.sessions.create({
-//             payment_method_types: ['card'],
-//             line_items: [
-//                 {
-//                     price_data: {
-//                         currency: 'usd',
-//                         product_data: {
-//                             name: `Branch ID: ${branchId}`,
-//                         },
-//                         unit_amount: 1000,
-//                     },
-//                     quantity: 1,
-//                 },
-//             ],
-//             mode: 'payment',
-//             success_url: `${process.env.FRONTEND_URL}?session_id={CHECKOUT_SESSION_ID}`,
-//             cancel_url: `${process.env.FRONTEND_URL}/cancel`,
-//             client_reference_id: branchId,
-//         });
-
-//         if (session) {
-//             return res.status(200).json(successResponse({ sessionId: session.id, url: session.url }, 'Checkout Session Created Successfully'));
-//         } else {
-//             return res.status(500).json(failureResponse({ error: 'Failed to create Stripe session' }, 'Failed to Checkout'));
-//         }
-//     } catch (error) {
-//         console.error('Error creating Stripe checkout session:', error);
-//         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to Checkout'));
-//     }
-// };
-
-
-
 import { connectToDB } from "../utils/db/db.js";
 import { successResponse, failureResponse } from "../Helper/helper.js";
 import Stripe from "stripe";
@@ -84,13 +30,13 @@ export const redirectStripe = async (req, res) => {
                         product_data: {
                             name: `Branch ID: ${branchId}`,
                         },
-                        unit_amount: 1000, // Amount in cents
+                        unit_amount: 1000, 
                     },
                     quantity: 1,
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.FRONTEND_URL}?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.FRONTEND_URL}/get-pdf/${branchId}?session_id={CHECKOUT_SESSION_ID}?success=true`,
             cancel_url: `${process.env.FRONTEND_URL}/cancel`,
             client_reference_id: branchId,
         });
@@ -120,7 +66,7 @@ export const confirmModelSubscription = async (req, res) => {
         }
 
         const paymentIntentId = session.payment_intent;
-        const expiryDate = moment().add(30, 'days').format('YYYY-MM-DD'); // Assuming 30 days for subscription period
+        const expiryDate = moment().add(30, 'days').format('YYYY-MM-DD');
 
         const saveUserSubscription = () => {
             return new Promise((resolve, reject) => {
@@ -162,4 +108,4 @@ export const getModelSubscription = async (req, res) => {
         console.log(error);
         return res.status(500).json(failureResponse({ error: 'Internal Server Error' }, 'Failed to fetch subscriptions'));
     }
-};
+}; 
