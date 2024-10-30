@@ -36,7 +36,7 @@ export const redirectStripe = async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.FRONTEND_URL}/get-pdf/${branchId}?session_id={CHECKOUT_SESSION_ID}?success=true`,
+            success_url: `${process.env.FRONTEND_URL}/get-pdf/${branchId}?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/cancel`,
             client_reference_id: branchId,
         });
