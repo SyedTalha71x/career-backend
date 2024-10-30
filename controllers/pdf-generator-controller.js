@@ -361,10 +361,17 @@ export const generatePdfReport = async (req, res) => {
     const relativePath = path.relative(process.cwd(), pdfPath);
     const downloadUrl = `${baseUrl}/${relativePath.replace(/\\/g, "/")}`;
 
-    res.status(200).json({
-      message: "PDF generated successfully",
-      downloadUrl: downloadUrl,
-      fileName: `CareerDevelopmentPlan_${branchId}.pdf`,
+    // res.status(200).json({
+    //   message: "PDF generated successfully",
+    //   downloadUrl: downloadUrl,
+    //   fileName: `CareerDevelopmentPlan_${branchId}.pdf`,
+    // });
+
+    res.download(pdfPath, `CareerDevelopmentPlan_${branchId}.pdf`, (err) => {
+      if (err) {
+        console.error("Error sending file:", err);
+        res.status(500).send("Error downloading file");
+      }
     });
   } catch (err) {
     console.error("Error generating PDF report:", err);
