@@ -103,7 +103,7 @@ export const checkDownloadStatus = async (req, res) => {
             return res.status(422).json(failureResponse({ error: 'branchId is required' }, 'Failed to check download status'));
         }
 
-        const query = 'SELECT id FROM model_subscription WHERE branch_id = ?';
+        const query = 'SELECT id FROM trainning_plan WHERE branch_id = ?';
         pool.query(query, [branchId], (err, results) => {
             if (err) {
                 console.log('Database error:', err);
@@ -114,7 +114,7 @@ export const checkDownloadStatus = async (req, res) => {
                 return res.status(200).json(successResponse({ downloadStatus: true }, 'Branch ID found, download status is true'));
             }
 
-            return res.status(404).json(failureResponse({ downloadStatus: false }, 'Branch ID not found'));
+            return res.status(404).json(failureResponse({ downloadStatus: false }, 'Branch ID not found in the trainning plan'));
         });
     } catch (error) {
         console.error('Error checking download status:', error);
