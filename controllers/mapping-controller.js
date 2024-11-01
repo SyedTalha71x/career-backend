@@ -921,18 +921,18 @@ export const getMessage = async (req, res) => {
 export const addSkill = async (req, res) => {
   console.log("addSkill API called");
   try {
-    const { title, sort, step_id, status } = req.body;
+    const { title, step_id, status } = req.body;
 
     if(!step_id){
       return res.status(400).json({error: 'StepId should be provided'})
     }
-    console.log(title, sort, step_id, status);
+    console.log(title, step_id, status);
     
     const insertQuery = `
-      INSERT INTO skills (title, sort, step_id, status)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO skills (title, step_id, status)
+      VALUES (?, ?, ?)
     `;
-    const results = await query(insertQuery, [title, sort, step_id, status]);
+    const results = await query(insertQuery, [title, step_id, status || 'pending' ]);
     console.log(results);
     
     return res.status(200).json({message: 'Skill created Successfully'})
