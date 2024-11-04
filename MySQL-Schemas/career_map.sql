@@ -1,14 +1,13 @@
-/*!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19  Distrib 10.6.18-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.37, for Linux (x86_64)
 --
--- Host: localhost    Database: career_map
+-- Host: localhost    Database: career_map_2
 -- ------------------------------------------------------
--- Server version	10.6.18-MariaDB-0ubuntu0.22.04.1
+-- Server version	8.0.37-0ubuntu0.23.10.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -22,16 +21,16 @@
 
 DROP TABLE IF EXISTS `action_plan_summary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `action_plan_summary` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `action` varchar(255) NOT NULL,
-  `responsiblity` enum('self','mentor','self/mentor') NOT NULL,
-  `plan_id` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `action` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `responsiblity` enum('self','mentor','self/mentor') COLLATE utf8mb4_general_ci NOT NULL,
+  `plan_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `action_plan_summary_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +39,7 @@ CREATE TABLE `action_plan_summary` (
 
 LOCK TABLES `action_plan_summary` WRITE;
 /*!40000 ALTER TABLE `action_plan_summary` DISABLE KEYS */;
-INSERT INTO `action_plan_summary` VALUES (26,'Complete HTML/CSS training','self',6),(27,'Enroll in PHP course','self',6),(28,'Participate in JavaScript workshop','self',6),(29,'Develop a WordPress plugin','self',6),(30,'Optimize a website for SEO','self',6),(31,'Seek mentorship for leadership skills','mentor',6),(39,'Enroll in Adobe courses on Udemy and LinkedIn Learning','self',9),(40,'Complete a typography project using resources from Skillshare','self',9),(41,'Seek mentor feedback on design projects','mentor',9),(42,'Schedule regular check-ins to evaluate progress','self',9);
+INSERT INTO `action_plan_summary` VALUES (1,'Complete Adobe Creative Suite course','self',1),(2,'Participate in UI/UX Design Workshop','self',1),(3,'Enroll in HTML, CSS, and JavaScript Bootcamp','self',1),(4,'Find a mentor for career guidance','mentor',1),(5,'Build a personal web project portfolio','self',1),(6,'Complete PHP, HTML/CSS, JavaScript, and WordPress development trainings','self',2),(7,'Develop SEO skills through online courses','self',2),(8,'Enroll in leadership and communication workshops','self',2),(9,'Prepare for PMP Certification and Agile training','self',2),(10,'Seek mentorship for project management guidance','mentor',2);
 /*!40000 ALTER TABLE `action_plan_summary` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -50,18 +49,18 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `branch`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `branch` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `step_id` bigint(20) DEFAULT NULL,
-  `color` varchar(255) NOT NULL,
-  `path_id` bigint(20) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `step_id` bigint DEFAULT NULL,
+  `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `path_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`step_id`),
   KEY `fk_branch_path_id` (`path_id`),
   CONSTRAINT `fk_branch_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_branch_step_id` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +69,7 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (9,NULL,'#f4b084',1),(10,37,'#a9d08e',1),(11,37,'#ccccff',1),(12,37,'#9bc2e6',1),(13,NULL,'#f4b084',2),(14,58,'#a9d08e',2),(15,58,'#ccccff',2),(16,58,'#9bc2e6',2),(17,NULL,'#f4b084',3),(18,79,'#a9d08e',3),(19,79,'#ccccff',3),(20,79,'#9bc2e6',3);
+INSERT INTO `branch` VALUES (1,NULL,'#f4b084',1),(2,1,'#a9d08e',1),(3,1,'#ccccff',1),(4,1,'#9bc2e6',1),(5,NULL,'#f4b084',2),(6,16,'#a9d08e',2),(7,16,'#ccccff',2),(8,16,'#9bc2e6',2);
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -80,17 +79,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `career_goals_overview`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `career_goals_overview` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `title` text NOT NULL,
-  `type` enum('s','l') NOT NULL,
-  `completion_date` date NOT NULL DEFAULT current_timestamp(),
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `title` text COLLATE utf8mb4_general_ci NOT NULL,
+  `type` enum('s','l') COLLATE utf8mb4_general_ci NOT NULL,
+  `completion_date` varchar(350) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `career_goals_overview_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +98,7 @@ CREATE TABLE `career_goals_overview` (
 
 LOCK TABLES `career_goals_overview` WRITE;
 /*!40000 ALTER TABLE `career_goals_overview` DISABLE KEYS */;
-INSERT INTO `career_goals_overview` VALUES (30,6,'Become a proficient WordPress Developer','s','2025-04-30'),(31,6,'Transition to a Team Lead role','s','2025-10-31'),(32,6,'Advance to Project Manager','l','2026-10-31'),(33,6,'Reach Product Manager level','l','2027-10-31'),(34,6,'Attain Operations Manager role','l','2028-10-31'),(35,6,'Achieve the position of Chief Technology Officer (CTO)','l','2029-10-31'),(47,9,'Become a proficient Graphic Designer','s','2025-04-30'),(48,9,'Advance to UI/UX Design Exploration','s','2025-10-30'),(49,9,'Develop expertise in Advanced UI/UX Design','l','2026-10-30'),(50,9,'Progress to UI/UX Design Specialist','l','2027-05-30'),(51,9,'Become a UI/UX Consultant','l','2028-05-30'),(52,9,'Achieve the Head of UI/UX Design position','l','2029-12-30');
+INSERT INTO `career_goals_overview` VALUES (1,1,'Master Graphic Design Tools and Concepts','s','2025-04-01'),(2,1,'Develop Proficiency in Web Development Fundamentals','s','2025-10-01'),(3,1,'Build and Diversify a Web Development Portfolio','s','2026-04-01'),(4,1,'Gain Experience with Frontend Frameworks','s','2026-10-01'),(5,1,'Secure a Frontend Developer Position','l','2027-04-01'),(6,1,'Advance to Senior Frontend Developer','l','2028-04-01'),(7,2,'Transition from WordPress Developer to Project Manager','s','2025-10-01'),(8,2,'Obtain PMP Certification and Agile Methodology Expertise','s','2026-04-01'),(9,2,'Lead Data Science Projects','l','2027-10-01'),(10,2,'Become a Data Science Manager','l','2028-10-01'),(11,2,'Achieve Director of Data Science Role','l','2029-10-01');
 /*!40000 ALTER TABLE `career_goals_overview` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -109,16 +108,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `career_path_progression_map`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `career_path_progression_map` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `role` varchar(255) NOT NULL,
-  `suggested_timing` text DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `role` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `suggested_timing` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `career_path_progression_map_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -127,7 +126,7 @@ CREATE TABLE `career_path_progression_map` (
 
 LOCK TABLES `career_path_progression_map` WRITE;
 /*!40000 ALTER TABLE `career_path_progression_map` DISABLE KEYS */;
-INSERT INTO `career_path_progression_map` VALUES (27,6,'WordPress Developer',NULL),(28,6,'Team Lead','6 months'),(29,6,'Project Manager','12 months'),(30,6,'Product Manager','12 months'),(31,6,'Operations Manager','12 months'),(32,6,'Chief Technology Officer (CTO)','12 months'),(44,9,'Graphic Designer',NULL),(45,9,'UI/UX Designer','6 months'),(46,9,'Advanced UI/UX Designer','12 months'),(47,9,'UI/UX Design Specialist','12 months'),(48,9,'UI/UX Consultant','12 months'),(49,9,'Head of UI/UX Design','18 months');
+INSERT INTO `career_path_progression_map` VALUES (1,1,'Graphic Designer',NULL),(2,1,'Junior Web Developer','6 months'),(3,1,'Frontend Developer','12 months'),(4,1,'Senior Frontend Developer','18 months'),(5,2,'Current WordPress Developer Role',NULL),(6,2,'Project Manager','12 months'),(7,2,'Data Science Project Lead','12 months'),(8,2,'Data Science Manager','12 months'),(9,2,'Director of Data Science','12 months');
 /*!40000 ALTER TABLE `career_path_progression_map` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,15 +136,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `facebook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `facebook_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `facebook_id` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `facebook_id` (`facebook_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -166,15 +165,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `google_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `google_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `google_id` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `profile_picture` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `google_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`),
   UNIQUE KEY `email` (`email`)
@@ -192,19 +191,49 @@ INSERT INTO `google_login` VALUES (4,'109075669814140893830','pycess76x@gmail.co
 UNLOCK TABLES;
 
 --
+-- Table structure for table `gpt_data`
+--
+
+DROP TABLE IF EXISTS `gpt_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `gpt_data` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `result` text NOT NULL,
+  `step_id` bigint NOT NULL,
+  `parent_gpt_id` varchar(350) DEFAULT NULL,
+  `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `prompt` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `step_id` (`step_id`),
+  CONSTRAINT `gpt_data_logs_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gpt_data`
+--
+
+LOCK TABLES `gpt_data` WRITE;
+/*!40000 ALTER TABLE `gpt_data` DISABLE KEYS */;
+INSERT INTO `gpt_data` VALUES (1,'Becoming an automation expert involves a combination of education, hands-on experience, and continuous learning in the field of automation technologies. Here are the steps you can take to develop your skills and advance your career as an automation expert:\n\n### 1. **Educational Background**\n   - **Earn a Relevant Degree**: Consider obtaining a degree in computer science, software engineering, information technology, electrical engineering, or a related field. This foundational knowledge is critical for understanding automation principles and technologies.\n   - **Cert',23,NULL,'2024-11-04 08:23:45','how to become an automation expert '),(2,'Gaining experience in automation after you\'ve acquired the necessary skills can be accomplished through a variety of approaches. Here are some effective strategies:\n\n### 1. **Hands-On Projects**\n   - **Personal Projects**: Create your own automation projects using tools like Selenium (for web applications), Ansible, Puppet, or automation scripts. Open-source projects can provide a great way to practice and showcase your skills.\n   - **Automation Challenges**: Participate in coding challenges or hackathons that focus on automation solutions.',23,'1','2024-11-04 08:23:55','after learning automation how to get experience ');
+/*!40000 ALTER TABLE `gpt_data` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `instagram_login`
 --
 
 DROP TABLE IF EXISTS `instagram_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `instagram_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `instagram_id` varchar(50) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `instagram_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `instagram_id` (`instagram_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -225,15 +254,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `linkedin_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `linkedin_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `linkedin_id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `linkedin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `linkedin_id` (`linkedin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -254,17 +283,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `model_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `model_subscription` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `payment_id` varchar(255) DEFAULT NULL,
-  `branch_id` int(11) NOT NULL,
-  `amount` int(20) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `payment_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `branch_id` int NOT NULL,
+  `amount` int NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +302,7 @@ CREATE TABLE `model_subscription` (
 
 LOCK TABLES `model_subscription` WRITE;
 /*!40000 ALTER TABLE `model_subscription` DISABLE KEYS */;
-INSERT INTO `model_subscription` VALUES (1,28,'0',3,10,'2024-10-28 12:07:53','2024-10-28 12:07:53'),(2,28,'0',3,10,'2024-10-28 12:11:29','2024-10-28 12:11:29'),(3,28,'0',5,10,'2024-10-28 12:11:47','2024-10-28 12:11:47'),(4,28,'0',5,10,'2024-10-28 12:17:55','2024-10-28 12:17:55'),(5,28,'pi_3QErrfIILuhliL1z1JtyoKQj',5,10,'2024-10-28 12:27:42','2024-10-28 12:27:42'),(6,28,'pi_3QEs3gIILuhliL1z0LkqmO8s',3,10,'2024-10-28 12:28:52','2024-10-28 12:28:52'),(7,28,'pi_3QEsHvIILuhliL1z1ATAbNvM',1,10,'2024-10-28 12:43:43','2024-10-28 12:43:43'),(8,28,'pi_3QEsJ7IILuhliL1z1RfI8Ghi',7,10,'2024-10-28 12:44:45','2024-10-28 12:44:45'),(9,28,'pi_3QFA8aIILuhliL1z1LovjTXZ',7,10,'2024-10-29 07:47:39','2024-10-29 07:47:39'),(10,28,'pi_3QFAIfIILuhliL1z1zTRYNj5',7,10,'2024-10-29 08:02:08','2024-10-29 08:02:08'),(11,28,'pi_3QFAIfIILuhliL1z1zTRYNj5',7,10,'2024-10-29 08:02:08','2024-10-29 08:02:08'),(12,28,'pi_3QEsJ7IILuhliL1z1RfI8Ghi',7,10,'2024-10-29 11:07:53','2024-10-29 11:07:53'),(13,28,'pi_3QFDJlIILuhliL1z02QBhcqz',7,10,'2024-10-29 11:11:59','2024-10-29 11:11:59'),(14,28,'pi_3QFDJlIILuhliL1z02QBhcqz',7,10,'2024-10-29 11:41:27','2024-10-29 11:41:27'),(15,28,'pi_3QFDJlIILuhliL1z02QBhcqz',7,10,'2024-10-29 11:41:38','2024-10-29 11:41:38'),(16,28,'pi_3QFZ52IILuhliL1z17qXjppS',13,10,'2024-10-30 10:34:43','2024-10-30 10:34:43'),(17,28,'pi_3QFZ52IILuhliL1z17qXjppS',13,10,'2024-10-30 10:35:14','2024-10-30 10:35:14'),(18,28,'pi_3QFZ52IILuhliL1z17qXjppS',13,10,'2024-10-30 10:35:48','2024-10-30 10:35:48'),(19,28,'pi_3QFZ52IILuhliL1z17qXjppS',13,10,'2024-10-30 10:35:54','2024-10-30 10:35:54'),(20,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:52:35','2024-10-30 10:52:35'),(21,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:54:15','2024-10-30 10:54:15'),(22,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:54:45','2024-10-30 10:54:45'),(23,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:54:45','2024-10-30 10:54:45'),(24,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:54:52','2024-10-30 10:54:52'),(25,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:55:01','2024-10-30 10:55:01'),(26,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:56:29','2024-10-30 10:56:29'),(27,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:57:39','2024-10-30 10:57:39'),(28,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:57:51','2024-10-30 10:57:51'),(29,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:57:51','2024-10-30 10:57:51'),(30,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:58:00','2024-10-30 10:58:00'),(31,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 10:59:42','2024-10-30 10:59:42'),(32,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:00:02','2024-10-30 11:00:02'),(33,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:00:03','2024-10-30 11:00:03'),(34,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:00:26','2024-10-30 11:00:26'),(35,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:01:14','2024-10-30 11:01:14'),(36,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:01:36','2024-10-30 11:01:36'),(37,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:01:47','2024-10-30 11:01:47'),(38,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:02:56','2024-10-30 11:02:56'),(39,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:02:56','2024-10-30 11:02:56'),(40,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:03:14','2024-10-30 11:03:14'),(41,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:03:28','2024-10-30 11:03:28'),(42,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:03:34','2024-10-30 11:03:34'),(43,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:03:46','2024-10-30 11:03:46'),(44,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:05:54','2024-10-30 11:05:54'),(45,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:06:11','2024-10-30 11:06:11'),(46,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:06:20','2024-10-30 11:06:20'),(47,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:06:31','2024-10-30 11:06:31'),(48,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:07:48','2024-10-30 11:07:48'),(49,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:08:43','2024-10-30 11:08:43'),(50,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:08:59','2024-10-30 11:08:59'),(51,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:09:03','2024-10-30 11:09:03'),(52,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:10:37','2024-10-30 11:10:37'),(53,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:10:37','2024-10-30 11:10:37'),(54,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:12:06','2024-10-30 11:12:06'),(55,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:13:19','2024-10-30 11:13:19'),(56,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:19:08','2024-10-30 11:19:08'),(57,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:20:08','2024-10-30 11:20:08'),(58,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:20:08','2024-10-30 11:20:08'),(59,28,'pi_3QFZVjIILuhliL1z0tIFHZXy',15,10,'2024-10-30 11:20:26','2024-10-30 11:20:26'),(60,28,'pi_3QFaCLIILuhliL1z0xnXoO44',15,10,'2024-10-30 11:36:34','2024-10-30 11:36:34'),(61,28,'pi_3QFaCLIILuhliL1z0xnXoO44',15,10,'2024-10-30 11:37:10','2024-10-30 11:37:10'),(62,28,'pi_3QFaCLIILuhliL1z0xnXoO44',15,10,'2024-10-30 11:46:59','2024-10-30 11:46:59'),(63,28,'pi_3QFaCLIILuhliL1z0xnXoO44',15,10,'2024-10-30 11:47:37','2024-10-30 11:47:37'),(64,28,'pi_3QFaObIILuhliL1z0KvIhZly',10,10,'2024-10-30 11:49:15','2024-10-30 11:49:15'),(65,28,'pi_3QFb6SIILuhliL1z1pCEJ1JS',10,10,'2024-10-30 12:34:34','2024-10-30 12:34:34'),(66,28,'pi_3QFb6SIILuhliL1z1pCEJ1JS',10,10,'2024-10-30 12:48:41','2024-10-30 12:48:41'),(67,28,'pi_3QFbU9IILuhliL1z1v8hy2KC',15,10,'2024-10-30 12:59:05','2024-10-30 12:59:05'),(68,28,'pi_3QFb6SIILuhliL1z1pCEJ1JS',10,10,'2024-10-30 13:02:06','2024-10-30 13:02:06'),(69,28,'pi_3QFbZ6IILuhliL1z1YBId5aS',19,10,'2024-10-30 13:04:12','2024-10-30 13:04:12'),(70,28,'pi_3QFbZ6IILuhliL1z1YBId5aS',19,10,'2024-10-30 13:04:51','2024-10-30 13:04:51'),(71,28,'pi_3QFb6SIILuhliL1z1pCEJ1JS',10,10,'2024-10-30 13:27:59','2024-10-30 13:27:59'),(72,28,'pi_3QFb6SIILuhliL1z1pCEJ1JS',10,10,'2024-10-30 13:27:59','2024-10-30 13:27:59'),(73,28,'pi_3QFbZ6IILuhliL1z1YBId5aS',19,10,'2024-10-30 13:27:59','2024-10-30 13:27:59'),(74,28,'pi_3QFc2XIILuhliL1z1m6tqFAJ',10,10,'2024-10-30 13:34:39','2024-10-30 13:34:39'),(75,28,'pi_3QFc6iIILuhliL1z12xflJQX',10,10,'2024-10-30 13:39:02','2024-10-30 13:39:02'),(76,28,'pi_3QFcFqIILuhliL1z1oysGhHo',10,10,'2024-10-30 13:48:26','2024-10-30 13:48:26');
+INSERT INTO `model_subscription` VALUES (1,28,'0',3,10,'2024-10-28 12:07:53','2024-10-28 12:07:53'),(2,28,'0',3,10,'2024-10-28 12:11:29','2024-10-28 12:11:29'),(3,28,'0',5,10,'2024-10-28 12:11:47','2024-10-28 12:11:47'),(4,28,'0',5,10,'2024-10-28 12:17:55','2024-10-28 12:17:55'),(5,28,'pi_3QErrfIILuhliL1z1JtyoKQj',5,10,'2024-10-28 12:27:42','2024-10-28 12:27:42'),(6,28,'pi_3QEs3gIILuhliL1z0LkqmO8s',3,10,'2024-10-28 12:28:52','2024-10-28 12:28:52'),(7,28,'pi_3QEsHvIILuhliL1z1ATAbNvM',1,10,'2024-10-28 12:43:43','2024-10-28 12:43:43'),(8,28,'pi_3QEsJ7IILuhliL1z1RfI8Ghi',7,10,'2024-10-28 12:44:45','2024-10-28 12:44:45');
 /*!40000 ALTER TABLE `model_subscription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -283,10 +312,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `modules` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `module_name` varchar(255) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -307,15 +336,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `next_steps_recommendations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `next_steps_recommendations` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `recommendations` text NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `recommendations` text COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `next_steps_recommendations_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -324,7 +353,7 @@ CREATE TABLE `next_steps_recommendations` (
 
 LOCK TABLES `next_steps_recommendations` WRITE;
 /*!40000 ALTER TABLE `next_steps_recommendations` DISABLE KEYS */;
-INSERT INTO `next_steps_recommendations` VALUES (16,6,'Focus on mastering technical skills as a WordPress Developer'),(17,6,'Gradually transition into leadership roles'),(18,6,'Pursue certifications in project management and agile methodologies'),(19,6,'Build strategic thinking and stakeholder management skills'),(26,9,'Focus on building a strong design portfolio to showcase skills.'),(27,9,'Engage in networking with other design professionals.'),(28,9,'Participate in design competitions to gain exposure.');
+INSERT INTO `next_steps_recommendations` VALUES (1,1,'Focus on mastering responsive design techniques.'),(2,1,'Develop a strong understanding of JavaScript fundamentals.'),(3,1,'Start building a portfolio of web development projects.'),(4,2,'Focus on completing all pending technical skills within the next 6 months.'),(5,2,'Schedule regular sessions with a mentor to discuss career progression.'),(6,2,'Engage in networking opportunities to connect with professionals in desired roles.');
 /*!40000 ALTER TABLE `next_steps_recommendations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -334,19 +363,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(350) NOT NULL,
-  `description` varchar(350) NOT NULL,
-  `link` varchar(255) DEFAULT NULL,
-  `read` tinyint(4) NOT NULL DEFAULT 0,
-  `seen` tinyint(4) NOT NULL DEFAULT 0,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `title` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `read` tinyint NOT NULL DEFAULT '0',
+  `seen` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -355,7 +384,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (3,30,'System Maintenance Scheduled','Our system will be undergoing maintenance on October 1st at 10:00 PM.','https://www.google.com/',1,1),(4,30,'Database Admin Scheduled','Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.','https://www.google.com/',1,1),(5,30,'I am an infrastructure Specialist','This path has been analyse',NULL,1,1),(6,30,'react js developer','This path has been analyse',NULL,1,1),(7,30,'react js developer','This path has been analyse',NULL,0,0),(8,36,'Law grad to solicitor','This path has been analyse',NULL,1,1),(9,36,'Pipefitter to superintendant ','This path has been analyse',NULL,1,1),(10,36,'Law ','This path has been analyse',NULL,1,1),(11,36,'law 2','This path has been analyse',NULL,1,1),(12,28,'javascript','This path has been analyse',NULL,1,1),(13,30,'Law grad to solicitor','This path has been analyse',NULL,0,0),(14,30,'Pipefitter to superintendant ','This path has been analyse',NULL,0,0),(15,30,'Law ','This path has been analyse',NULL,0,0),(16,30,'law 2','This path has been analyse',NULL,0,0),(17,30,'javascript','This path has been analyse',NULL,0,0),(18,36,'IT Specialist Career','This path has been analyse',NULL,0,1),(19,37,'javascript','This path has been analyse',NULL,1,1),(20,37,'python developer','This path has been analyse',NULL,1,1),(21,37,'data entry','This path has been analyse',NULL,1,1),(22,37,'data entry operator','This path has been analyse',NULL,1,1),(23,28,'frontend developer','This path has been analyse',NULL,1,1),(24,37,'ml engineer','This path has been analyse',NULL,1,1),(25,37,' Machine learning developer','This path has been analyse',NULL,1,1),(26,37,'react js developer','This path has been analyse',NULL,1,1),(27,37,'react js developer','This path has been analyse',NULL,1,1),(28,37,'ai engineer','This path has been analyse',NULL,1,1),(29,37,'data entry operator','This path has been analyse',NULL,1,1),(30,37,' python developer','This path has been analyse',NULL,1,1),(31,37,' python developer','This path has been analyse',NULL,1,1),(32,37,' python developer','This path has been analyse',NULL,1,1),(33,37,'python developer','This path has been analyse',NULL,1,1),(34,37,' python developer','This path has been analyse',NULL,1,1),(35,37,'mechanic ','This path has been analyse',NULL,1,1),(36,37,'blockchain developer','This path has been analyse',NULL,1,1),(37,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(38,37,' python developer','This path has been analyse',NULL,1,1),(39,37,' python developer','This path has been analyse',NULL,1,1),(40,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(41,37,'mechanic ','This path has been analyse',NULL,1,1),(42,37,'react js developer','This path has been analyse',NULL,1,1),(43,37,'data entry operator','This path has been analyse',NULL,1,1),(44,37,'ai engineer','This path has been analyse',NULL,1,1),(45,37,'data entry operator','This path has been analyse',NULL,1,1),(46,37,'singer','This path has been analyse',NULL,0,1),(47,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(48,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(49,37,'javascript deveoper','This path has been analyse',NULL,0,1),(50,37,'ml engineer','This path has been analyse',NULL,0,1),(51,37,'javascript deveoper','This path has been analyse',NULL,0,1),(52,28,'python developer','This path has been analyse',NULL,1,1),(53,28,'python developer','This path has been analyse',NULL,1,1),(54,28,'python developer','This path has been analyse',NULL,1,1),(55,28,'singer','This path has been analyse',NULL,0,1),(56,28,'ai engineer','This path has been analyse',NULL,0,1),(57,28,'frontend developer','This path has been analyse',NULL,0,1),(58,28,'graphic designer','This path has been analyse',NULL,0,1),(59,28,'wordpress developer','This path has been analyse',NULL,0,1),(60,28,'graphic designer','This path has been analyse',NULL,0,1),(61,28,'wordpress developer','This path has been analyse',NULL,0,1),(62,28,'data analyst','This path has been analyse',NULL,0,1);
+INSERT INTO `notifications` VALUES (3,30,'System Maintenance Scheduled','Our system will be undergoing maintenance on October 1st at 10:00 PM.','https://www.google.com/',1,1),(4,30,'Database Admin Scheduled','Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.','https://www.google.com/',1,1),(5,30,'I am an infrastructure Specialist','This path has been analyse',NULL,1,1),(6,30,'react js developer','This path has been analyse',NULL,1,1),(7,30,'react js developer','This path has been analyse',NULL,0,0),(8,36,'Law grad to solicitor','This path has been analyse',NULL,1,1),(9,36,'Pipefitter to superintendant ','This path has been analyse',NULL,1,1),(10,36,'Law ','This path has been analyse',NULL,1,1),(11,36,'law 2','This path has been analyse',NULL,1,1),(12,28,'javascript','This path has been analyse',NULL,1,1),(13,30,'Law grad to solicitor','This path has been analyse',NULL,0,0),(14,30,'Pipefitter to superintendant ','This path has been analyse',NULL,0,0),(15,30,'Law ','This path has been analyse',NULL,0,0),(16,30,'law 2','This path has been analyse',NULL,0,0),(17,30,'javascript','This path has been analyse',NULL,0,0),(18,36,'IT Specialist Career','This path has been analyse',NULL,0,1),(19,37,'javascript','This path has been analyse',NULL,1,1),(20,37,'python developer','This path has been analyse',NULL,1,1),(21,37,'data entry','This path has been analyse',NULL,1,1),(22,37,'data entry operator','This path has been analyse',NULL,1,1),(23,28,'frontend developer','This path has been analyse',NULL,1,1),(24,37,'ml engineer','This path has been analyse',NULL,1,1),(25,37,' Machine learning developer','This path has been analyse',NULL,1,1),(26,37,'react js developer','This path has been analyse',NULL,1,1),(27,37,'react js developer','This path has been analyse',NULL,1,1),(28,37,'ai engineer','This path has been analyse',NULL,1,1),(29,37,'data entry operator','This path has been analyse',NULL,1,1),(30,37,' python developer','This path has been analyse',NULL,1,1),(31,37,' python developer','This path has been analyse',NULL,1,1),(32,37,' python developer','This path has been analyse',NULL,1,1),(33,37,'python developer','This path has been analyse',NULL,1,1),(34,37,' python developer','This path has been analyse',NULL,1,1),(35,37,'mechanic ','This path has been analyse',NULL,1,1),(36,37,'blockchain developer','This path has been analyse',NULL,1,1),(37,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(38,37,' python developer','This path has been analyse',NULL,1,1),(39,37,' python developer','This path has been analyse',NULL,1,1),(40,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(41,37,'mechanic ','This path has been analyse',NULL,1,1),(42,37,'react js developer','This path has been analyse',NULL,1,1),(43,37,'data entry operator','This path has been analyse',NULL,1,1),(44,37,'ai engineer','This path has been analyse',NULL,1,1),(45,37,'data entry operator','This path has been analyse',NULL,1,1),(46,37,'singer','This path has been analyse',NULL,0,1),(47,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(48,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(49,37,'javascript deveoper','This path has been analyse',NULL,0,1),(50,37,'ml engineer','This path has been analyse',NULL,0,1),(51,37,'javascript deveoper','This path has been analyse',NULL,0,1),(52,28,'python developer','This path has been analyse',NULL,1,1),(53,28,'python developer','This path has been analyse',NULL,1,1),(54,28,'python developer','This path has been analyse',NULL,1,1),(55,28,'singer','This path has been analyse',NULL,0,0),(56,28,'ai engineer','This path has been analyse',NULL,0,0),(57,28,'frontend developer','This path has been analyse',NULL,0,0),(58,28,'graphic designer','This path has been analyse',NULL,0,0),(59,28,'wordpress developer','This path has been analyse',NULL,0,0);
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -365,15 +394,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `outlook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `outlook_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `outlook_id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `outlook_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `outlook_id` (`outlook_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -394,19 +423,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `path`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `path` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `prompt` longtext DEFAULT NULL,
-  `file` varchar(255) DEFAULT NULL,
-  `status` enum('pending','analysed','analysing') DEFAULT 'pending',
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(250) DEFAULT NULL,
-  `gpt_id` varchar(350) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `prompt` longtext COLLATE utf8mb4_unicode_ci,
+  `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('pending','analysed','analysing') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `user_id` int DEFAULT NULL,
+  `title` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -415,7 +444,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'I am a graphic designer & wanna be a Frontend Developer.',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'I am professional singer & wanna be a data analyst',NULL,'analysed',28,'data analyst',NULL);
+INSERT INTO `path` VALUES (1,'I am a graphic designer & wanna be a Frontend Developer.',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -425,10 +454,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permission_modules` (
-  `permission_id` int(11) DEFAULT NULL,
-  `module_id` int(11) DEFAULT NULL,
+  `permission_id` int DEFAULT NULL,
+  `module_id` int DEFAULT NULL,
   KEY `permission_id` (`permission_id`),
   KEY `module_id` (`module_id`),
   CONSTRAINT `permission_modules_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`),
@@ -452,13 +481,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_to_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permission_to_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `role_id` int(11) NOT NULL,
-  `permission_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `role_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   KEY `permission_id` (`permission_id`),
@@ -483,13 +512,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permissions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `slug` varchar(255) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -510,10 +539,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `role_to_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `role_to_users` (
-  `role_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `role_id` int NOT NULL,
+  `user_id` int NOT NULL,
   KEY `role_id` (`role_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
@@ -537,12 +566,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -564,17 +593,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_gap_analysis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skill_gap_analysis` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `title` text NOT NULL,
-  `priority` enum('High','Medium','Low') DEFAULT NULL,
-  `status` enum('pending','completed') NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `title` text COLLATE utf8mb4_general_ci NOT NULL,
+  `priority` enum('High','Medium','Low') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `skill_gap_analysis_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=270 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -583,7 +612,7 @@ CREATE TABLE `skill_gap_analysis` (
 
 LOCK TABLES `skill_gap_analysis` WRITE;
 /*!40000 ALTER TABLE `skill_gap_analysis` DISABLE KEYS */;
-INSERT INTO `skill_gap_analysis` VALUES (150,6,'HTML/CSS','High','pending'),(151,6,'PHP','High','pending'),(152,6,'JavaScript','High','pending'),(153,6,'WordPress Plugins','High','pending'),(154,6,'SEO','Medium','pending'),(155,6,'Leadership','High','pending'),(156,6,'Project Management','High','pending'),(157,6,'Conflict Resolution','Medium','pending'),(158,6,'Time Management','Medium','pending'),(159,6,'Technical Expertise','High','pending'),(160,6,'Agile Methodologies','High','pending'),(161,6,'Risk Management','Medium','pending'),(162,6,'Budgeting','Medium','pending'),(163,6,'Client Relations','Medium','pending'),(164,6,'Resource Allocation','Medium','pending'),(165,6,'Strategic Thinking','Medium','pending'),(166,6,'Product Lifecycle','Medium','pending'),(167,6,'Market Analysis','Medium','pending'),(168,6,'Stakeholder Management','Medium','pending'),(169,6,'Roadmapping','Medium','pending'),(170,6,'Process Improvement','Medium','pending'),(171,6,'Performance Metrics','Medium','pending'),(172,6,'Operational Strategy','Medium','pending'),(173,6,'Change Management','Medium','pending'),(174,6,'Analytical Thinking','Medium','pending'),(175,6,'Visionary Leadership','High','pending'),(176,6,'Technology Roadmap','High','pending'),(177,6,'Innovation Management','Medium','pending'),(178,6,'Cross-Department Collaboration','Medium','pending'),(179,6,'Risk Assessment','High','pending'),(240,9,'Adobe Photoshop','High','pending'),(241,9,'Adobe Illustrator','High','pending'),(242,9,'Typography','Medium','pending'),(243,9,'Layout Design','Medium','pending'),(244,9,'Color Theory','Medium','pending'),(245,9,'Wireframing','High','pending'),(246,9,'Prototyping','High','pending'),(247,9,'User Research','High','pending'),(248,9,'Usability Testing','High','pending'),(249,9,'Interaction Design','High','pending'),(250,9,'Design Thinking','High','pending'),(251,9,'Information Architecture',NULL,'completed'),(252,9,'Responsive Design',NULL,'completed'),(253,9,'A/B Testing','High','pending'),(254,9,'Accessibility','High','pending'),(255,9,'Visual Design','Medium','pending'),(256,9,'User Journeys','Medium','pending'),(257,9,'Persona Development','Medium','pending'),(258,9,'User-Centered Design','High','pending'),(259,9,'Design Systems','Medium','pending'),(260,9,'Client Management','Medium','pending'),(261,9,'Project Planning','Medium','pending'),(262,9,'Communication','Medium','pending'),(263,9,'Problem Solving','High','pending'),(264,9,'Time Management','Medium','pending'),(265,9,'Leadership','Medium','pending'),(266,9,'Team Building','Medium','pending'),(267,9,'Strategic Planning','Medium','pending'),(268,9,'Budget Management','Medium','pending'),(269,9,'Mentorship','Medium','pending');
+INSERT INTO `skill_gap_analysis` VALUES (1,1,'Adobe Creative Suite','High','pending'),(2,1,'UI/UX Design','High','pending'),(3,1,'Typography','Medium','pending'),(4,1,'Color Theory','Medium','pending'),(5,1,'Responsive Design','High','pending'),(6,1,'HTML','High','pending'),(7,1,'CSS','High','pending'),(8,1,'JavaScript','High','pending'),(9,1,'DOM Manipulation','High','pending'),(10,1,'Project Management','Medium','pending'),(11,1,'Git/GitHub','High','pending'),(12,1,'Web Design','High','pending'),(13,1,'Debugging','High','pending'),(14,1,'Code Optimization','Medium','pending'),(15,1,'React','High','pending'),(16,1,'Vue.js','High','pending'),(17,1,'State Management','High','pending'),(18,1,'Component-Based Architecture','High','pending'),(19,1,'Single Page Applications','High','pending'),(20,1,'Interviewing','High','pending'),(21,1,'Technical Communication','Medium','pending'),(22,1,'Problem Solving','High','pending'),(23,1,'Team Collaboration','Medium','pending'),(24,1,'Adaptability','Medium','pending'),(25,1,'Advanced JavaScript','High','pending'),(26,1,'Performance Optimization','Medium','pending'),(27,1,'Security Best Practices','Medium','pending'),(28,1,'Testing and Debugging','High','pending'),(29,1,'Mentorship','Medium','pending'),(30,2,'PHP','High','pending'),(31,2,'HTML/CSS','High','pending'),(32,2,'JavaScript','High','pending'),(33,2,'WordPress CMS','High','pending'),(34,2,'SEO','High','pending'),(35,2,'Leadership','High','pending'),(36,2,'Communication','High','pending'),(37,2,'Project Planning','High','pending'),(38,2,'Budget Management','High','pending'),(39,2,'Risk Management','High','pending'),(40,2,'PMP Certification','High','pending'),(41,2,'Agile Methodology','High','pending'),(42,2,'Process Improvement','High','pending'),(43,2,'Time Management','High','pending'),(44,2,'Stakeholder Engagement','High','pending'),(45,2,'Data Science Project Management','High','pending'),(46,2,'Team Leadership','High','pending'),(47,2,'Resource Allocation','High','pending'),(48,2,'Performance Metrics','High','pending'),(49,2,'Strategic Planning','High','pending'),(50,2,'Team Building','High','pending'),(51,2,'Advanced Data Science','High','pending'),(52,2,'Business Acumen','High','pending'),(53,2,'Decision Making','High','pending'),(54,2,'Visionary Leadership','High','pending'),(55,2,'Executive Leadership','High','pending'),(56,2,'Strategic Vision','High','pending'),(57,2,'Industry Expertise','High','pending'),(58,2,'Organizational Development','High','pending'),(59,2,'Innovation Management','High','pending');
 /*!40000 ALTER TABLE `skill_gap_analysis` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -593,15 +622,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_gap_analysis_resources`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skill_gap_analysis_resources` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `skill_gap_analysis_id` bigint(20) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `platform` varchar(255) NOT NULL,
-  `link` varchar(255) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `skill_gap_analysis_id` bigint NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `platform` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=392 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -610,7 +639,7 @@ CREATE TABLE `skill_gap_analysis_resources` (
 
 LOCK TABLES `skill_gap_analysis_resources` WRITE;
 /*!40000 ALTER TABLE `skill_gap_analysis_resources` DISABLE KEYS */;
-INSERT INTO `skill_gap_analysis_resources` VALUES (182,150,'HTML/CSS','Codecademy','https://www.codecademy.com/learn/learn-html-css'),(183,150,'HTML/CSS','W3Schools','https://www.w3schools.com/html/'),(184,151,'PHP','Udemy','https://www.udemy.com/course/php-for-beginners/'),(185,151,'PHP','PHP.net','https://www.php.net/manual/en/'),(186,152,'JavaScript','FreeCodeCamp','https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/'),(187,152,'JavaScript','MDN Web Docs','https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide'),(188,153,'WordPress Plugins','LinkedIn Learning','https://www.linkedin.com/learning/wordpress-plugin-development'),(189,153,'WordPress Plugins','Plugin Handbook','https://developer.wordpress.org/plugins/'),(190,154,'SEO','Moz','https://moz.com/beginners-guide-to-seo'),(191,154,'SEO','Coursera','https://www.coursera.org/specializations/seo'),(192,155,'Leadership','Harvard Business Review','https://hbr.org/topic/leadership'),(193,155,'Leadership','Coursera','https://www.coursera.org/learn/leading-people-teams'),(194,156,'Project Management','PMI','https://www.pmi.org/certifications/types/certified-associate-capm'),(195,156,'Project Management','edX','https://www.edx.org/course/introduction-to-project-management'),(196,157,'Conflict Resolution','Udemy','https://www.udemy.com/course/conflict-resolution-skills/'),(197,157,'Conflict Resolution','LinkedIn Learning','https://www.linkedin.com/learning/conflict-resolution-foundations'),(198,158,'Time Management','Coursera','https://www.coursera.org/learn/work-smarter-not-harder'),(199,158,'Time Management','LinkedIn Learning','https://www.linkedin.com/learning/time-management-fundamentals'),(200,159,'Technical Expertise','Pluralsight','https://www.pluralsight.com/paths/technical-leadership'),(201,159,'Technical Expertise','Udacity','https://www.udacity.com/course/technical-program-management--nd087'),(202,160,'Agile Methodologies','Scrum.org','https://www.scrum.org/resources/what-is-agile'),(203,160,'Agile Methodologies','Coursera','https://www.coursera.org/specializations/agile-development'),(204,161,'Risk Management','PMI','https://www.pmi.org/certifications/risk-management-pmi-rmp'),(205,161,'Risk Management','Udemy','https://www.udemy.com/course/risk-management/'),(206,162,'Budgeting','Coursera','https://www.coursera.org/learn/finance-for-non-finance'),(207,162,'Budgeting','edX','https://www.edx.org/course/introduction-to-corporate-finance'),(208,163,'Client Relations','LinkedIn Learning','https://www.linkedin.com/learning/building-rapport-with-customers'),(209,163,'Client Relations','HubSpot','https://academy.hubspot.com/courses/customer-success'),(210,164,'Resource Allocation','MindTools','https://www.mindtools.com/pages/article/newPPM_88.htm'),(211,164,'Resource Allocation','Coursera','https://www.coursera.org/learn/resource-management-capacity-planning'),(212,165,'Strategic Thinking','LinkedIn Learning','https://www.linkedin.com/learning/strategic-thinking'),(213,165,'Strategic Thinking','Harvard Business Review','https://hbr.org/2015/01/the-big-picture-building-strategic-skills'),(214,166,'Product Lifecycle','Coursera','https://www.coursera.org/learn/product-management'),(215,166,'Product Lifecycle','Udemy','https://www.udemy.com/course/product-management-101/'),(216,167,'Market Analysis','LinkedIn Learning','https://www.linkedin.com/learning/market-research-foundations'),(217,167,'Market Analysis','edX','https://www.edx.org/micromasters/marketing-analytics'),(218,168,'Stakeholder Management','Udemy','https://www.udemy.com/course/stakeholder-management/'),(219,168,'Stakeholder Management','LinkedIn Learning','https://www.linkedin.com/learning/managing-stakeholders'),(220,169,'Roadmapping','ProductPlan','https://www.productplan.com/learn/product-roadmap/'),(221,169,'Roadmapping','Udemy','https://www.udemy.com/course/agile-roadmap-planning/'),(222,170,'Process Improvement','Six Sigma','https://www.sixsigmaonline.org/six-sigma-certification/yellow-belt/'),(223,170,'Process Improvement','LinkedIn Learning','https://www.linkedin.com/learning/process-improvement-foundations'),(224,171,'Performance Metrics','Coursera','https://www.coursera.org/learn/metrics'),(225,171,'Performance Metrics','LinkedIn Learning','https://www.linkedin.com/learning/measuring-team-performance'),(226,172,'Operational Strategy','Coursera','https://www.coursera.org/learn/operations-management'),(227,172,'Operational Strategy','edX','https://www.edx.org/course/operational-management-strategy'),(228,173,'Change Management','LinkedIn Learning','https://www.linkedin.com/learning/change-management-foundations'),(229,173,'Change Management','Prosci','https://www.prosci.com/change-management/thought-leadership-library'),(230,174,'Analytical Thinking','Coursera','https://www.coursera.org/learn/critical-thinking'),(231,174,'Analytical Thinking','LinkedIn Learning','https://www.linkedin.com/learning/thinking-critically'),(232,175,'Visionary Leadership','Harvard Business Review','https://hbr.org/topic/visionary-leadership'),(233,175,'Visionary Leadership','Coursera','https://www.coursera.org/learn/visionary-leadership'),(234,176,'Technology Roadmap','Pluralsight','https://www.pluralsight.com/paths/technology-roadmap'),(235,176,'Technology Roadmap','LinkedIn Learning','https://www.linkedin.com/learning/planning-a-technology-roadmap'),(236,177,'Innovation Management','edX','https://www.edx.org/course/managing-innovation'),(237,177,'Innovation Management','Coursera','https://www.coursera.org/learn/innovation-management'),(238,178,'Cross-Department Collaboration','LinkedIn Learning','https://www.linkedin.com/learning/cross-functional-collaboration'),(239,178,'Cross-Department Collaboration','Udemy','https://www.udemy.com/course/effective-communication-and-collaboration/'),(240,179,'Risk Assessment','PMI','https://www.pmi.org/learning/library/risk-assessment-management-structuring-6894'),(241,179,'Risk Assessment','Coursera','https://www.coursera.org/learn/risk-management'),(362,240,'Adobe Photoshop','Udemy','https://www.udemy.com/course/adobe-photoshop-cc-complete-beginner-to-advanced-training/'),(363,240,'Adobe Photoshop','LinkedIn Learning','https://www.linkedin.com/learning/photoshop-2024-essential-training'),(364,241,'Adobe Illustrator','Coursera','https://www.coursera.org/learn/adobe-illustrator-cc'),(365,241,'Adobe Illustrator','YouTube','https://www.youtube.com/watch?v=Q1nUEuTFkHs'),(366,242,'Typography','Skillshare','https://www.skillshare.com/classes/Typography-That-Works-Typographic-Composition-and-Fonts/123456'),(367,243,'Layout Design','Domestika','https://www.domestika.org/en/courses/1234-introduction-to-graphic-design-layout-and-composition'),(368,244,'Color Theory','Khan Academy','https://www.khanacademy.org/humanities/art-history-basics/ah-art-elements-techniques/color/a/color-and-light'),(369,245,'Wireframing','Figma','https://www.figma.com/resources/learn-design/wireframing-for-beginners/'),(370,246,'Prototyping','InVision','https://www.invisionapp.com/inside-design/prototyping-course'),(371,247,'User Research','Interaction Design Foundation','https://www.interaction-design.org/courses/conducting-usability-research'),(372,248,'Usability Testing','Google','https://www.google.com/design/spec/usability-testing.html'),(373,249,'Interaction Design','Coursera','https://www.coursera.org/specializations/interaction-design'),(374,250,'Design Thinking','IDEO U','https://www.ideou.com/pages/design-thinking'),(375,253,'A/B Testing','Optimizely','https://www.optimizely.com/optimization-glossary/ab-testing/'),(376,254,'Accessibility','W3C','https://www.w3.org/WAI/'),(377,255,'Visual Design','Medium','https://medium.com/design-bootcamp/principles-of-visual-design-6b99e5f14e9e'),(378,256,'User Journeys','NNG','https://www.nngroup.com/articles/journey-mapping-101/'),(379,257,'Persona Development','HubSpot','https://blog.hubspot.com/marketing/buyer-persona-research'),(380,258,'User-Centered Design','Microsoft','https://www.microsoft.com/design/ux-guide'),(381,259,'Design Systems','Smashing Magazine','https://www.smashingmagazine.com/2019/06/design-systems-guide/'),(382,260,'Client Management','LinkedIn Learning','https://www.linkedin.com/learning/client-management-for-creative-teams'),(383,261,'Project Planning','Coursera','https://www.coursera.org/specializations/project-management'),(384,262,'Communication','Toastmasters','https://www.toastmasters.org/pathways-overview'),(385,263,'Problem Solving','MIT OpenCourseWare','https://ocw.mit.edu/courses/special-programs/sp-268-the-missing-semester-of-your-cs-education-january-iap-2020/'),(386,264,'Time Management','Mind Tools','https://www.mindtools.com/pages/main/newMN_HTE.htm'),(387,265,'Leadership','Harvard Business Review','https://hbr.org/2000/03/leadership-that-gets-results'),(388,266,'Team Building','Team Building USA','https://www.teambuildingusa.com/'),(389,267,'Strategic Planning','Strategic Management Society','https://www.strategicmanagement.net/research'),(390,268,'Budget Management','Investopedia','https://www.investopedia.com/articles/pf/08/personal-budget.asp'),(391,269,'Mentorship','Mentorloop','https://mentorloop.com/resources/mentoring-guide/');
+INSERT INTO `skill_gap_analysis_resources` VALUES (1,1,'Adobe Creative Suite','Udemy','https://www.udemy.com/adobe-creative-cloud-course/'),(2,2,'UI/UX Design','Coursera','https://www.coursera.org/specializations/ui-ux-design'),(3,3,'Typography','LinkedIn Learning','https://www.linkedin.com/learning/typography-complete-guide'),(4,4,'Color Theory','Skillshare','https://www.skillshare.com/classes/Color-Theory-for-Designers/1234567'),(5,5,'Responsive Design','freeCodeCamp','https://www.freecodecamp.org/learn/responsive-web-design/'),(6,6,'HTML','Codecademy','https://www.codecademy.com/learn/learn-html'),(7,7,'CSS','W3Schools','https://www.w3schools.com/css/'),(8,8,'JavaScript','MDN Web Docs','https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide'),(9,9,'DOM Manipulation','YouTube','https://www.youtube.com/watch?v=0ik6X4DJKCc'),(10,10,'Project Management','Coursera','https://www.coursera.org/learn/project-management'),(11,11,'Git/GitHub','GitHub Learning Lab','https://lab.github.com/githubtraining/introduction-to-github'),(12,12,'Web Design','Udacity','https://www.udacity.com/course/web-design-for-everybody--ud304'),(13,13,'Debugging','Pluralsight','https://www.pluralsight.com/courses/debugging-javascript-chrome'),(14,14,'Code Optimization','Coursera','https://www.coursera.org/learn/web-application-optimization'),(15,15,'React','React Official Website','https://reactjs.org/docs/getting-started.html'),(16,16,'Vue.js','Vue.js Official Website','https://vuejs.org/v2/guide/'),(17,17,'State Management','Egghead.io','https://egghead.io/courses/manage-complex-state-in-react-apps-with-redux'),(18,18,'Component-Based Architecture','Udemy','https://www.udemy.com/course/react-the-complete-guide-incl-redux/'),(19,19,'Single Page Applications','Pluralsight','https://www.pluralsight.com/courses/angularjs-building-spa'),(20,20,'Interviewing','LinkedIn Learning','https://www.linkedin.com/learning/mastering-common-interview-questions'),(21,21,'Technical Communication','Coursera','https://www.coursera.org/learn/technical-communication'),(22,22,'Problem Solving','Khan Academy','https://www.khanacademy.org/college-careers-more/personal-finance/problem-solving'),(23,23,'Team Collaboration','Skillshare','https://www.skillshare.com/classes/Successful-Collaboration-Working-in-a-Team/2345678'),(24,24,'Adaptability','Udemy','https://www.udemy.com/course/adaptability-the-key-to-success/'),(25,25,'Advanced JavaScript','Eloquent JavaScript','https://eloquentjavascript.net/'),(26,26,'Performance Optimization','Udacity','https://www.udacity.com/course/website-performance-optimization--ud884'),(27,27,'Security Best Practices','Coursera','https://www.coursera.org/learn/web-security-fundamentals'),(28,28,'Testing and Debugging','Pluralsight','https://www.pluralsight.com/courses/javascript-testing-debugging'),(29,29,'Mentorship','LinkedIn Learning','https://www.linkedin.com/learning/becoming-a-thought-leader'),(30,30,'PHP','Udemy','https://www.udemy.com/course/php-for-beginners/'),(31,30,'PHP','Codecademy','https://www.codecademy.com/learn/learn-php'),(32,31,'HTML/CSS','Coursera','https://www.coursera.org/learn/html-css-javascript'),(33,31,'HTML/CSS','FreeCodeCamp','https://www.freecodecamp.org/learn/responsive-web-design/'),(34,32,'JavaScript','Mozilla Developer Network','https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide'),(35,32,'JavaScript','Udemy','https://www.udemy.com/course/the-complete-javascript-course/'),(36,33,'WordPress CMS','LinkedIn Learning','https://www.linkedin.com/learning/wordpress-essential-training'),(37,33,'WordPress CMS','WordPress Codex','https://codex.wordpress.org/Getting_Started_with_WordPress'),(38,34,'SEO','Google Digital Garage','https://learndigital.withgoogle.com/digitalgarage/course/digital-marketing'),(39,34,'SEO','Moz','https://moz.com/beginners-guide-to-seo'),(40,35,'Leadership','Coursera','https://www.coursera.org/courses?query=leadership'),(41,35,'Leadership','LinkedIn Learning','https://www.linkedin.com/learning/leadership-foundations'),(42,36,'Communication','Udemy','https://www.udemy.com/course/communication-skills-for-beginners/'),(43,36,'Communication','LinkedIn Learning','https://www.linkedin.com/learning/communicating-with-confidence'),(44,37,'Project Planning','Coursera','https://www.coursera.org/learn/project-management'),(45,37,'Project Planning','Project Management Institute','https://www.pmi.org/learning/library/project-planning-structure-6571'),(46,38,'Budget Management','edX','https://www.edx.org/course/financial-management'),(47,38,'Budget Management','LinkedIn Learning','https://www.linkedin.com/learning/budgeting-in-project-management'),(48,39,'Risk Management','Coursera','https://www.coursera.org/learn/risk-management'),(49,39,'Risk Management','Udemy','https://www.udemy.com/course/risk-management/'),(50,40,'PMP Certification','PMI','https://www.pmi.org/certifications/project-management-pmp'),(51,40,'PMP Certification','LinkedIn Learning','https://www.linkedin.com/learning/prepare-for-the-project-management-professional-pmp-exam'),(52,41,'Agile Methodology','Scrum.org','https://www.scrum.org/resources/training'),(53,41,'Agile Methodology','Coursera','https://www.coursera.org/specializations/agile-development'),(54,42,'Process Improvement','LinkedIn Learning','https://www.linkedin.com/learning/process-improvement-foundations'),(55,42,'Process Improvement','Coursera','https://www.coursera.org/learn/introduction-process-improvement'),(56,43,'Time Management','Udemy','https://www.udemy.com/course/productivity-and-time-management/'),(57,43,'Time Management','LinkedIn Learning','https://www.linkedin.com/learning/time-management-fundamentals'),(58,44,'Stakeholder Engagement','Coursera','https://www.coursera.org/learn/stakeholder-management'),(59,44,'Stakeholder Engagement','LinkedIn Learning','https://www.linkedin.com/learning/engaging-stakeholders'),(60,45,'Data Science Project Management','Coursera','https://www.coursera.org/learn/data-science-project-management'),(61,45,'Data Science Project Management','DataCamp','https://www.datacamp.com/courses/managing-data-science-projects'),(62,46,'Team Leadership','LinkedIn Learning','https://www.linkedin.com/learning/leading-your-team'),(63,46,'Team Leadership','Coursera','https://www.coursera.org/learn/team-leadership-communication'),(64,47,'Resource Allocation','Udemy','https://www.udemy.com/course/resource-allocation/'),(65,47,'Resource Allocation','LinkedIn Learning','https://www.linkedin.com/learning/managing-resources'),(66,48,'Performance Metrics','Coursera','https://www.coursera.org/learn/measuring-performance'),(67,48,'Performance Metrics','LinkedIn Learning','https://www.linkedin.com/learning/performance-management'),(68,49,'Strategic Planning','Udemy','https://www.udemy.com/course/strategic-planning/'),(69,49,'Strategic Planning','LinkedIn Learning','https://www.linkedin.com/learning/strategic-planning-foundations'),(70,50,'Team Building','Coursera','https://www.coursera.org/learn/high-performing-teams'),(71,50,'Team Building','LinkedIn Learning','https://www.linkedin.com/learning/team-building'),(72,51,'Advanced Data Science','edX','https://www.edx.org/micromasters/advanced-data-science'),(73,51,'Advanced Data Science','Coursera','https://www.coursera.org/specializations/aml'),(74,52,'Business Acumen','LinkedIn Learning','https://www.linkedin.com/learning/developing-business-acumen'),(75,52,'Business Acumen','Coursera','https://www.coursera.org/specializations/business-strategy'),(76,53,'Decision Making','Udemy','https://www.udemy.com/course/decision-making/'),(77,53,'Decision Making','LinkedIn Learning','https://www.linkedin.com/learning/making-decisions'),(78,54,'Visionary Leadership','Coursera','https://www.coursera.org/learn/visionary-leadership'),(79,54,'Visionary Leadership','LinkedIn Learning','https://www.linkedin.com/learning/visionary-leadership-skills'),(80,55,'Executive Leadership','Harvard Business School Online','https://online.hbs.edu/courses/executive-leadership/'),(81,55,'Executive Leadership','LinkedIn Learning','https://www.linkedin.com/learning/executive-leadership'),(82,56,'Strategic Vision','Coursera','https://www.coursera.org/specializations/strategic-leadership'),(83,56,'Strategic Vision','LinkedIn Learning','https://www.linkedin.com/learning/strategic-vision'),(84,57,'Industry Expertise','Coursera','https://www.coursera.org/specializations/industry-4-0'),(85,57,'Industry Expertise','LinkedIn Learning','https://www.linkedin.com/learning/industry-expertise'),(86,58,'Organizational Development','LinkedIn Learning','https://www.linkedin.com/learning/organizational-development'),(87,58,'Organizational Development','Coursera','https://www.coursera.org/learn/organizational-development'),(88,59,'Innovation Management','Coursera','https://www.coursera.org/specializations/innovation-management'),(89,59,'Innovation Management','LinkedIn Learning','https://www.linkedin.com/learning/innovation-management');
 /*!40000 ALTER TABLE `skill_gap_analysis_resources` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -620,17 +649,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skills`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skills` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `sort` tinyint(1) NOT NULL,
-  `step_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') DEFAULT 'pending',
+  `step_id` bigint DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=496 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=181 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -639,7 +668,7 @@ CREATE TABLE `skills` (
 
 LOCK TABLES `skills` WRITE;
 /*!40000 ALTER TABLE `skills` DISABLE KEYS */;
-INSERT INTO `skills` VALUES (181,'Adobe Photoshop',1,37,'pending'),(182,'Adobe Illustrator',2,37,'pending'),(183,'Typography',3,37,'pending'),(184,'Layout Design',4,37,'pending'),(185,'Color Theory',5,37,'pending'),(186,'Wireframing',1,38,'pending'),(187,'Prototyping',2,38,'pending'),(188,'User Research',3,38,'pending'),(189,'Usability Testing',4,38,'pending'),(190,'Interaction Design',5,38,'pending'),(191,'Design Thinking',1,39,'pending'),(192,'Information Architecture',2,39,'completed'),(193,'Responsive Design',3,39,'completed'),(194,'A/B Testing',4,39,'pending'),(195,'Accessibility',5,39,'pending'),(196,'Visual Design',1,40,'pending'),(197,'User Journeys',2,40,'pending'),(198,'Persona Development',3,40,'pending'),(199,'User-Centered Design',4,40,'pending'),(200,'Design Systems',5,40,'pending'),(201,'Client Management',1,41,'pending'),(202,'Project Planning',2,41,'pending'),(203,'Communication',3,41,'pending'),(204,'Problem Solving',4,41,'pending'),(205,'Time Management',5,41,'pending'),(206,'Leadership',1,42,'pending'),(207,'Team Building',2,42,'pending'),(208,'Strategic Planning',3,42,'pending'),(209,'Budget Management',4,42,'pending'),(210,'Mentorship',5,42,'pending'),(211,'Team Leadership',1,43,'pending'),(212,'Project Management',2,43,'pending'),(213,'Conflict Resolution',3,43,'pending'),(214,'Feedback Delivery',4,43,'pending'),(215,'Delegation',5,43,'pending'),(216,'Creative Vision',1,44,'pending'),(217,'Brand Strategy',2,44,'pending'),(218,'Art Direction',3,44,'pending'),(219,'Client Relations',4,44,'pending'),(220,'Innovation',5,44,'pending'),(221,'Advanced Leadership',1,45,'pending'),(222,'Strategic Insight',2,45,'pending'),(223,'Market Analysis',3,45,'pending'),(224,'Creative Problem Solving',4,45,'pending'),(225,'Negotiation',5,45,'pending'),(226,'Executive Leadership',1,46,'pending'),(227,'Visionary Thinking',2,46,'pending'),(228,'Cross-Departmental Collaboration',3,46,'pending'),(229,'Change Management',4,46,'pending'),(230,'Decision Making',5,46,'pending'),(231,'Executive Oversight',1,47,'pending'),(232,'Global Strategy',2,47,'pending'),(233,'Industry Leadership',3,47,'pending'),(234,'Corporate Governance',4,47,'pending'),(235,'Business Acumen',5,47,'pending'),(236,'HTML',1,48,'pending'),(237,'CSS',2,48,'pending'),(238,'Responsive Design',3,48,'pending'),(239,'Web Typography',4,48,'pending'),(240,'Basic JavaScript',5,48,'pending'),(241,'JavaScript',1,49,'pending'),(242,'React',2,49,'pending'),(243,'Version Control (Git)',3,49,'pending'),(244,'APIs',4,49,'pending'),(245,'DOM Manipulation',5,49,'pending'),(246,'Vue.js',1,50,'pending'),(247,'Angular',2,50,'pending'),(248,'Webpack',3,50,'pending'),(249,'Sass',4,50,'pending'),(250,'Performance Optimization',5,50,'pending'),(251,'Node.js',1,51,'pending'),(252,'Express.js',2,51,'pending'),(253,'Database Management',3,51,'pending'),(254,'Authentication',4,51,'pending'),(255,'RESTful Services',5,51,'pending'),(256,'Technical Leadership',1,52,'pending'),(257,'Code Review',2,52,'pending'),(258,'System Architecture',3,52,'pending'),(259,'Agile Methodologies',4,52,'pending'),(260,'Continuous Integration',5,52,'pending'),(261,'HTML',1,53,'pending'),(262,'CSS',2,53,'pending'),(263,'Responsive Design',3,53,'pending'),(264,'Web Graphics',4,53,'pending'),(265,'Basic JavaScript',5,53,'pending'),(266,'JavaScript',1,54,'pending'),(267,'React',2,54,'pending'),(268,'CSS Preprocessors',3,54,'pending'),(269,'Version Control',4,54,'pending'),(270,'Debugging',5,54,'pending'),(271,'Advanced JavaScript',1,55,'pending'),(272,'Angular',2,55,'pending'),(273,'API Integration',3,55,'pending'),(274,'Responsive Frameworks',4,55,'pending'),(275,'Testing and Debugging',5,55,'pending'),(276,'Leadership',1,56,'pending'),(277,'Mentorship',2,56,'pending'),(278,'Advanced React',3,56,'pending'),(279,'Performance Tuning',4,56,'pending'),(280,'Security Best Practices',5,56,'pending'),(281,'System Design',1,57,'pending'),(282,'Scalability',2,57,'pending'),(283,'Technical Strategy',3,57,'pending'),(284,'Cross-Platform Development',4,57,'pending'),(285,'Advanced Problem Solving',5,57,'pending'),(286,'HTML/CSS',1,58,'completed'),(287,'PHP',2,58,'pending'),(288,'JavaScript',3,58,'pending'),(289,'WordPress Plugins',4,58,'pending'),(290,'SEO',5,58,'pending'),(291,'Client Communication',1,59,'pending'),(292,'Project Management',2,59,'pending'),(293,'Responsive Design',3,59,'pending'),(294,'Content Management',4,59,'pending'),(295,'Problem Solving',5,59,'pending'),(296,'Google Analytics',1,60,'pending'),(297,'Social Media Marketing',2,60,'pending'),(298,'Email Campaigns',3,60,'pending'),(299,'Content Creation',4,60,'pending'),(300,'SEO Optimization',5,60,'pending'),(301,'Adobe XD',1,61,'pending'),(302,'User Research',2,61,'pending'),(303,'Wireframing',3,61,'pending'),(304,'Prototyping',4,61,'pending'),(305,'Usability Testing',5,61,'pending'),(306,'Content Writing',1,62,'pending'),(307,'SEO',2,62,'pending'),(308,'Content Strategy',3,62,'pending'),(309,'Social Media',4,62,'pending'),(310,'Audience Engagement',5,62,'pending'),(311,'Excel',1,63,'pending'),(312,'SQL',2,63,'pending'),(313,'Data Visualization',3,63,'pending'),(314,'Statistical Analysis',4,63,'pending'),(315,'Python',5,63,'pending'),(316,'Leadership',1,64,'pending'),(317,'Project Management',2,64,'pending'),(318,'Conflict Resolution',3,64,'pending'),(319,'Time Management',4,64,'pending'),(320,'Technical Expertise',5,64,'pending'),(321,'Agile Methodologies',1,65,'completed'),(322,'Risk Management',2,65,'completed'),(323,'Budgeting',3,65,'completed'),(324,'Client Relations',4,65,'pending'),(325,'Resource Allocation',5,65,'pending'),(326,'Strategic Thinking',1,66,'pending'),(327,'Product Lifecycle',2,66,'pending'),(328,'Market Analysis',3,66,'pending'),(329,'Stakeholder Management',4,66,'pending'),(330,'Roadmapping',5,66,'pending'),(331,'Process Improvement',1,67,'pending'),(332,'Performance Metrics',2,67,'pending'),(333,'Operational Strategy',3,67,'pending'),(334,'Change Management',4,67,'pending'),(335,'Analytical Thinking',5,67,'pending'),(336,'Visionary Leadership',1,68,'pending'),(337,'Technology Roadmap',2,68,'pending'),(338,'Innovation Management',3,68,'pending'),(339,'Cross-Department Collaboration',4,68,'pending'),(340,'Risk Assessment',5,68,'pending'),(341,'React.js',1,69,'pending'),(342,'Vue.js',2,69,'pending'),(343,'CSS Preprocessors',3,69,'pending'),(344,'JavaScript Frameworks',4,69,'pending'),(345,'Version Control',5,69,'pending'),(346,'Node.js',1,70,'pending'),(347,'Express.js',2,70,'pending'),(348,'Database Management',3,70,'pending'),(349,'RESTful APIs',4,70,'pending'),(350,'Cloud Services',5,70,'pending'),(351,'ETL Processes',1,71,'pending'),(352,'Big Data Technologies',2,71,'pending'),(353,'Data Warehousing',3,71,'pending'),(354,'Apache Hadoop',4,71,'pending'),(355,'Data Mining',5,71,'pending'),(356,'Machine Learning Algorithms',1,72,'pending'),(357,'TensorFlow',2,72,'pending'),(358,'Scikit-learn',3,72,'pending'),(359,'Model Evaluation',4,72,'pending'),(360,'Python Programming',5,72,'pending'),(361,'Data Modeling',1,73,'pending'),(362,'Predictive Analytics',2,73,'pending'),(363,'Data Visualization Tools',3,73,'pending'),(364,'Statistical Modeling',4,73,'pending'),(365,'Advanced Python',5,73,'pending'),(366,'Python Syntax',1,74,'completed'),(367,'Data Structures',2,74,'completed'),(368,'Error Handling',3,74,'completed'),(369,'Object-Oriented Programming',4,74,'pending'),(370,'Libraries like Pandas and NumPy',5,74,'pending'),(371,'Data Cleaning',1,75,'pending'),(372,'Exploratory Data Analysis',2,75,'pending'),(373,'Statistical Methods',3,75,'pending'),(374,'Data Visualization',4,75,'pending'),(375,'Python Libraries: Matplotlib, Seaborn',5,75,'pending'),(376,'Supervised Learning',1,76,'pending'),(377,'Unsupervised Learning',2,76,'pending'),(378,'Model Evaluation',3,76,'pending'),(379,'Scikit-learn',4,76,'pending'),(380,'Feature Engineering',5,76,'pending'),(381,'Project Management',1,77,'pending'),(382,'Data Wrangling',2,77,'pending'),(383,'Model Deployment',3,77,'pending'),(384,'Data Ethics',4,77,'pending'),(385,'Collaboration Tools',5,77,'pending'),(386,'Advanced Data Modeling',1,78,'pending'),(387,'Predictive Analytics',2,78,'pending'),(388,'Big Data Handling',3,78,'pending'),(389,'Machine Learning Deployment',4,78,'pending'),(390,'Continuous Learning',5,78,'pending'),(391,'Data Literacy',1,79,'pending'),(392,'Statistical Analysis',2,79,'pending'),(393,'Problem Solving',3,79,'pending'),(394,'Creativity',4,79,'pending'),(395,'Adaptability',5,79,'pending'),(396,'Music Industry Knowledge',1,80,'pending'),(397,'Data Visualization',2,80,'pending'),(398,'Trend Analysis',3,80,'pending'),(399,'Communication',4,80,'pending'),(400,'Data Collection',5,80,'pending'),(401,'Project Management',1,81,'pending'),(402,'Critical Thinking',2,81,'pending'),(403,'Data Cleaning',3,81,'pending'),(404,'Collaboration',4,81,'pending'),(405,'Presentation Skills',5,81,'pending'),(406,'Networking',1,82,'pending'),(407,'Interpersonal Skills',2,82,'pending'),(408,'Industry Research',3,82,'pending'),(409,'Negotiation',4,82,'pending'),(410,'Influence',5,82,'pending'),(411,'Public Speaking',1,83,'pending'),(412,'Active Listening',2,83,'pending'),(413,'Event Participation',3,83,'pending'),(414,'Note-taking',4,83,'pending'),(415,'Continuous Learning',5,83,'pending'),(416,'Consulting',1,84,'pending'),(417,'Strategic Planning',2,84,'pending'),(418,'Analytical Thinking',3,84,'pending'),(419,'Client Management',4,84,'pending'),(420,'Decision Making',5,84,'pending'),(421,'Leadership',1,85,'pending'),(422,'Team Management',2,85,'completed'),(423,'Performance Evaluation',3,85,'completed'),(424,'Conflict Resolution',4,85,'completed'),(425,'Time Management',5,85,'pending'),(426,'Strategic Thinking',1,86,'pending'),(427,'Project Planning',2,86,'pending'),(428,'Resource Allocation',3,86,'pending'),(429,'Risk Management',4,86,'pending'),(430,'Goal Setting',5,86,'pending'),(431,'Data Governance',1,87,'pending'),(432,'Policy Development',2,87,'pending'),(433,'Compliance',3,87,'pending'),(434,'Quality Assurance',4,87,'pending'),(435,'Stakeholder Engagement',5,87,'pending'),(436,'Mentoring',1,88,'pending'),(437,'Coaching',2,88,'pending'),(438,'Feedback',3,88,'pending'),(439,'Career Development',4,88,'pending'),(440,'Empathy',5,88,'pending'),(441,'Executive Leadership',1,89,'pending'),(442,'Visionary Thinking',2,89,'pending'),(443,'Budget Management',3,89,'pending'),(444,'Corporate Governance',4,89,'pending'),(445,'Change Management',5,89,'pending'),(446,'Technical Proficiency',1,90,'pending'),(447,'SQL',2,90,'pending'),(448,'Python',3,90,'pending'),(449,'Excel',4,90,'pending'),(450,'Data Wrangling',5,90,'pending'),(451,'Data Visualization',1,91,'pending'),(452,'Tableau',2,91,'pending'),(453,'Power BI',3,91,'pending'),(454,'Design Thinking',4,91,'pending'),(455,'User Experience',5,91,'pending'),(456,'Statistics',1,92,'pending'),(457,'Regression Analysis',2,92,'pending'),(458,'Predictive Modeling',3,92,'pending'),(459,'Machine Learning',4,92,'pending'),(460,'Hypothesis Testing',5,92,'pending'),(461,'Machine Learning',1,93,'pending'),(462,'Model Deployment',2,93,'pending'),(463,'Algorithm Optimization',3,93,'pending'),(464,'Data Engineering',4,93,'pending'),(465,'Big Data',5,93,'pending'),(466,'Data Science',1,94,'pending'),(467,'Artificial Intelligence',2,94,'pending'),(468,'Deep Learning',3,94,'pending'),(469,'Research',4,94,'pending'),(470,'Innovation',5,94,'pending'),(471,'Certification Preparation',1,95,'pending'),(472,'Exam Techniques',2,95,'pending'),(473,'Time Management',3,95,'pending'),(474,'Focus',4,95,'pending'),(475,'Persistence',5,95,'pending'),(476,'Project Execution',1,96,'pending'),(477,'Collaboration',2,96,'pending'),(478,'Data Interpretation',3,96,'pending'),(479,'Problem Solving',4,96,'pending'),(480,'Attention to Detail',5,96,'pending'),(481,'Portfolio Development',1,97,'pending'),(482,'Self-Promotion',2,97,'pending'),(483,'Content Creation',3,97,'pending'),(484,'Branding',4,97,'pending'),(485,'Presentation',5,97,'pending'),(486,'Job Search',1,98,'pending'),(487,'Resume Writing',2,98,'pending'),(488,'Interviewing',3,98,'pending'),(489,'Networking',4,98,'pending'),(490,'Negotiation',5,98,'pending'),(491,'Advanced Analysis',1,99,'pending'),(492,'Leadership',2,99,'pending'),(493,'Mentoring',3,99,'pending'),(494,'Strategic Thinking',4,99,'pending'),(495,'Relationship Building',5,99,'pending');
+INSERT INTO `skills` VALUES (1,'Adobe Creative Suite',1,1,'pending'),(2,'UI/UX Design',2,1,'pending'),(3,'Typography',3,1,'pending'),(4,'Color Theory',4,1,'pending'),(5,'Responsive Design',5,1,'pending'),(6,'User Research',1,2,'pending'),(7,'Wireframing',2,2,'pending'),(8,'Prototyping',3,2,'pending'),(9,'Usability Testing',4,2,'pending'),(10,'Information Architecture',5,2,'pending'),(11,'SEO',1,3,'pending'),(12,'Content Creation',2,3,'pending'),(13,'Social Media Management',3,3,'pending'),(14,'Analytics',4,3,'pending'),(15,'Campaign Management',5,3,'pending'),(16,'Leadership',1,4,'pending'),(17,'Project Management',2,4,'pending'),(18,'Creative Strategy',3,4,'pending'),(19,'Team Management',4,4,'pending'),(20,'Brand Development',5,4,'pending'),(21,'Team Leadership',1,5,'pending'),(22,'Conflict Resolution',2,5,'pending'),(23,'Performance Management',3,5,'pending'),(24,'Budgeting',4,5,'pending'),(25,'Resource Allocation',5,5,'pending'),(26,'Product Roadmapping',1,6,'pending'),(27,'Stakeholder Management',2,6,'pending'),(28,'Market Analysis',3,6,'pending'),(29,'Agile Methodologies',4,6,'pending'),(30,'Prioritization',5,6,'pending'),(31,'Visionary Leadership',1,7,'pending'),(32,'Strategic Planning',2,7,'pending'),(33,'Design Thinking',3,7,'pending'),(34,'Innovation',4,7,'pending'),(35,'Mentorship',5,7,'pending'),(36,'HTML/CSS',1,8,'pending'),(37,'JavaScript',2,8,'pending'),(38,'Version Control (Git)',3,8,'pending'),(39,'Responsive Design',4,8,'pending'),(40,'Cross-Browser Compatibility',5,8,'pending'),(41,'Node.js',1,9,'pending'),(42,'Database Management',2,9,'pending'),(43,'APIs',3,9,'pending'),(44,'Server-Side Logic',4,9,'pending'),(45,'Cloud Services',5,9,'pending'),(46,'Technical Leadership',1,10,'pending'),(47,'Code Review',2,10,'pending'),(48,'Architecture Design',3,10,'pending'),(49,'Continuous Integration',4,10,'pending'),(50,'Quality Assurance',5,10,'pending'),(51,'HTML',1,11,'pending'),(52,'CSS',2,11,'pending'),(53,'JavaScript',3,11,'pending'),(54,'Responsive Design',4,11,'pending'),(55,'DOM Manipulation',5,11,'pending'),(56,'Project Management',1,12,'pending'),(57,'Git/GitHub',2,12,'pending'),(58,'Web Design',3,12,'pending'),(59,'Debugging',4,12,'pending'),(60,'Code Optimization',5,12,'pending'),(61,'React',1,13,'pending'),(62,'Vue.js',2,13,'pending'),(63,'State Management',3,13,'pending'),(64,'Component-Based Architecture',4,13,'pending'),(65,'Single Page Applications',5,13,'pending'),(66,'Interviewing',1,14,'pending'),(67,'Technical Communication',2,14,'pending'),(68,'Problem Solving',3,14,'pending'),(69,'Team Collaboration',4,14,'pending'),(70,'Adaptability',5,14,'pending'),(71,'Advanced JavaScript',1,15,'pending'),(72,'Performance Optimization',2,15,'pending'),(73,'Security Best Practices',3,15,'pending'),(74,'Testing and Debugging',4,15,'pending'),(75,'Mentorship',5,15,'pending'),(76,'PHP',1,16,'pending'),(77,'HTML/CSS',2,16,'pending'),(78,'JavaScript',3,16,'pending'),(79,'WordPress CMS',4,16,'pending'),(80,'SEO',5,16,'pending'),(81,'Excel',1,17,'pending'),(82,'SQL',2,17,'pending'),(83,'Data Visualization',3,17,'pending'),(84,'Statistical Analysis',4,17,'pending'),(85,'Critical Thinking',5,17,'pending'),(86,'Data Science Basics',1,18,'pending'),(87,'Networking',2,18,'pending'),(88,'Problem-Solving',3,18,'pending'),(89,'Team Collaboration',4,18,'pending'),(90,'Project Management',5,18,'pending'),(91,'Portfolio Development',1,19,'pending'),(92,'Python for Data Science',2,19,'pending'),(93,'Data Cleaning',3,19,'pending'),(94,'Visualization Tools',4,19,'pending'),(95,'Git/GitHub',5,19,'pending'),(96,'Community Engagement',1,20,'pending'),(97,'Continuous Learning',2,20,'pending'),(98,'Mentorship',3,20,'pending'),(99,'Knowledge Sharing',4,20,'pending'),(100,'Networking',5,20,'pending'),(101,'Open Source Contribution',1,21,'pending'),(102,'Collaboration',2,21,'pending'),(103,'Coding Best Practices',3,21,'pending'),(104,'Version Control',4,21,'pending'),(105,'Problem Solving',5,21,'pending'),(106,'Leadership',1,22,'pending'),(107,'Communication',2,22,'pending'),(108,'Project Planning',3,22,'pending'),(109,'Budget Management',4,22,'pending'),(110,'Risk Management',5,22,'pending'),(111,'PMP Certification',1,23,'pending'),(112,'Agile Methodology',2,23,'pending'),(113,'Process Improvement',3,23,'pending'),(114,'Time Management',4,23,'pending'),(115,'Stakeholder Engagement',5,23,'pending'),(116,'Data Science Project Management',1,24,'pending'),(117,'Team Leadership',2,24,'pending'),(118,'Resource Allocation',3,24,'pending'),(119,'Performance Metrics',4,24,'pending'),(120,'Strategic Planning',5,24,'pending'),(121,'Team Building',1,25,'pending'),(122,'Advanced Data Science',2,25,'pending'),(123,'Business Acumen',3,25,'pending'),(124,'Decision Making',4,25,'pending'),(125,'Visionary Leadership',5,25,'pending'),(126,'Executive Leadership',1,26,'pending'),(127,'Strategic Vision',2,26,'pending'),(128,'Industry Expertise',3,26,'pending'),(129,'Organizational Development',4,26,'pending'),(130,'Innovation Management',5,26,'pending'),(131,'Python',1,27,'pending'),(132,'Data Structures',2,27,'pending'),(133,'Libraries (Pandas, NumPy)',3,27,'pending'),(134,'Data Manipulation',4,27,'pending'),(135,'Coding Best Practices',5,27,'pending'),(136,'Machine Learning',1,28,'pending'),(137,'Supervised Learning',2,28,'pending'),(138,'Unsupervised Learning',3,28,'pending'),(139,'Model Evaluation',4,28,'pending'),(140,'Python Libraries (scikit-learn)',5,28,'pending'),(141,'Competitive Analysis',1,29,'pending'),(142,'Problem Solving',2,29,'pending'),(143,'Algorithm Optimization',3,29,'pending'),(144,'Collaboration',4,29,'pending'),(145,'Critical Thinking',5,29,'pending'),(146,'Natural Language Processing',1,30,'pending'),(147,'Computer Vision',2,30,'pending'),(148,'Big Data Technologies',3,30,'pending'),(149,'Advanced Algorithms',4,30,'pending'),(150,'Research and Development',5,30,'pending'),(151,'Technical Leadership',1,31,'pending'),(152,'Mentorship',2,31,'pending'),(153,'Innovation',3,31,'pending'),(154,'Technical Strategy',4,31,'pending'),(155,'Cross-Functional Collaboration',5,31,'pending'),(156,'Data Analysis',1,32,'pending'),(157,'Python',2,32,'pending'),(158,'R Programming',3,32,'pending'),(159,'SQL',4,32,'pending'),(160,'Statistical Analysis',5,32,'pending'),(161,'Machine Learning',1,33,'pending'),(162,'Supervised Learning',2,33,'pending'),(163,'Unsupervised Learning',3,33,'pending'),(164,'Model Evaluation',4,33,'pending'),(165,'Data Preprocessing',5,33,'pending'),(166,'Project Management',1,34,'pending'),(167,'Data Cleaning',2,34,'pending'),(168,'Data Visualization',3,34,'pending'),(169,'Python Libraries',4,34,'pending'),(170,'Problem Solving',5,34,'pending'),(171,'Deep Learning',1,35,'pending'),(172,'Natural Language Processing',2,35,'pending'),(173,'Big Data',3,35,'pending'),(174,'Data Engineering',4,35,'pending'),(175,'Time Series Analysis',5,35,'pending'),(176,'Data-Driven Decision Making',1,36,'pending'),(177,'Advanced Statistical Analysis',2,36,'pending'),(178,'Predictive Modeling',3,36,'pending'),(179,'Communication Skills',4,36,'pending'),(180,'Business Acumen',5,36,'pending');
 /*!40000 ALTER TABLE `skills` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -649,22 +678,22 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `steps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `steps` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `sort` tinyint(4) NOT NULL,
-  `path_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') DEFAULT 'pending',
-  `branch_id` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `sort` tinyint NOT NULL,
+  `path_id` bigint DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `branch_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`path_id`),
   KEY `fk_steps_branch_id` (`branch_id`),
   CONSTRAINT `fk_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`),
   CONSTRAINT `fk_steps_branch_id` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`id`) ON DELETE CASCADE,
   CONSTRAINT `steps_ibfk_1` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -673,7 +702,7 @@ CREATE TABLE `steps` (
 
 LOCK TABLES `steps` WRITE;
 /*!40000 ALTER TABLE `steps` DISABLE KEYS */;
-INSERT INTO `steps` VALUES (37,'Graphic Designer','Build a strong foundation in graphic design principles and software.',1,1,'pending',9),(38,'UI/UX Design Exploration','Explore user interface and user experience design.',1,1,'pending',10),(39,'Advanced UI/UX Design','Master advanced concepts in UI/UX design.',2,1,'pending',10),(40,'UI/UX Design Specialist','Become a specialist in UI/UX design with a strong portfolio.',3,1,'pending',10),(41,'UI/UX Consultant','Consult on UI/UX projects for various clients.',4,1,'pending',10),(42,'Head of UI/UX Design','Lead a team of designers in a UI/UX department.',5,1,'pending',10),(43,'Design Team Lead','Lead a small team of graphic designers.',1,1,'pending',11),(44,'Creative Director','Oversee the creative direction of projects.',2,1,'pending',11),(45,'Senior Creative Director','Manage larger creative teams and complex projects.',3,1,'pending',11),(46,'VP of Design','Guide the overall design strategy of the company.',4,1,'pending',11),(47,'Chief Design Officer','Head the design department at the executive level.',5,1,'pending',11),(48,'Web Design Basics','Learn the basics of web design and development.',1,1,'pending',12),(49,'Frontend Development','Gain skills in frontend development technologies.',2,1,'pending',12),(50,'Advanced Frontend Development','Develop advanced skills in frontend frameworks.',3,1,'pending',12),(51,'Full Stack Developer','Expand knowledge to include backend technologies.',4,1,'pending',12),(52,'Lead Frontend Developer','Lead a team of frontend developers on complex projects.',5,1,'pending',12),(53,'Transition to Web Design','Begin transitioning skills from graphic design to web design.',2,1,'pending',9),(54,'Junior Frontend Developer','Secure a position as a junior frontend developer.',3,1,'pending',9),(55,'Frontend Developer','Establish yourself as a competent frontend developer.',4,1,'pending',9),(56,'Senior Frontend Developer','Achieve a senior position in frontend development.',5,1,'pending',9),(57,'Frontend Architect','Become a frontend architect, designing complex systems.',6,1,'pending',9),(58,'WordPress Developer','Enhance your skills and experience as a WordPress Developer to build a strong foundation.',1,2,'pending',13),(59,'Freelance Web Consultant','Explore freelance opportunities to broaden your expertise in various web technologies.',1,2,'pending',14),(60,'Digital Marketing Specialist','Gain insights into digital marketing strategies and tools.',2,2,'pending',14),(61,'UX/UI Designer','Develop skills in user experience and interface design.',3,2,'pending',14),(62,'Tech Blogger','Start a tech blog to share knowledge and establish authority in the field.',4,2,'pending',14),(63,'Data Analyst','Transition into data analysis to build foundational skills for data science.',5,2,'pending',14),(64,'Team Lead','Lead a team of WordPress developers, managing projects and team dynamics.',1,2,'pending',15),(65,'Project Manager','Oversee web development projects from inception to completion.',2,2,'pending',15),(66,'Product Manager','Define product vision and strategy, collaborating with cross-functional teams.',3,2,'pending',15),(67,'Operations Manager','Manage daily operations and optimize processes for efficiency.',4,2,'pending',15),(68,'Chief Technology Officer (CTO)','Lead the technology strategy and innovation at an organizational level.',5,2,'pending',15),(69,'Front-end Developer','Specialize in front-end technologies to enhance user interfaces.',1,2,'pending',16),(70,'Full Stack Developer','Expand your skills to include back-end development.',2,2,'pending',16),(71,'Data Engineer','Focus on data infrastructure and pipeline development.',3,2,'pending',16),(72,'Machine Learning Engineer','Develop machine learning models and algorithms.',4,2,'pending',16),(73,'Data Scientist','Reach your goal of becoming a data scientist with expertise in data analysis and modeling.',5,2,'pending',16),(74,'Learn Python Programming','Gain proficiency in Python, which is essential for data science.',2,2,'pending',13),(75,'Master Data Analysis','Develop core skills in data analysis to handle real-world datasets.',3,2,'pending',13),(76,'Engage in Machine Learning','Learn the fundamentals of machine learning algorithms and their applications.',4,2,'pending',13),(77,'Specialize in Data Science Projects','Work on projects to apply data science skills in real-world scenarios.',5,2,'pending',13),(78,'Achieve Data Scientist Role','Secure a position as a data scientist, applying all acquired skills to solve complex data problems.',6,2,'pending',13),(79,'Transition from Singing to Data Analysis','Begin learning foundational data analysis skills while leveraging existing creative skills.',1,3,'pending',17),(80,'Explore Music Data Analysis','Analyze music industry data to find trends and insights.',1,3,'pending',18),(81,'Develop a Music Analytics Project','Create a project that analyzes a specific aspect of music data.',2,3,'pending',18),(82,'Network with Music Data Professionals','Build connections in the music data field.',3,3,'pending',18),(83,'Attend Music Data Conferences','Participate in industry events to stay updated.',4,3,'pending',18),(84,'Become a Music Data Consultant','Offer expert advice on music data to various stakeholders.',5,3,'pending',18),(85,'Lead a Data Analysis Team','Manage a team of data analysts in a company.',1,3,'pending',19),(86,'Develop Strategic Data Initiatives','Plan and implement data-driven strategies.',2,3,'pending',19),(87,'Enhance Data Governance','Improve data quality and governance in the organization.',3,3,'pending',19),(88,'Mentor Future Data Leaders','Guide and mentor upcoming data professionals.',4,3,'pending',19),(89,'Become a Chief Data Officer','Oversee data management and strategy at the executive level.',5,3,'pending',19),(90,'Master Data Analysis Tools','Gain expertise in tools like Excel, SQL, and Python.',1,3,'pending',20),(91,'Specialize in Data Visualization','Focus on creating impactful data visualizations.',2,3,'pending',20),(92,'Conduct Advanced Statistical Analysis','Perform complex data analyses using statistical methods.',3,3,'pending',20),(93,'Implement Machine Learning Models','Develop and deploy machine learning models.',4,3,'pending',20),(94,'Become a Data Science Expert','Achieve expertise in data science methodologies and applications.',5,3,'pending',20),(95,'Complete Data Analysis Certification','Obtain a certification in data analysis to validate skills.',2,3,'pending',17),(96,'Gain Practical Experience','Work on real-world data analysis projects to gain hands-on experience.',3,3,'pending',17),(97,'Build a Data Portfolio','Create a portfolio showcasing data analysis projects and skills.',4,3,'pending',17),(98,'Secure a Data Analyst Position','Apply for and secure a position as a data analyst.',5,3,'pending',17),(99,'Advance to Senior Data Analyst','Gain more responsibility and expertise as a senior data analyst.',6,3,'pending',17);
+INSERT INTO `steps` VALUES (1,'Current Position: Graphic Designer','Leverage existing design skills and begin exploring frontend development.',1,1,'pending',1),(2,'Explore UI/UX Design','Deepen understanding of user interface and experience design.',1,1,'pending',2),(3,'Digital Marketing Specialist','Utilize design skills to create compelling digital marketing strategies.',2,1,'pending',2),(4,'Creative Director','Lead creative projects and guide design teams.',3,1,'pending',2),(5,'Design Team Lead','Manage a team of designers and oversee project delivery.',1,1,'pending',3),(6,'Product Manager','Bridge the gap between design and product development.',2,1,'pending',3),(7,'Chief Design Officer','Define the design vision and strategy for the company.',3,1,'pending',3),(8,'Frontend Developer','Transition to frontend development with a focus on design integration.',1,1,'pending',4),(9,'Full Stack Developer','Expand skills to include backend development.',2,1,'pending',4),(10,'Technical Lead','Lead a team of developers and oversee technical projects.',3,1,'pending',4),(11,'Learn HTML, CSS, and JavaScript','Develop foundational skills in frontend development.',2,1,'pending',1),(12,'Build a Portfolio of Web Projects','Create a portfolio showcasing frontend development projects.',3,1,'pending',1),(13,'Gain Experience with Frontend Frameworks','Learn and apply modern frontend frameworks like React or Vue.js.',4,1,'pending',1),(14,'Secure a Frontend Developer Position','Apply for and secure a position as a frontend developer.',5,1,'pending',1),(15,'Advance to Senior Frontend Developer','Enhance expertise and take on more complex projects.',6,1,'pending',1),(16,'Current WordPress Developer Role','Leverage current skills and projects to build a foundation for transition.',1,2,'pending',5),(17,'Explore Data Analysis Tools','Learn data analysis using tools like Excel and SQL.',1,2,'pending',6),(18,'Participate in Data Science Workshops','Attend workshops to gain practical insights into data science.',2,2,'pending',6),(19,'Build a Portfolio with Data Projects','Create a portfolio showcasing data analysis projects.',3,2,'pending',6),(20,'Join Data Science Communities','Engage with data science communities for learning and growth.',4,2,'pending',6),(21,'Contribute to Open Source Data Projects','Enhance skills by contributing to open source data projects.',5,2,'pending',6),(22,'Transition to Project Management','Shift focus to managing projects and teams.',1,2,'pending',7),(23,'Get Certified in Project Management','Obtain PMP or equivalent certifications.',2,2,'pending',7),(24,'Lead Data Science Projects','Manage data science projects within the organization.',3,2,'pending',7),(25,'Become a Data Science Manager','Oversee data science teams and initiatives.',4,2,'pending',7),(26,'Director of Data Science','Direct overall data science strategy and execution.',5,2,'pending',7),(27,'Learn Python for Data Science','Master Python programming with a focus on data science applications.',1,2,'pending',8),(28,'Master Machine Learning Algorithms','Deep dive into machine learning techniques and algorithms.',2,2,'pending',8),(29,'Engage in Data Science Competitions','Participate in competitions to solve real-world data problems.',3,2,'pending',8),(30,'Advanced Data Science Specialization','Specialize in fields like NLP, Computer Vision, or Big Data.',4,2,'pending',8),(31,'Become a Lead Data Scientist','Lead technical data science initiatives and mentor junior data scientists.',5,2,'pending',8),(32,'Learn Data Analysis Fundamentals','Develop a strong foundation in data analysis techniques and tools.',2,2,'pending',5),(33,'Acquire Machine Learning Skills','Gain proficiency in machine learning algorithms and their applications.',3,2,'pending',5),(34,'Work on Data Science Projects','Apply data science skills in real-world projects to gain practical experience.',4,2,'pending',5),(35,'Pursue Advanced Data Science Courses','Enroll in advanced courses to deepen understanding in specific areas of data science.',5,2,'pending',5),(36,'Achieve Data Scientist Role','Secure a position as a data scientist and contribute to data-driven decision making.',6,2,'pending',5);
 /*!40000 ALTER TABLE `steps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -683,12 +712,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `subscriptions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subscriptions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `valid_till` int(11) DEFAULT NULL,
+  `valid_till` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -709,20 +738,20 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `training_activities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `training_activities` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `expected_outcomes` text NOT NULL,
-  `progress_measurement` varchar(255) NOT NULL,
-  `duration` varchar(255) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `responsible` varchar(255) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `expected_outcomes` text COLLATE utf8mb4_general_ci NOT NULL,
+  `progress_measurement` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `duration` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `responsible` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `training_activities_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -731,7 +760,7 @@ CREATE TABLE `training_activities` (
 
 LOCK TABLES `training_activities` WRITE;
 /*!40000 ALTER TABLE `training_activities` DISABLE KEYS */;
-INSERT INTO `training_activities` VALUES (55,6,'HTML/CSS Intensive Bootcamp','Ability to build structured and styled web pages','Completion of projects and quizzes','4 weeks','2024-11-30 00:00:00','Self'),(56,6,'PHP Development Course','Understanding of PHP fundamentals and building dynamic websites','Project submissions and assessments','6 weeks','2025-01-15 00:00:00','Self'),(57,6,'JavaScript Mastery Workshop','Proficiency in JavaScript for front-end development','Completion of exercises and a capstone project','6 weeks','2025-03-01 00:00:00','Self'),(58,6,'WordPress Plugin Development Training','Capability to develop and customize WordPress plugins','Development of a custom plugin','4 weeks','2025-04-01 00:00:00','Self'),(59,6,'SEO Fundamentals Workshop','Knowledge to optimize websites for search engines','SEO audit of a website','3 weeks','2025-04-30 00:00:00','Self'),(60,6,'Leadership Skills Development Program','Enhanced leadership capabilities','360-degree feedback','4 weeks','2025-06-01 00:00:00','Self'),(61,6,'Project Management Certification','PMI certified associate in project management','Certification exam','8 weeks','2025-08-01 00:00:00','Self'),(78,9,'Adobe Photoshop Mastery Workshop','Become proficient in Adobe Photoshop for graphic design.','Completion of design projects','6 weeks','2025-01-15 00:00:00','Self'),(79,9,'Adobe Illustrator Advanced Techniques','Gain advanced skills in Adobe Illustrator.','Portfolio of vector designs','6 weeks','2025-03-01 00:00:00','Self'),(80,9,'Typography and Layout Design Course','Develop a keen eye for typography and layout in design.','Typography project','4 weeks','2025-04-01 00:00:00','Self'),(81,9,'UI/UX Design Fundamentals','Understand the basics of UI/UX design, including wireframing and prototyping.','Design a basic app interface','8 weeks','2025-10-30 00:00:00','Self'),(82,9,'Advanced UI/UX Design Techniques','Master advanced UI/UX principles, including usability testing and interaction design.','Usability tested UI prototype','12 weeks','2026-10-30 00:00:00','Self');
+INSERT INTO `training_activities` VALUES (1,1,'Adobe Creative Suite Masterclass','Proficiency in Adobe Photoshop, Illustrator, and InDesign','Project submissions and quizzes','6 weeks','2025-01-01 00:00:00','Self'),(2,1,'UI/UX Design Workshop','Understanding of user-centered design principles','Design projects and peer review','4 weeks','2025-03-01 00:00:00','Self'),(3,1,'HTML, CSS, and JavaScript Bootcamp','Ability to create static and interactive web pages','Code reviews and projects','12 weeks','2025-06-01 00:00:00','Self'),(4,1,'Git/GitHub Essentials','Effective version control using Git','Repository submissions','2 weeks','2025-08-01 00:00:00','Self'),(5,1,'React and Vue.js Development Course','Proficiency in building single-page applications','Capstone project','8 weeks','2026-01-01 00:00:00','Self'),(6,1,'Advanced JavaScript and Performance Optimization','Deep understanding of JavaScript and performance tuning','Performance audits and coding challenges','6 weeks','2026-07-01 00:00:00','Self'),(7,2,'PHP and WordPress Development Bootcamp','Proficiency in PHP and WordPress CMS','Completion of projects and quizzes','12 weeks','2025-01-15 00:00:00','Self'),(8,2,'Advanced JavaScript and Frontend Development','Mastery of JavaScript and frontend frameworks','Project-based assessments','8 weeks','2025-04-01 00:00:00','Self'),(9,2,'SEO and Digital Marketing Strategy','In-depth understanding of SEO and marketing strategies','Completion of a capstone project','6 weeks','2025-06-01 00:00:00','Self'),(10,2,'Project Management Fundamentals','Knowledge of project management principles','Exams and case studies analysis','4 weeks','2025-08-01 00:00:00','Self'),(11,2,'PMP Certification Preparation','Readiness for PMP certification exam','Mock exams and peer reviews','12 weeks','2025-11-01 00:00:00','Self'),(12,2,'Agile Methodology Training','Understanding Agile practices','Practical applications and simulations','6 weeks','2026-02-01 00:00:00','Self'),(13,2,'Leadership and Team Management Workshop','Enhanced leadership capabilities','Leadership role plays and feedback','3 days','2026-05-01 00:00:00','Self'),(14,2,'Data Science Project Management Training','Ability to manage data science projects','Project management simulations','8 weeks','2026-10-01 00:00:00','Self'),(15,2,'Advanced Data Science Techniques Course','Advanced data science skills','Capstone project and peer evaluation','10 weeks','2027-04-01 00:00:00','Self');
 /*!40000 ALTER TABLE `training_activities` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -741,13 +770,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `trainning_plan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `trainning_plan` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_recommendation` text NOT NULL,
-  `branch_id` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_recommendation` text COLLATE utf8mb4_general_ci NOT NULL,
+  `branch_id` bigint NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -756,7 +785,7 @@ CREATE TABLE `trainning_plan` (
 
 LOCK TABLES `trainning_plan` WRITE;
 /*!40000 ALTER TABLE `trainning_plan` DISABLE KEYS */;
-INSERT INTO `trainning_plan` VALUES (6,'Engage in continuous learning by attending industry conferences, networking with professionals, and subscribing to tech and leadership journals. Regularly participate in webinars and workshops to stay updated with the latest trends and technologies in your field.',15),(9,'Engage in continuous learning by attending workshops, conferences, and webinars related to UI/UX design. Subscribe to industry publications and follow influential designers on social media to stay updated with the latest trends and techniques. Consider joining professional organizations such as the Interaction Design Association (IxDA) to connect with peers and gain access to additional resources.',10);
+INSERT INTO `trainning_plan` VALUES (1,'Continuously seek out new learning opportunities, such as attending web development conferences, participating in hackathons, and engaging with online developer communities. Regularly update your portfolio with new projects and ensure your skills are aligned with industry trends by subscribing to tech newsletters and following key influencers in the web development space.',1),(2,'Pursue continuous learning opportunities such as attending industry conferences, participating in webinars, and engaging in professional communities. Stay updated with the latest trends in technology and management by reading industry publications and following thought leaders on platforms like LinkedIn and Twitter. Consider contributing to open-source projects to gain practical experience and visibility in the tech community.',7);
 /*!40000 ALTER TABLE `trainning_plan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -766,15 +795,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_subscription` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subscription_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `subscription_id` int NOT NULL,
+  `user_id` int NOT NULL,
   `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `subscription_id` (`subscription_id`),
   KEY `user_id` (`user_id`),
@@ -799,14 +828,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `otp` varchar(6) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `otp` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
@@ -833,4 +862,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-01  6:14:30
+-- Dump completed on 2024-11-04  8:51:06

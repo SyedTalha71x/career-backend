@@ -842,56 +842,96 @@ export const sendMessage = async (req, res) => {
     const { message, step_id } = req.body; 
     const systemMessage = "You are an experienced career advisor with a deep understanding of career development paths.";
 
-    const getChatGPTResponse = async (content) => {
-      const response = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-4o-mini", 
-          messages: [{ role: "user", content }],
-          max_tokens: 100,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${OPENAI_KEY}`,
-          },
-        }
-      );
-      return response.data;
+    // Function to get conversation history
+    const getConversationHistory = async (stepId) => {
+      const historyQuery = `
+        SELECT prompt, result 
+        FROM gpt_data 
+        WHERE step_id = ? 
+        ORDER BY created ASC
+      `;
+      const historyRecords = await query(historyQuery, [stepId]);
+      return historyRecords;
     };
 
-    const userResponse = await getChatGPTResponse(message);
-    const result = userResponse.choices[0].message.content;
+    // Fetch conversation history for the step_id
+    const conversationHistory = await getConversationHistory(step_id);
 
-    const systemResponse = await getChatGPTResponse(systemMessage);
+    // Prepare messages array including the system message
+    const messages = [
+      { role: "system", content: systemMessage }
+    ];
+
+    // Append previous messages to the array
+    conversationHistory.forEach(record => {
+      messages.push({ role: "user", content: record.prompt });
+      messages.push({ role: "assistant", content: record.result });
+    });
+
+    // Add the new user message to the messages array
+    messages.push({ role: "user", content: message });
+
+
+    // Call OpenAI API with the full conversation context
+    const userResponse = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4o-mini", 
+        messages: messages,
+        max_tokens: 100,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OPENAI_KEY}`,
+        },
+      }
+    );
+
+    // Get the assistant's response
+    const assistantResponse = userResponse.data.choices[0].message.content;
+
+    // Insert the new user prompt and assistant response into the database
+    const insertQuery = `
+      INSERT INTO gpt_data (result, step_id, prompt, parent_gpt_id) 
+      VALUES (?, ?, ?, ?)
+    `;
     
-    // Check if there is a previous record to use as a parent
     const previousRecordQuery = `
       SELECT id FROM gpt_data 
       WHERE step_id = ? 
       ORDER BY created DESC 
       LIMIT 1
     `;
-
     const previousRecord = await query(previousRecordQuery, [step_id]);
     const parentId = previousRecord.length > 0 ? previousRecord[0].id : null; // Get the ID of the last record
 
-    const insertQuery = `
-      INSERT INTO gpt_data (result, step_id, prompt${parentId ? ', parent_gpt_id' : ''})
-      VALUES (?, ?, ?${parentId ? ', ?' : ''})
-    `;
-  
-    const queryParams = [result, step_id, message]; 
-    if (parentId) queryParams.push(parentId); 
-
+    const queryParams = [assistantResponse, step_id, message, parentId]; 
     await query(insertQuery, queryParams);
 
-    return res.status(200).json({ status: true });
+    // Construct the conversation array to return
+    const fullConversation = [
+      { role: "system", content: systemMessage },
+      ...messages.slice(1), // This should now include all messages from the conversation
+      { role: "assistant", content: assistantResponse } // Include the assistant's response
+    ];
+
+    console.log(fullConversation);
+    
+
+    return res.status(200).json({ 
+      status: true, 
+      conversation: fullConversation 
+    });
   } catch (error) {
     console.error("Error in sendMessage API:", error);
     return res.status(500).json({ status: false, error: "Internal Server Error" });
   }
 };
+
+
+
+
 
 
 export const getMessage = async (req, res) => {
@@ -923,22 +963,26 @@ export const addSkill = async (req, res) => {
   try {
     const { title, step_id, status } = req.body;
 
-    if(!step_id){
-      return res.status(400).json({error: 'StepId should be provided'})
+    if (!step_id) {
+      return res.status(400).json({ error: "StepId should be provided" });
     }
     console.log(title, step_id, status);
-    
+
     const insertQuery = `
       INSERT INTO skills (title, step_id, status)
       VALUES (?, ?, ?)
     `;
-    const results = await query(insertQuery, [title, step_id, status || 'pending' ]);
+    const results = await query(insertQuery, [
+      title,
+      step_id,
+      status || "pending",
+    ]);
     console.log(results);
-    
-    return res.status(200).json({message: 'Skill created Successfully'})
+
+    return res.status(200).json({ message: "Skill created Successfully" });
   } catch (error) {
-    console.error('Database error:', error);
-   return res.status(500).json({error: 'Internal Server Error'})
+    console.error("Database error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const updateSkill = async (req, res) => {
@@ -946,8 +990,8 @@ export const updateSkill = async (req, res) => {
   try {
     const skillId = req.params.id;
 
-    if(!skillId){
-      return res.status(400).json({error: 'SkillIs should be provided'})
+    if (!skillId) {
+      return res.status(400).json({ error: "SkillIs should be provided" });
     }
     const { title, sort, step_id, status } = req.body;
 
@@ -972,12 +1016,12 @@ export const updateSkill = async (req, res) => {
     }
 
     if (fieldsToUpdate.length === 0) {
-      return res.status(400).json({error: 'No field are provided to update'})
+      return res.status(400).json({ error: "No field are provided to update" });
     }
 
     const updateQuery = `
       UPDATE skills
-      SET ${fieldsToUpdate.join(', ')}
+      SET ${fieldsToUpdate.join(", ")}
       WHERE id = ?
     `;
 
@@ -985,13 +1029,13 @@ export const updateSkill = async (req, res) => {
     const result = await query(updateQuery, values);
 
     if (result.affectedRows === 0) {
-      return res.status(400).json({error: 'skill not found'})
+      return res.status(400).json({ error: "skill not found" });
     }
 
-    return res.status(200).json({message: 'skill has been updated'})
+    return res.status(200).json({ message: "skill has been updated" });
   } catch (error) {
-    console.error('Error in updateSkill API:', error);
-    return res.status(500).json({error: 'Internal Server Error'})
+    console.error("Error in updateSkill API:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const deleteSkill = async (req, res) => {
@@ -999,8 +1043,8 @@ export const deleteSkill = async (req, res) => {
   try {
     const skillId = req.params.id;
 
-    if(!skillId){
-      return res.status(400).json({error: 'SkillIs should be provided'})
+    if (!skillId) {
+      return res.status(400).json({ error: "SkillIs should be provided" });
     }
 
     const deleteQuery = `
@@ -1011,12 +1055,12 @@ export const deleteSkill = async (req, res) => {
     const result = await query(deleteQuery, [skillId]);
 
     if (result.affectedRows === 0) {
-      return res.status(400).json({error: 'Skill not found'})
+      return res.status(400).json({ error: "Skill not found" });
     }
 
-    return res.status(200).json({message: 'Skill has been deleted'})
-    } catch (error) {
-    console.error('Error in deleteSkill API:', error);
-    return res.status(500).json({error: 'Internal Server Error'})
+    return res.status(200).json({ message: "Skill has been deleted" });
+  } catch (error) {
+    console.error("Error in deleteSkill API:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
