@@ -884,8 +884,6 @@ export const sendMessage = async (req, res) => {
     );
 
     const assistantResponse = userResponse.data.choices[0].message.content;
-
-    // Insert the new user prompt and assistant response into the database
     const insertQuery = `
       INSERT INTO gpt_data (result, step_id, prompt, parent_gpt_id) 
       VALUES (?, ?, ?, ?)
@@ -914,7 +912,6 @@ export const sendMessage = async (req, res) => {
 
     return res.status(200).json({ 
       status: true, 
-      conversation: fullConversation 
     });
   } catch (error) {
     console.error("Error in sendMessage API:", error);
