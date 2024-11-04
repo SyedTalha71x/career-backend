@@ -842,7 +842,6 @@ export const sendMessage = async (req, res) => {
     const { message, step_id } = req.body; 
     const systemMessage = "You are an experienced career advisor with a deep understanding of career development paths.";
 
-    // Function to get conversation history
     const getConversationHistory = async (stepId) => {
       const historyQuery = `
         SELECT prompt, result 
@@ -854,10 +853,8 @@ export const sendMessage = async (req, res) => {
       return historyRecords;
     };
 
-    // Fetch conversation history for the step_id
     const conversationHistory = await getConversationHistory(step_id);
 
-    // Prepare messages array including the system message
     const messages = [
       { role: "system", content: systemMessage }
     ];
@@ -868,11 +865,9 @@ export const sendMessage = async (req, res) => {
       messages.push({ role: "assistant", content: record.result });
     });
 
-    // Add the new user message to the messages array
     messages.push({ role: "user", content: message });
 
 
-    // Call OpenAI API with the full conversation context
     const userResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -888,7 +883,6 @@ export const sendMessage = async (req, res) => {
       }
     );
 
-    // Get the assistant's response
     const assistantResponse = userResponse.data.choices[0].message.content;
 
     // Insert the new user prompt and assistant response into the database
@@ -904,16 +898,15 @@ export const sendMessage = async (req, res) => {
       LIMIT 1
     `;
     const previousRecord = await query(previousRecordQuery, [step_id]);
-    const parentId = previousRecord.length > 0 ? previousRecord[0].id : null; // Get the ID of the last record
+    const parentId = previousRecord.length > 0 ? previousRecord[0].id : null; 
 
     const queryParams = [assistantResponse, step_id, message, parentId]; 
     await query(insertQuery, queryParams);
 
-    // Construct the conversation array to return
     const fullConversation = [
       { role: "system", content: systemMessage },
-      ...messages.slice(1), // This should now include all messages from the conversation
-      { role: "assistant", content: assistantResponse } // Include the assistant's response
+      ...messages.slice(1), 
+      { role: "assistant", content: assistantResponse } 
     ];
 
     console.log(fullConversation);
@@ -928,17 +921,11 @@ export const sendMessage = async (req, res) => {
     return res.status(500).json({ status: false, error: "Internal Server Error" });
   }
 };
-
-
-
-
-
-
 export const getMessage = async (req, res) => {
   try {
     const step_id = req.params.id;
     const getQry = `
-      SELECT id, gpt_id, result, prompt
+      SELECT id, result, prompt
       FROM gpt_data 
       WHERE step_id = ? 
       ORDER BY created DESC 
@@ -972,6 +959,7 @@ export const addSkill = async (req, res) => {
       INSERT INTO skills (title, step_id, status)
       VALUES (?, ?, ?)
     `;
+    
     const results = await query(insertQuery, [
       title,
       step_id,
