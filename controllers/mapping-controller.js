@@ -953,26 +953,32 @@ export const addSkill = async (req, res) => {
     if (!step_id) {
       return res.status(400).json({ error: "StepId should be provided" });
     }
-    console.log(title, step_id, status);
+
+    const getMaxSortQuery = `
+      SELECT COALESCE(MAX(sort), 0) + 1 AS nextSort FROM skills WHERE step_id = ?
+    `;
+    const [maxSortResult] = await query(getMaxSortQuery, [step_id]);
+    const nextSort = maxSortResult.nextSort; 
 
     const insertQuery = `
-      INSERT INTO skills (title, step_id, status)
-      VALUES (?, ?, ?)
+      INSERT INTO skills (title, step_id, status, sort)
+      VALUES (?, ?, ?, ?)
     `;
-    
     const results = await query(insertQuery, [
       title,
       step_id,
       status || "pending",
+      nextSort, 
     ]);
-    console.log(results);
 
-    return res.status(200).json({ message: "Skill created Successfully" });
+    console.log(results);
+    return res.status(200).json({ message: "Skill created successfully" });
   } catch (error) {
     console.error("Database error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 export const updateSkill = async (req, res) => {
   console.log("updateSkill API called");
   try {
