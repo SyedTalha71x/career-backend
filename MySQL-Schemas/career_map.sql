@@ -207,7 +207,7 @@ CREATE TABLE `gpt_data` (
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `gpt_data_logs_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,7 +216,7 @@ CREATE TABLE `gpt_data` (
 
 LOCK TABLES `gpt_data` WRITE;
 /*!40000 ALTER TABLE `gpt_data` DISABLE KEYS */;
-INSERT INTO `gpt_data` VALUES (1,'Becoming an automation expert involves a combination of education, hands-on experience, and continuous learning in the field of automation technologies. Here are the steps you can take to develop your skills and advance your career as an automation expert:\n\n### 1. **Educational Background**\n   - **Earn a Relevant Degree**: Consider obtaining a degree in computer science, software engineering, information technology, electrical engineering, or a related field. This foundational knowledge is critical for understanding automation principles and technologies.\n   - **Cert',23,NULL,'2024-11-04 08:23:45','how to become an automation expert '),(2,'Gaining experience in automation after you\'ve acquired the necessary skills can be accomplished through a variety of approaches. Here are some effective strategies:\n\n### 1. **Hands-On Projects**\n   - **Personal Projects**: Create your own automation projects using tools like Selenium (for web applications), Ansible, Puppet, or automation scripts. Open-source projects can provide a great way to practice and showcase your skills.\n   - **Automation Challenges**: Participate in coding challenges or hackathons that focus on automation solutions.',23,'1','2024-11-04 08:23:55','after learning automation how to get experience ');
+INSERT INTO `gpt_data` VALUES (1,'Becoming an automation expert involves a combination of education, hands-on experience, and continuous learning in the field of automation technologies. Here are the steps you can take to develop your skills and advance your career as an automation expert:\n\n### 1. **Educational Background**\n   - **Earn a Relevant Degree**: Consider obtaining a degree in computer science, software engineering, information technology, electrical engineering, or a related field. This foundational knowledge is critical for understanding automation principles and technologies.\n   - **Cert',23,NULL,'2024-11-04 08:23:45','how to become an automation expert '),(2,'Gaining experience in automation after you\'ve acquired the necessary skills can be accomplished through a variety of approaches. Here are some effective strategies:\n\n### 1. **Hands-On Projects**\n   - **Personal Projects**: Create your own automation projects using tools like Selenium (for web applications), Ansible, Puppet, or automation scripts. Open-source projects can provide a great way to practice and showcase your skills.\n   - **Automation Challenges**: Participate in coding challenges or hackathons that focus on automation solutions.',23,'1','2024-11-04 08:23:55','after learning automation how to get experience '),(3,'Becoming a lead data engineer typically requires a combination of educational qualifications, technical skills, experience, and soft skills. Here’s a step-by-step guide to help you achieve this goal:\n\n### 1. Educational Background\n- **Degree**: Obtain a bachelor’s degree in a relevant field such as Computer Science, Information Technology, Software Engineering, Mathematics, or a related discipline. A master’s degree can be a plus but is not always necessary.\n  \n### 2. Gain Relevant Experience\n-',24,NULL,'2024-11-04 13:27:06','how can i become a lead data engineer  '),(4,'Transitioning from an automation role to a DevOps position involves building on your automation skills and learning about the broader practices and tools associated with DevOps. Here are the steps you can take:\n\n### 1. **Understand DevOps Principles**\n   - **Cultural Shift**: Familiarize yourself with the DevOps culture, which emphasizes collaboration between development and operations teams, continuous integration, continuous delivery (CI/CD), and Agile methodologies.\n   - **Learn the DevOps Lifecycle**: Understand the stages',23,'2','2024-11-04 13:27:53','after automation what were the further steps for devops  ');
 /*!40000 ALTER TABLE `gpt_data` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -435,7 +435,7 @@ CREATE TABLE `path` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -444,7 +444,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'I am a graphic designer & wanna be a Frontend Developer.',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL);
+INSERT INTO `path` VALUES (1,'I am a graphic designer & wanna be a Frontend Developer.',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert',NULL),(4,'Welcome to the era of frontend',NULL,'pending',30,'I am an frontend expert',NULL),(5,'Welcome to the era of backend',NULL,'pending',30,'I am an backend expert',NULL),(6,'Welcome to the era of devops',NULL,'pending',30,'I am an devops expert',NULL),(7,'Welcome to the era of infrastructure',NULL,'pending',30,'I am an infrastructure expert',NULL),(8,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(9,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -718,8 +718,12 @@ CREATE TABLE `subscriptions` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `valid_till` int DEFAULT NULL,
+  `total_path` int DEFAULT NULL,
+  `total_training_plan` int DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `points` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -728,7 +732,7 @@ CREATE TABLE `subscriptions` (
 
 LOCK TABLES `subscriptions` WRITE;
 /*!40000 ALTER TABLE `subscriptions` DISABLE KEYS */;
-INSERT INTO `subscriptions` VALUES (8,'Gold Plan',20.99,10),(9,'Platnium Plan',20.99,10),(10,'Bronze Plan',13.22,20);
+INSERT INTO `subscriptions` VALUES (1,'Pioneer Plan',99.00,365,15,3,'Ideal for ambitious career explorers aiming for top-level growth and insight.','Up to 15 maps + 3 training plans'),(2,'Navigator Plan',55.00,365,6,1,'Great for building multiple career paths with guided support.','Up to 6 maps + 1 training plan'),(3,'Explorer Plan',28.00,365,2,0,'Up to 2 maps with tailored AI path suggestions. Perfect for exploring your next big move.','Up to 2 maps with tailored AI path suggestions');
 /*!40000 ALTER TABLE `subscriptions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -804,12 +808,14 @@ CREATE TABLE `user_subscription` (
   `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `current_path` int DEFAULT NULL,
+  `current_training_plan` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `subscription_id` (`subscription_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_subscription_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`id`),
   CONSTRAINT `user_subscription_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -818,7 +824,7 @@ CREATE TABLE `user_subscription` (
 
 LOCK TABLES `user_subscription` WRITE;
 /*!40000 ALTER TABLE `user_subscription` DISABLE KEYS */;
-INSERT INTO `user_subscription` VALUES (9,8,30,'2024-08-30 00:00:00','pi_3PprfnIILuhliL1z00EGL4bm','2024-08-20 13:00:35','2024-08-20 13:00:35'),(11,10,29,'2024-09-10 00:00:00','pi_3Pq8dfIILuhliL1z1pFtpte9','2024-08-21 07:07:31','2024-08-21 07:07:31'),(13,10,29,'2024-09-10 00:00:00','pi_3PqEplIILuhliL1z0hxEU6sZ','2024-08-21 13:44:24','2024-08-21 13:44:24'),(14,10,29,'2024-09-10 00:00:00','pi_3PqEplIILuhliL1z0hxEU6sZ','2024-08-21 13:44:24','2024-08-21 13:44:24');
+INSERT INTO `user_subscription` VALUES (1,3,30,'2025-11-06 00:00:00','pi_3QI9axIILuhliL1z10hl3OKa','2024-11-06 13:48:30','2024-11-06 14:35:47',2,1);
 /*!40000 ALTER TABLE `user_subscription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -840,7 +846,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -849,7 +855,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'hussain21x','hussain12@gmail.com','8b117546c9cdd79b2f88159fd94e1195623f7f8b53b54a2bb3b7675ecd834a93',NULL,NULL,NULL),(2,'faris21x','faris12@gmail.com','8a91dbf39a7d58400d17676648461e8d9895a7a48ea02e6a641de439b402a656',NULL,NULL,NULL),(3,'talha17x','talha@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(4,'aiman12','aiman@gmail.com','1a62b2b12c469335995cced03433260373e0b975344059e1a1fbdc66e6aca914',NULL,NULL,NULL),(5,'haris12','haris12@gmail.com','cffd26c9ddbb65b048a0f714b704a5ed9a5ad7a66130b7a43963899528a97928',NULL,NULL,NULL),(6,'test1','test12@gmail.com','c42bd77fb632be76f683bc427943fb3f848170dc33c14b7d5dc1b771db078c84',NULL,NULL,NULL),(7,'one71x','one@gmail.com','4d312d42968237ea5e754e39580b0f7fbb906dbf8608847310df370ed45828dd',NULL,NULL,NULL),(8,'syed71x','syed@gmail.com','73f72fcd6f1108782be74a62f817922edfc021a5d6a68513ec8aa9af4fad3b45',NULL,NULL,NULL),(9,'mustafa69x','mustafa@gmail.com','8e352b24effd2b624844f3d5d0fb2a0960903bf8aee759c2226a98993329c702',NULL,NULL,NULL),(10,'shayan71x','shayan@gmail.com','506c78e44f2184e46a6467bb17cf6b5937821be63a6170a8b8a07331b1660e13',NULL,NULL,NULL),(11,'Two69x$','two@gmail.com','2e1d7dfa4ca32532c7d453db04da86afcf38f0cc4008e1f577854b32c51115a7','https://images.pexels.com/photos/2310713/pexels-photo-2310713.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',NULL,NULL),(13,'hunain69x','hunain@gmail.com','840dc021cf333401c6b8f854939c7065058c6468843a37610071ded8569902b6',NULL,NULL,NULL),(14,'three12','three12@gmail.com','b7af263584bc6e827fa262dd8eb99d8bb3b1b43d045d3643acc8d975e49d30a3',NULL,NULL,NULL),(15,'hassan','hassan123@gmail.com','5c80b9535206b56dc8d78543de507d3e3fe08636dc6a9d12deb1dac0e7e5bb87',NULL,'gQXel3','2024-08-19 14:40:39'),(19,'poka123','poka123@gmail.com','22306f9ad37b7be1e823c6a1ccbc2cb944e6c9962f8f9da5103dc3f70b622c77',NULL,NULL,NULL),(21,'anas71x','anas@gmail.com','5410327224be6b772e71705ef1c6e8f87d8d253754c56f1521f642cef16b3898',NULL,NULL,NULL),(22,'areeba12','areeba@gmail.com','8d080c78cd9eb424ad93536b6b4faf3e521661a1bab4068cdc5e902ac623651f',NULL,NULL,NULL),(23,'tassaract','tassaract@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(24,'tassaract1','tassaract1@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(27,'ahmed','ahmed@gmail.com','77a2e452cc950bddfa44fe8c61db107305166800b489adf97f31fad9e2ba72f6',NULL,NULL,NULL),(28,'hassan123','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,'puVzLQ','2024-10-08 13:13:09'),(29,'talha_83x','pc16777.syedtalhahussain@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(30,'syed899x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL),(31,'amna','amna@gmail.com','a24738c27f7a51a6079b03d7149a5c12e4608a356c4d17e316b71941d819c346',NULL,NULL,NULL),(32,'noor','noor@gmail.com','6913c81ff94fc68e7b04d1de8b226fcd528fcb3c939cacce6bb5859c7a6157b4',NULL,NULL,NULL),(33,'faizan_18x','faizan@gmail.com','49f606bc2b2239194f22b0f301ff6aec2860e636f5eed176e308f6fd2c55fcde',NULL,NULL,NULL),(34,'khan','khan@gmail.com','cad3fe7aae4d46b047d0164e64aed2b1a98b74bf45d0fc23be076005504bace6',NULL,NULL,NULL),(35,'hadi','hadi@gmail.com','b87622c28e68762bc12fd2e4fddc2daae09a09679d54b4e8d4de7814ec8207c4',NULL,NULL,NULL),(36,'Alroylewis','Alroylewis@hotmail.co.uk','f95a6ba11d2cdcfcf9a073ea603492139bd05f71709af61b73dc4594f3f4866d',NULL,NULL,NULL),(37,'hassan321','unitedfurniture75@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL),(38,'zaidworks515','zaid_works515@outlook.com','d4598a2752541ac5de8ebc3b1923b57f9052ede3f40ae572957b5fe9b984cb83',NULL,NULL,NULL);
+INSERT INTO `users` VALUES (1,'hussain21x','hussain12@gmail.com','8b117546c9cdd79b2f88159fd94e1195623f7f8b53b54a2bb3b7675ecd834a93',NULL,NULL,NULL),(2,'faris21x','faris12@gmail.com','8a91dbf39a7d58400d17676648461e8d9895a7a48ea02e6a641de439b402a656',NULL,NULL,NULL),(3,'talha17x','talha@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(4,'aiman12','aiman@gmail.com','1a62b2b12c469335995cced03433260373e0b975344059e1a1fbdc66e6aca914',NULL,NULL,NULL),(5,'haris12','haris12@gmail.com','cffd26c9ddbb65b048a0f714b704a5ed9a5ad7a66130b7a43963899528a97928',NULL,NULL,NULL),(6,'test1','test12@gmail.com','c42bd77fb632be76f683bc427943fb3f848170dc33c14b7d5dc1b771db078c84',NULL,NULL,NULL),(7,'one71x','one@gmail.com','4d312d42968237ea5e754e39580b0f7fbb906dbf8608847310df370ed45828dd',NULL,NULL,NULL),(8,'syed71x','syed@gmail.com','73f72fcd6f1108782be74a62f817922edfc021a5d6a68513ec8aa9af4fad3b45',NULL,NULL,NULL),(9,'mustafa69x','mustafa@gmail.com','8e352b24effd2b624844f3d5d0fb2a0960903bf8aee759c2226a98993329c702',NULL,NULL,NULL),(10,'shayan71x','shayan@gmail.com','506c78e44f2184e46a6467bb17cf6b5937821be63a6170a8b8a07331b1660e13',NULL,NULL,NULL),(11,'Two69x$','two@gmail.com','2e1d7dfa4ca32532c7d453db04da86afcf38f0cc4008e1f577854b32c51115a7','https://images.pexels.com/photos/2310713/pexels-photo-2310713.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',NULL,NULL),(13,'hunain69x','hunain@gmail.com','840dc021cf333401c6b8f854939c7065058c6468843a37610071ded8569902b6',NULL,NULL,NULL),(14,'three12','three12@gmail.com','b7af263584bc6e827fa262dd8eb99d8bb3b1b43d045d3643acc8d975e49d30a3',NULL,NULL,NULL),(15,'hassan','hassan123@gmail.com','5c80b9535206b56dc8d78543de507d3e3fe08636dc6a9d12deb1dac0e7e5bb87',NULL,'gQXel3','2024-08-19 14:40:39'),(19,'poka123','poka123@gmail.com','22306f9ad37b7be1e823c6a1ccbc2cb944e6c9962f8f9da5103dc3f70b622c77',NULL,NULL,NULL),(21,'anas71x','anas@gmail.com','5410327224be6b772e71705ef1c6e8f87d8d253754c56f1521f642cef16b3898',NULL,NULL,NULL),(22,'areeba12','areeba@gmail.com','8d080c78cd9eb424ad93536b6b4faf3e521661a1bab4068cdc5e902ac623651f',NULL,NULL,NULL),(23,'tassaract','tassaract@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(24,'tassaract1','tassaract1@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(27,'ahmed','ahmed@gmail.com','77a2e452cc950bddfa44fe8c61db107305166800b489adf97f31fad9e2ba72f6',NULL,NULL,NULL),(28,'hassan123','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,'puVzLQ','2024-10-08 13:13:09'),(29,'talha_83x','pc16777.syedtalhahussain@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(30,'syed899x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL),(31,'amna','amna@gmail.com','a24738c27f7a51a6079b03d7149a5c12e4608a356c4d17e316b71941d819c346',NULL,NULL,NULL),(32,'noor','noor@gmail.com','6913c81ff94fc68e7b04d1de8b226fcd528fcb3c939cacce6bb5859c7a6157b4',NULL,NULL,NULL),(33,'faizan_18x','faizan@gmail.com','49f606bc2b2239194f22b0f301ff6aec2860e636f5eed176e308f6fd2c55fcde',NULL,NULL,NULL),(34,'khan','khan@gmail.com','cad3fe7aae4d46b047d0164e64aed2b1a98b74bf45d0fc23be076005504bace6',NULL,NULL,NULL),(35,'hadi','hadi@gmail.com','b87622c28e68762bc12fd2e4fddc2daae09a09679d54b4e8d4de7814ec8207c4',NULL,NULL,NULL),(36,'Alroylewis','Alroylewis@hotmail.co.uk','f95a6ba11d2cdcfcf9a073ea603492139bd05f71709af61b73dc4594f3f4866d',NULL,NULL,NULL),(37,'hassan321','unitedfurniture75@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL),(38,'zaidworks515','zaid_works515@outlook.com','d4598a2752541ac5de8ebc3b1923b57f9052ede3f40ae572957b5fe9b984cb83',NULL,NULL,NULL),(39,'faris','faris@gmail.com','e0cf5c55783c2a22ef4f66e0a0f55c37719c285b445351b6deb081567349e357',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -862,4 +868,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-04 12:38:57
+-- Dump completed on 2024-11-06 19:56:47
