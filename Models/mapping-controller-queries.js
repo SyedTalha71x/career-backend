@@ -35,7 +35,8 @@ export const GET_PATHS_WITH_TOTAL_SKILLS_COUNT = `
      inner join skills as sk on sk.step_id = s.id
      where s.path_id = p.id
    ) as total_skill_count
-   from path as p where p.user_id = ?;
+   from path as p where p.user_id = ?
+   order by p.id desc;
 `;
 
 export const GET_ALL_SKILLS = `SELECT skills.* FROM skills 

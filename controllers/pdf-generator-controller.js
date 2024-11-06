@@ -242,8 +242,6 @@ export const generatePdfReport = async (req, res) => {
 
     // Step 4: Fetch skill gap analysis resources based on skill_gap_analysis_id
     const skillGapResourceIds = skillGapResults.map((row) => row.id);
-    console.log(skillGapResourceIds);
-
     let skillGapResourcesResults = [];
 
     if (skillGapResourceIds.length) {
@@ -300,7 +298,7 @@ export const generatePdfReport = async (req, res) => {
       });
     });
 
-    // Fetch Model Subscriptoon Data
+    // Fetch Model Subscription Data
     const model_subscription = `SELECT payment_id, amount FROM model_subscription WHERE branch_id = ?;`;
     const modelSubscriptionResult = await new Promise((resolve, reject) => {
       pool.query(model_subscription, [branchId], (error, results) => {
@@ -355,17 +353,24 @@ export const generatePdfReport = async (req, res) => {
       })),
     };
 
+    // Step 9: Increment current_training_plan in user_subscription table
+    const updateSubscriptionQuery = `
+      UPDATE user_subscription
+      SET current_training_plan = IFNULL(current_training_plan, 0) + 1
+      WHERE user_id = ?
+    `;
+    await new Promise((resolve, reject) => {
+      pool.query(updateSubscriptionQuery, [userId], (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
+      });
+    });
+
     const pdfPath = await generatePDF(data, branchId);
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
     const relativePath = path.relative(process.cwd(), pdfPath);
     const downloadUrl = `${baseUrl}/${relativePath.replace(/\\/g, "/")}`;
-
-    // res.status(200).json({
-    //   message: "PDF generated successfully",
-    //   downloadUrl: downloadUrl,
-    //   fileName: `CareerDevelopmentPlan_${branchId}.pdf`,
-    // });
 
     res.download(pdfPath, `CareerDevelopmentPlan_${branchId}.pdf`, (err) => {
       if (err) {
@@ -380,3 +385,4 @@ export const generatePdfReport = async (req, res) => {
       .json({ message: "Error generating PDF report", error: err });
   }
 };
+

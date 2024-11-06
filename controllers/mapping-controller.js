@@ -69,6 +69,29 @@ export const createPath = async (req, res) => {
         }
 
         try {
+          const updateSubscriptionQuery = `
+              UPDATE user_subscription 
+              SET current_path = COALESCE(current_path, 0) + 1 
+              WHERE user_id = ? AND expiry_date > NOW()
+            `;
+
+          pool.query(updateSubscriptionQuery, [userId], (updateErr) => {
+            if (updateErr) {
+              console.error(
+                "Error updating current_path in user_subscription:",
+                updateErr
+              );
+              return res
+                .status(500)
+                .json(
+                  failureResponse(
+                    { error: "Failed to update current path count" },
+                    "Failed to create the path"
+                  )
+                );
+            }
+          });
+
           const authHeader = req.header("Authorization");
           const roadmapResponse = await axios.post(
             `http://64.23.166.88:3500/generate_roadmap?id=${result.insertId}`,
@@ -839,8 +862,9 @@ export const getSpecificSkillsWithStepId = (req, res) => {
 };
 export const sendMessage = async (req, res) => {
   try {
-    const { message, step_id } = req.body; 
-    const systemMessage = "You are an experienced career advisor with a deep understanding of career development paths.";
+    const { message, step_id } = req.body;
+    const systemMessage =
+      "You are an experienced career advisor with a deep understanding of career development paths.";
 
     const getConversationHistory = async (stepId) => {
       const historyQuery = `
@@ -855,23 +879,20 @@ export const sendMessage = async (req, res) => {
 
     const conversationHistory = await getConversationHistory(step_id);
 
-    const messages = [
-      { role: "system", content: systemMessage }
-    ];
+    const messages = [{ role: "system", content: systemMessage }];
 
     // Append previous messages to the array
-    conversationHistory.forEach(record => {
+    conversationHistory.forEach((record) => {
       messages.push({ role: "user", content: record.prompt });
       messages.push({ role: "assistant", content: record.result });
     });
 
     messages.push({ role: "user", content: message });
 
-
     const userResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini", 
+        model: "gpt-4o-mini",
         messages: messages,
         max_tokens: 100,
       },
@@ -888,7 +909,7 @@ export const sendMessage = async (req, res) => {
       INSERT INTO gpt_data (result, step_id, prompt, parent_gpt_id) 
       VALUES (?, ?, ?, ?)
     `;
-    
+
     const previousRecordQuery = `
       SELECT id FROM gpt_data 
       WHERE step_id = ? 
@@ -896,26 +917,27 @@ export const sendMessage = async (req, res) => {
       LIMIT 1
     `;
     const previousRecord = await query(previousRecordQuery, [step_id]);
-    const parentId = previousRecord.length > 0 ? previousRecord[0].id : null; 
+    const parentId = previousRecord.length > 0 ? previousRecord[0].id : null;
 
-    const queryParams = [assistantResponse, step_id, message, parentId]; 
+    const queryParams = [assistantResponse, step_id, message, parentId];
     await query(insertQuery, queryParams);
 
     const fullConversation = [
       { role: "system", content: systemMessage },
-      ...messages.slice(1), 
-      { role: "assistant", content: assistantResponse } 
+      ...messages.slice(1),
+      { role: "assistant", content: assistantResponse },
     ];
 
     console.log(fullConversation);
-    
 
-    return res.status(200).json({ 
-      status: true, 
+    return res.status(200).json({
+      status: true,
     });
   } catch (error) {
     console.error("Error in sendMessage API:", error);
-    return res.status(500).json({ status: false, error: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ status: false, error: "Internal Server Error" });
   }
 };
 export const getMessage = async (req, res) => {
@@ -955,7 +977,7 @@ export const addSkill = async (req, res) => {
       SELECT COALESCE(MAX(sort), 0) + 1 AS nextSort FROM skills WHERE step_id = ?
     `;
     const [maxSortResult] = await query(getMaxSortQuery, [step_id]);
-    const nextSort = maxSortResult.nextSort; 
+    const nextSort = maxSortResult.nextSort;
 
     const insertQuery = `
       INSERT INTO skills (title, step_id, status, sort)
@@ -965,7 +987,7 @@ export const addSkill = async (req, res) => {
       title,
       step_id,
       status || "pending",
-      nextSort, 
+      nextSort,
     ]);
 
     console.log(results);
@@ -975,7 +997,6 @@ export const addSkill = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 export const updateSkill = async (req, res) => {
   console.log("updateSkill API called");
   try {

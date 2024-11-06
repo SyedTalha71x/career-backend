@@ -56,7 +56,6 @@ export const createSubscriptions = async (req, res) => {
       );
   }
 };
-
 export const purchaseSubscription = async (req, res) => {
   try {
     const { subscriptionId } = req.body;
@@ -85,7 +84,6 @@ export const purchaseSubscription = async (req, res) => {
         );
     }
 
-    // Get subscription details from the database
     const subscription = await new Promise((resolve, reject) => {
       const query =
         "SELECT name, price, valid_till FROM subscriptions WHERE id = ?";
@@ -151,7 +149,7 @@ export const purchaseSubscription = async (req, res) => {
 };
 export const getSubscription = async (req, res) => {
   try {
-    const query = "SELECT id, name, price FROM subscriptions";
+    const query = "SELECT id, name, price, valid_till, description, points FROM subscriptions";
     pool.query(query, (err, results) => {
       if (err) {
         console.log(err);
@@ -178,6 +176,7 @@ export const getSubscription = async (req, res) => {
       );
   }
 };
+
 export const confirmSubscription = async (req, res) => {
   try {
     const { sessionId } = req.body;
@@ -306,33 +305,180 @@ export const checkUserSubscription = async (req, res) => {
     LIMIT 1;
   `;
   try {
-    pool.query(checkPathQuery, [userId], (err, results)=>{
-        if(err){
+    pool.query(checkPathQuery, [userId], (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+
+      const pathCount = results[0]?.pathCount || 0;
+
+      if (pathCount > 0) {
+        pool.query(query, [userId], (err, subResults) => {
+          if (err) {
             console.log(err);
-            return res.status(500).json({message: 'Internal Server Error'})
-        }
+            return res.status(500).json({ message: "Internal Server Error" });
+          }
+          if (subResults.length === 0) {
+            return res.json({
+              Subscription_Status: false,
+              message:
+                "You need to purchase a subscription to create a new path.",
+            });
+          }
 
-        const pathCount = results[0]?.pathCount || 0;
-
-        if(pathCount > 0){
-            pool.query(query, [userId], (err, subResults)=>{
-                if(err){
-                    console.log(err);
-                    return res.status(500).json({message: 'Internal Server Error'})                    
-                }
-                if (subResults.length === 0) {
-                    return res.json({ Subscription_Status: false, message: 'You need to purchase a subscription to create a new path.' });
-                }
-
-                return res.status(200).json({Subscription_Status: true, message: 'Yes you can create a new path'})
-            })
-        }
-        else
-        {
-            return res.status(200).json({Subscription_Status: true, message: 'Yes you can create your first path for free'})
-        }
-    })
+          return res
+            .status(200)
+            .json({
+              Subscription_Status: false,
+              message: "Yes you can create a new path",
+            });
+        });
+      } else {
+        return res
+          .status(200)
+          .json({
+            Subscription_Status: true,
+            message: "Yes you can create your first path for free",
+          });
+      }
+    });
   } catch (error) {
-    console.error('Unexpected error', error);
-    return res.status(500).json({ error: 'Internal server error' });  }
+    console.error("Unexpected error", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
+export const checkPathSubscription = (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json(
+        failureResponse(
+          { error: "User not authenticated" },
+          "Failed to check Subscription"
+        )
+      );
+    }
+    const query = `
+      SELECT 
+        us.current_path, 
+        s.total_path,
+        s.id AS subscription_id
+      FROM user_subscription AS us
+      JOIN subscriptions AS s ON us.subscription_id = s.id
+      WHERE us.user_id = ? AND us.expiry_date > NOW()
+    `;
+
+    pool.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (!results.length) {
+        return res.status(200).json({
+          error: "No active subscription found. Please purchase a subscription to create paths.",
+          Subscription_Status: false
+        });
+      }
+
+      const { current_path, subscription_id } = results[0];
+      
+      let pathLimit;
+      switch (subscription_id) {
+        case 1: // Pioneer 
+          pathLimit = 15;
+          break;
+        case 2: // Navigator 
+          pathLimit = 6;
+          break;
+        case 3: // Explorer 
+          pathLimit = 2;
+          break;
+        default:
+          return res.status(400).json({ error: "Unknown subscription type" });
+      }
+      if (current_path >= pathLimit) {
+        return res.status(200).json({
+          error: "Subscription limit reached. Upgrade your plan.", Subscription_Status: false
+        });
+      }
+      res.status(200).json({ message: "Path creation is allowed.", Subscription_Status: true });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const checkTrainingPlanSubscription = (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json(
+        failureResponse(
+          { error: "User not authenticated" },
+          "Failed to check Training Plan Subscription"
+        )
+      );
+    }
+
+    const query = `
+      SELECT 
+        us.current_training_plan, 
+        s.total_training_plan,
+        s.id AS subscription_id
+      FROM user_subscription AS us
+      JOIN subscriptions AS s ON us.subscription_id = s.id
+      WHERE us.user_id = ? AND us.expiry_date > NOW()
+    `;
+
+    pool.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (!results.length) {
+        return res.status(200).json({
+          error: "No active subscription found. Please purchase a subscription to access training plans.",
+          Subscription_Status: false
+        });
+      }
+
+      const { current_training_plan, subscription_id } = results[0];
+      
+      let trainingPlanLimit;
+      switch (subscription_id) {
+        case 1: // Pioneer 
+          trainingPlanLimit = 3;
+          break;
+        case 2: // Navigator 
+          trainingPlanLimit = 1;
+          break;
+        case 3: // Explorer 
+          trainingPlanLimit = 0;
+          break;
+        default:
+          return res.status(400).json({ error: "Unknown subscription type" });
+      }
+
+      if (current_training_plan >= trainingPlanLimit) {
+        return res.status(200).json({
+          error: "Training plan limit reached. Upgrade your plan.",
+          Subscription_Status: false
+        });
+      }
+
+      res.status(200).json({ 
+        message: "Training plan creation is allowed.",
+        Subscription_Status: true 
+      });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
