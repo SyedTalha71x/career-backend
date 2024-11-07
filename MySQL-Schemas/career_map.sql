@@ -1,13 +1,14 @@
--- MySQL dump 10.13  Distrib 8.0.37, for Linux (x86_64)
+/*!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19  Distrib 10.6.18-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: career_map_2
+-- Host: localhost    Database: career_map
 -- ------------------------------------------------------
--- Server version	8.0.37-0ubuntu0.23.10.2
+-- Server version	10.6.18-MariaDB-0ubuntu0.22.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,12 +22,12 @@
 
 DROP TABLE IF EXISTS `action_plan_summary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `action_plan_summary` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `action` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `responsiblity` enum('self','mentor','self/mentor') COLLATE utf8mb4_general_ci NOT NULL,
-  `plan_id` bigint NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `action` varchar(255) NOT NULL,
+  `responsiblity` enum('self','mentor','self/mentor') NOT NULL,
+  `plan_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `action_plan_summary_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -49,18 +50,18 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `branch`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `branch` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `step_id` bigint DEFAULT NULL,
-  `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `path_id` bigint DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `step_id` bigint(20) DEFAULT NULL,
+  `color` varchar(255) NOT NULL,
+  `path_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`step_id`),
   KEY `fk_branch_path_id` (`path_id`),
   CONSTRAINT `fk_branch_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_branch_step_id` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +70,7 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (1,NULL,'#f4b084',1),(2,1,'#a9d08e',1),(3,1,'#ccccff',1),(4,1,'#9bc2e6',1),(5,NULL,'#f4b084',2),(6,16,'#a9d08e',2),(7,16,'#ccccff',2),(8,16,'#9bc2e6',2);
+INSERT INTO `branch` VALUES (1,NULL,'#f4b084',1),(2,1,'#a9d08e',1),(3,1,'#ccccff',1),(4,1,'#9bc2e6',1),(5,NULL,'#f4b084',2),(6,16,'#a9d08e',2),(7,16,'#ccccff',2),(8,16,'#9bc2e6',2),(9,NULL,'#f4b084',10),(10,37,'#a9d08e',10),(11,37,'#ccccff',10),(12,37,'#9bc2e6',10);
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,13 +80,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `career_goals_overview`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `career_goals_overview` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint NOT NULL,
-  `title` text COLLATE utf8mb4_general_ci NOT NULL,
-  `type` enum('s','l') COLLATE utf8mb4_general_ci NOT NULL,
-  `completion_date` varchar(350) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint(20) NOT NULL,
+  `title` text NOT NULL,
+  `type` enum('s','l') NOT NULL,
+  `completion_date` varchar(350) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `career_goals_overview_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -108,12 +109,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `career_path_progression_map`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `career_path_progression_map` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint NOT NULL,
-  `role` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `suggested_timing` text COLLATE utf8mb4_general_ci,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint(20) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  `suggested_timing` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `career_path_progression_map_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -136,15 +137,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `facebook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `facebook_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `facebook_id` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `facebook_id` (`facebook_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -165,15 +166,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `google_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `google_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `google_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` text COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `google_id` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `profile_picture` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`),
   UNIQUE KEY `email` (`email`)
@@ -196,18 +197,18 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gpt_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gpt_data` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `result` text NOT NULL,
-  `step_id` bigint NOT NULL,
+  `step_id` bigint(20) NOT NULL,
   `parent_gpt_id` varchar(350) DEFAULT NULL,
-  `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created` timestamp NULL DEFAULT current_timestamp(),
   `prompt` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `gpt_data_logs_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -226,14 +227,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `instagram_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `instagram_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `instagram_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `instagram_id` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `instagram_id` (`instagram_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -254,15 +255,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `linkedin_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `linkedin_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `linkedin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `linkedin_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `linkedin_id` (`linkedin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -283,17 +284,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `model_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `model_subscription` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `payment_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `branch_id` int NOT NULL,
-  `amount` int NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `payment_id` varchar(255) DEFAULT NULL,
+  `branch_id` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -302,7 +303,7 @@ CREATE TABLE `model_subscription` (
 
 LOCK TABLES `model_subscription` WRITE;
 /*!40000 ALTER TABLE `model_subscription` DISABLE KEYS */;
-INSERT INTO `model_subscription` VALUES (1,28,'0',3,10,'2024-10-28 12:07:53','2024-10-28 12:07:53'),(2,28,'0',3,10,'2024-10-28 12:11:29','2024-10-28 12:11:29'),(3,28,'0',5,10,'2024-10-28 12:11:47','2024-10-28 12:11:47'),(4,28,'0',5,10,'2024-10-28 12:17:55','2024-10-28 12:17:55'),(5,28,'pi_3QErrfIILuhliL1z1JtyoKQj',5,10,'2024-10-28 12:27:42','2024-10-28 12:27:42'),(6,28,'pi_3QEs3gIILuhliL1z0LkqmO8s',3,10,'2024-10-28 12:28:52','2024-10-28 12:28:52'),(7,28,'pi_3QEsHvIILuhliL1z1ATAbNvM',1,10,'2024-10-28 12:43:43','2024-10-28 12:43:43'),(8,28,'pi_3QEsJ7IILuhliL1z1RfI8Ghi',7,10,'2024-10-28 12:44:45','2024-10-28 12:44:45');
+INSERT INTO `model_subscription` VALUES (1,28,'0',3,10,'2024-10-28 12:07:53','2024-10-28 12:07:53'),(2,28,'0',3,10,'2024-10-28 12:11:29','2024-10-28 12:11:29'),(3,28,'0',5,10,'2024-10-28 12:11:47','2024-10-28 12:11:47'),(4,28,'0',5,10,'2024-10-28 12:17:55','2024-10-28 12:17:55'),(5,28,'pi_3QErrfIILuhliL1z1JtyoKQj',5,10,'2024-10-28 12:27:42','2024-10-28 12:27:42'),(6,28,'pi_3QEs3gIILuhliL1z0LkqmO8s',3,10,'2024-10-28 12:28:52','2024-10-28 12:28:52'),(7,28,'pi_3QEsHvIILuhliL1z1ATAbNvM',1,10,'2024-10-28 12:43:43','2024-10-28 12:43:43'),(8,28,'pi_3QEsJ7IILuhliL1z1RfI8Ghi',7,10,'2024-10-28 12:44:45','2024-10-28 12:44:45'),(9,40,'pi_3QIShkIILuhliL1z1WBcxyP9',11,10,'2024-11-07 10:12:52','2024-11-07 10:12:52');
 /*!40000 ALTER TABLE `model_subscription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -312,10 +313,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `modules` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `module_name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -336,11 +337,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `next_steps_recommendations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `next_steps_recommendations` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint NOT NULL,
-  `recommendations` text COLLATE utf8mb4_general_ci NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint(20) NOT NULL,
+  `recommendations` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `next_steps_recommendations_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -363,19 +364,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notifications` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
-  `title` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `read` tinyint NOT NULL DEFAULT '0',
-  `seen` tinyint NOT NULL DEFAULT '0',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `title` varchar(350) NOT NULL,
+  `description` varchar(350) NOT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `read` tinyint(4) NOT NULL DEFAULT 0,
+  `seen` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -384,7 +385,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (3,30,'System Maintenance Scheduled','Our system will be undergoing maintenance on October 1st at 10:00 PM.','https://www.google.com/',1,1),(4,30,'Database Admin Scheduled','Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.','https://www.google.com/',1,1),(5,30,'I am an infrastructure Specialist','This path has been analyse',NULL,1,1),(6,30,'react js developer','This path has been analyse',NULL,1,1),(7,30,'react js developer','This path has been analyse',NULL,0,0),(8,36,'Law grad to solicitor','This path has been analyse',NULL,1,1),(9,36,'Pipefitter to superintendant ','This path has been analyse',NULL,1,1),(10,36,'Law ','This path has been analyse',NULL,1,1),(11,36,'law 2','This path has been analyse',NULL,1,1),(12,28,'javascript','This path has been analyse',NULL,1,1),(13,30,'Law grad to solicitor','This path has been analyse',NULL,0,0),(14,30,'Pipefitter to superintendant ','This path has been analyse',NULL,0,0),(15,30,'Law ','This path has been analyse',NULL,0,0),(16,30,'law 2','This path has been analyse',NULL,0,0),(17,30,'javascript','This path has been analyse',NULL,0,0),(18,36,'IT Specialist Career','This path has been analyse',NULL,0,1),(19,37,'javascript','This path has been analyse',NULL,1,1),(20,37,'python developer','This path has been analyse',NULL,1,1),(21,37,'data entry','This path has been analyse',NULL,1,1),(22,37,'data entry operator','This path has been analyse',NULL,1,1),(23,28,'frontend developer','This path has been analyse',NULL,1,1),(24,37,'ml engineer','This path has been analyse',NULL,1,1),(25,37,' Machine learning developer','This path has been analyse',NULL,1,1),(26,37,'react js developer','This path has been analyse',NULL,1,1),(27,37,'react js developer','This path has been analyse',NULL,1,1),(28,37,'ai engineer','This path has been analyse',NULL,1,1),(29,37,'data entry operator','This path has been analyse',NULL,1,1),(30,37,' python developer','This path has been analyse',NULL,1,1),(31,37,' python developer','This path has been analyse',NULL,1,1),(32,37,' python developer','This path has been analyse',NULL,1,1),(33,37,'python developer','This path has been analyse',NULL,1,1),(34,37,' python developer','This path has been analyse',NULL,1,1),(35,37,'mechanic ','This path has been analyse',NULL,1,1),(36,37,'blockchain developer','This path has been analyse',NULL,1,1),(37,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(38,37,' python developer','This path has been analyse',NULL,1,1),(39,37,' python developer','This path has been analyse',NULL,1,1),(40,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(41,37,'mechanic ','This path has been analyse',NULL,1,1),(42,37,'react js developer','This path has been analyse',NULL,1,1),(43,37,'data entry operator','This path has been analyse',NULL,1,1),(44,37,'ai engineer','This path has been analyse',NULL,1,1),(45,37,'data entry operator','This path has been analyse',NULL,1,1),(46,37,'singer','This path has been analyse',NULL,0,1),(47,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(48,37,'python developer banna hy mujhe','This path has been analyse',NULL,0,1),(49,37,'javascript deveoper','This path has been analyse',NULL,0,1),(50,37,'ml engineer','This path has been analyse',NULL,0,1),(51,37,'javascript deveoper','This path has been analyse',NULL,0,1),(52,28,'python developer','This path has been analyse',NULL,1,1),(53,28,'python developer','This path has been analyse',NULL,1,1),(54,28,'python developer','This path has been analyse',NULL,1,1),(55,28,'singer','This path has been analyse',NULL,0,0),(56,28,'ai engineer','This path has been analyse',NULL,0,0),(57,28,'frontend developer','This path has been analyse',NULL,0,0),(58,28,'graphic designer','This path has been analyse',NULL,0,0),(59,28,'wordpress developer','This path has been analyse',NULL,0,0);
+INSERT INTO `notifications` VALUES (3,30,'System Maintenance Scheduled','Our system will be undergoing maintenance on October 1st at 10:00 PM.','https://www.google.com/',1,1),(4,30,'Database Admin Scheduled','Our database admin system will be undergoing maintenance on September 1st at 8:00 PM.','https://www.google.com/',1,1),(5,30,'I am an infrastructure Specialist','This path has been analyse',NULL,1,1),(6,30,'react js developer','This path has been analyse',NULL,1,1),(7,30,'react js developer','This path has been analyse',NULL,0,0),(8,36,'Law grad to solicitor','This path has been analyse',NULL,1,1),(9,36,'Pipefitter to superintendant ','This path has been analyse',NULL,1,1),(10,36,'Law ','This path has been analyse',NULL,1,1),(11,36,'law 2','This path has been analyse',NULL,1,1),(12,28,'javascript','This path has been analyse',NULL,1,1),(13,30,'Law grad to solicitor','This path has been analyse',NULL,0,0),(14,30,'Pipefitter to superintendant ','This path has been analyse',NULL,0,0),(15,30,'Law ','This path has been analyse',NULL,0,0),(16,30,'law 2','This path has been analyse',NULL,0,0),(17,30,'javascript','This path has been analyse',NULL,0,0),(18,36,'IT Specialist Career','This path has been analyse',NULL,0,1),(19,37,'javascript','This path has been analyse',NULL,1,1),(20,37,'python developer','This path has been analyse',NULL,1,1),(21,37,'data entry','This path has been analyse',NULL,1,1),(22,37,'data entry operator','This path has been analyse',NULL,1,1),(23,28,'frontend developer','This path has been analyse',NULL,1,1),(24,37,'ml engineer','This path has been analyse',NULL,1,1),(25,37,' Machine learning developer','This path has been analyse',NULL,1,1),(26,37,'react js developer','This path has been analyse',NULL,1,1),(27,37,'react js developer','This path has been analyse',NULL,1,1),(28,37,'ai engineer','This path has been analyse',NULL,1,1),(29,37,'data entry operator','This path has been analyse',NULL,1,1),(30,37,' python developer','This path has been analyse',NULL,1,1),(31,37,' python developer','This path has been analyse',NULL,1,1),(32,37,' python developer','This path has been analyse',NULL,1,1),(33,37,'python developer','This path has been analyse',NULL,1,1),(34,37,' python developer','This path has been analyse',NULL,1,1),(35,37,'mechanic ','This path has been analyse',NULL,1,1),(36,37,'blockchain developer','This path has been analyse',NULL,1,1),(37,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(38,37,' python developer','This path has been analyse',NULL,1,1),(39,37,' python developer','This path has been analyse',NULL,1,1),(40,37,'blockchain with Ai developer','This path has been analyse',NULL,1,1),(41,37,'mechanic ','This path has been analyse',NULL,1,1),(42,37,'react js developer','This path has been analyse',NULL,1,1),(43,37,'data entry operator','This path has been analyse',NULL,1,1),(44,37,'ai engineer','This path has been analyse',NULL,1,1),(45,37,'data entry operator','This path has been analyse',NULL,1,1),(46,37,'singer','This path has been analyse',NULL,1,1),(47,37,'python developer banna hy mujhe','This path has been analyse',NULL,1,1),(48,37,'python developer banna hy mujhe','This path has been analyse',NULL,1,1),(49,37,'javascript deveoper','This path has been analyse',NULL,1,1),(50,37,'ml engineer','This path has been analyse',NULL,1,1),(51,37,'javascript deveoper','This path has been analyse',NULL,1,1),(52,28,'python developer','This path has been analyse',NULL,1,1),(53,28,'python developer','This path has been analyse',NULL,1,1),(54,28,'python developer','This path has been analyse',NULL,1,1),(55,28,'singer','This path has been analyse',NULL,0,0),(56,28,'ai engineer','This path has been analyse',NULL,0,0),(57,28,'frontend developer','This path has been analyse',NULL,0,0),(58,28,'graphic designer','This path has been analyse',NULL,0,0),(59,28,'wordpress developer','This path has been analyse',NULL,0,0),(60,40,'video editor','This path has been analyse',NULL,0,1);
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -394,15 +395,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `outlook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `outlook_login` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `outlook_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `outlook_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `outlook_id` (`outlook_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -423,19 +424,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `path`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `path` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `prompt` longtext COLLATE utf8mb4_unicode_ci,
-  `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('pending','analysed','analysing') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `user_id` int DEFAULT NULL,
-  `title` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `prompt` longtext DEFAULT NULL,
+  `file` varchar(255) DEFAULT NULL,
+  `status` enum('pending','analysed','analysing') DEFAULT 'pending',
+  `user_id` int(11) DEFAULT NULL,
+  `title` varchar(250) DEFAULT NULL,
+  `gpt_id` varchar(350) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -444,7 +445,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'I am a graphic designer & wanna be a Frontend Developer.',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert',NULL),(4,'Welcome to the era of frontend',NULL,'pending',30,'I am an frontend expert',NULL),(5,'Welcome to the era of backend',NULL,'pending',30,'I am an backend expert',NULL),(6,'Welcome to the era of devops',NULL,'pending',30,'I am an devops expert',NULL),(7,'Welcome to the era of infrastructure',NULL,'pending',30,'I am an infrastructure expert',NULL),(8,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(9,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL);
+INSERT INTO `path` VALUES (1,'I am a graphic designer & wanna be a Frontend Developer.',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert',NULL),(4,'Welcome to the era of frontend',NULL,'pending',30,'I am an frontend expert',NULL),(5,'Welcome to the era of backend',NULL,'pending',30,'I am an backend expert',NULL),(6,'Welcome to the era of devops',NULL,'pending',30,'I am an devops expert',NULL),(7,'Welcome to the era of infrastructure',NULL,'pending',30,'I am an infrastructure expert',NULL),(8,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(9,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(10,'how can I shift my field from video editor to civil engineer?',NULL,'analysed',40,'video editor',NULL);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -454,10 +455,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permission_modules` (
-  `permission_id` int DEFAULT NULL,
-  `module_id` int DEFAULT NULL,
+  `permission_id` int(11) DEFAULT NULL,
+  `module_id` int(11) DEFAULT NULL,
   KEY `permission_id` (`permission_id`),
   KEY `module_id` (`module_id`),
   CONSTRAINT `permission_modules_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`),
@@ -481,13 +482,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_to_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permission_to_role` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `role_id` int NOT NULL,
-  `permission_id` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   KEY `permission_id` (`permission_id`),
@@ -512,13 +513,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permissions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `slug` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -539,10 +540,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `role_to_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `role_to_users` (
-  `role_id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   KEY `role_id` (`role_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
@@ -566,12 +567,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roles` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -593,13 +594,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_gap_analysis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `skill_gap_analysis` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint NOT NULL,
-  `title` text COLLATE utf8mb4_general_ci NOT NULL,
-  `priority` enum('High','Medium','Low') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status` enum('pending','completed') COLLATE utf8mb4_general_ci NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint(20) NOT NULL,
+  `title` text NOT NULL,
+  `priority` enum('High','Medium','Low') DEFAULT NULL,
+  `status` enum('pending','completed') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `skill_gap_analysis_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -622,13 +623,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_gap_analysis_resources`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `skill_gap_analysis_resources` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `skill_gap_analysis_id` bigint NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `platform` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `link` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `skill_gap_analysis_id` bigint(20) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `platform` varchar(255) NOT NULL,
+  `link` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -649,17 +650,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skills`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `skills` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
   `sort` tinyint(1) NOT NULL,
-  `step_id` bigint DEFAULT NULL,
-  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `step_id` bigint(20) DEFAULT NULL,
+  `status` enum('pending','completed') DEFAULT 'pending',
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=292 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -668,7 +669,7 @@ CREATE TABLE `skills` (
 
 LOCK TABLES `skills` WRITE;
 /*!40000 ALTER TABLE `skills` DISABLE KEYS */;
-INSERT INTO `skills` VALUES (1,'Adobe Creative Suite',1,1,'pending'),(2,'UI/UX Design',2,1,'pending'),(3,'Typography',3,1,'pending'),(4,'Color Theory',4,1,'pending'),(5,'Responsive Design',5,1,'pending'),(6,'User Research',1,2,'pending'),(7,'Wireframing',2,2,'pending'),(8,'Prototyping',3,2,'pending'),(9,'Usability Testing',4,2,'pending'),(10,'Information Architecture',5,2,'pending'),(11,'SEO',1,3,'pending'),(12,'Content Creation',2,3,'pending'),(13,'Social Media Management',3,3,'pending'),(14,'Analytics',4,3,'pending'),(15,'Campaign Management',5,3,'pending'),(16,'Leadership',1,4,'pending'),(17,'Project Management',2,4,'pending'),(18,'Creative Strategy',3,4,'pending'),(19,'Team Management',4,4,'pending'),(20,'Brand Development',5,4,'pending'),(21,'Team Leadership',1,5,'pending'),(22,'Conflict Resolution',2,5,'pending'),(23,'Performance Management',3,5,'pending'),(24,'Budgeting',4,5,'pending'),(25,'Resource Allocation',5,5,'pending'),(26,'Product Roadmapping',1,6,'pending'),(27,'Stakeholder Management',2,6,'pending'),(28,'Market Analysis',3,6,'pending'),(29,'Agile Methodologies',4,6,'pending'),(30,'Prioritization',5,6,'pending'),(31,'Visionary Leadership',1,7,'pending'),(32,'Strategic Planning',2,7,'pending'),(33,'Design Thinking',3,7,'pending'),(34,'Innovation',4,7,'pending'),(35,'Mentorship',5,7,'pending'),(36,'HTML/CSS',1,8,'pending'),(37,'JavaScript',2,8,'pending'),(38,'Version Control (Git)',3,8,'pending'),(39,'Responsive Design',4,8,'pending'),(40,'Cross-Browser Compatibility',5,8,'pending'),(41,'Node.js',1,9,'pending'),(42,'Database Management',2,9,'pending'),(43,'APIs',3,9,'pending'),(44,'Server-Side Logic',4,9,'pending'),(45,'Cloud Services',5,9,'pending'),(46,'Technical Leadership',1,10,'pending'),(47,'Code Review',2,10,'pending'),(48,'Architecture Design',3,10,'pending'),(49,'Continuous Integration',4,10,'pending'),(50,'Quality Assurance',5,10,'pending'),(51,'HTML',1,11,'pending'),(52,'CSS',2,11,'pending'),(53,'JavaScript',3,11,'pending'),(54,'Responsive Design',4,11,'pending'),(55,'DOM Manipulation',5,11,'pending'),(56,'Project Management',1,12,'pending'),(57,'Git/GitHub',2,12,'pending'),(58,'Web Design',3,12,'pending'),(59,'Debugging',4,12,'pending'),(60,'Code Optimization',5,12,'pending'),(61,'React',1,13,'pending'),(62,'Vue.js',2,13,'pending'),(63,'State Management',3,13,'pending'),(64,'Component-Based Architecture',4,13,'pending'),(65,'Single Page Applications',5,13,'pending'),(66,'Interviewing',1,14,'pending'),(67,'Technical Communication',2,14,'pending'),(68,'Problem Solving',3,14,'pending'),(69,'Team Collaboration',4,14,'pending'),(70,'Adaptability',5,14,'pending'),(71,'Advanced JavaScript',1,15,'pending'),(72,'Performance Optimization',2,15,'pending'),(73,'Security Best Practices',3,15,'pending'),(74,'Testing and Debugging',4,15,'pending'),(75,'Mentorship',5,15,'pending'),(76,'PHP',1,16,'pending'),(77,'HTML/CSS',2,16,'pending'),(78,'JavaScript',3,16,'pending'),(79,'WordPress CMS',4,16,'pending'),(80,'SEO',5,16,'pending'),(81,'Excel',1,17,'pending'),(82,'SQL',2,17,'pending'),(83,'Data Visualization',3,17,'pending'),(84,'Statistical Analysis',4,17,'pending'),(85,'Critical Thinking',5,17,'pending'),(86,'Data Science Basics',1,18,'pending'),(87,'Networking',2,18,'pending'),(88,'Problem-Solving',3,18,'pending'),(89,'Team Collaboration',4,18,'pending'),(90,'Project Management',5,18,'pending'),(91,'Portfolio Development',1,19,'pending'),(92,'Python for Data Science',2,19,'pending'),(93,'Data Cleaning',3,19,'pending'),(94,'Visualization Tools',4,19,'pending'),(95,'Git/GitHub',5,19,'pending'),(96,'Community Engagement',1,20,'pending'),(97,'Continuous Learning',2,20,'pending'),(98,'Mentorship',3,20,'pending'),(99,'Knowledge Sharing',4,20,'pending'),(100,'Networking',5,20,'pending'),(101,'Open Source Contribution',1,21,'pending'),(102,'Collaboration',2,21,'pending'),(103,'Coding Best Practices',3,21,'pending'),(104,'Version Control',4,21,'pending'),(105,'Problem Solving',5,21,'pending'),(106,'Leadership',1,22,'pending'),(107,'Communication',2,22,'pending'),(108,'Project Planning',3,22,'pending'),(109,'Budget Management',4,22,'pending'),(110,'Risk Management',5,22,'pending'),(111,'PMP Certification',1,23,'pending'),(112,'Agile Methodology',2,23,'pending'),(113,'Process Improvement',3,23,'pending'),(114,'Time Management',4,23,'pending'),(115,'Stakeholder Engagement',5,23,'pending'),(116,'Data Science Project Management',1,24,'pending'),(117,'Team Leadership',2,24,'pending'),(118,'Resource Allocation',3,24,'pending'),(119,'Performance Metrics',4,24,'pending'),(120,'Strategic Planning',5,24,'pending'),(121,'Team Building',1,25,'pending'),(122,'Advanced Data Science',2,25,'pending'),(123,'Business Acumen',3,25,'pending'),(124,'Decision Making',4,25,'pending'),(125,'Visionary Leadership',5,25,'pending'),(126,'Executive Leadership',1,26,'pending'),(127,'Strategic Vision',2,26,'pending'),(128,'Industry Expertise',3,26,'pending'),(129,'Organizational Development',4,26,'pending'),(130,'Innovation Management',5,26,'pending'),(131,'Python',1,27,'pending'),(132,'Data Structures',2,27,'pending'),(133,'Libraries (Pandas, NumPy)',3,27,'pending'),(134,'Data Manipulation',4,27,'pending'),(135,'Coding Best Practices',5,27,'pending'),(136,'Machine Learning',1,28,'pending'),(137,'Supervised Learning',2,28,'pending'),(138,'Unsupervised Learning',3,28,'pending'),(139,'Model Evaluation',4,28,'pending'),(140,'Python Libraries (scikit-learn)',5,28,'pending'),(141,'Competitive Analysis',1,29,'pending'),(142,'Problem Solving',2,29,'pending'),(143,'Algorithm Optimization',3,29,'pending'),(144,'Collaboration',4,29,'pending'),(145,'Critical Thinking',5,29,'pending'),(146,'Natural Language Processing',1,30,'pending'),(147,'Computer Vision',2,30,'pending'),(148,'Big Data Technologies',3,30,'pending'),(149,'Advanced Algorithms',4,30,'pending'),(150,'Research and Development',5,30,'pending'),(151,'Technical Leadership',1,31,'pending'),(152,'Mentorship',2,31,'pending'),(153,'Innovation',3,31,'pending'),(154,'Technical Strategy',4,31,'pending'),(155,'Cross-Functional Collaboration',5,31,'pending'),(156,'Data Analysis',1,32,'pending'),(157,'Python',2,32,'pending'),(158,'R Programming',3,32,'pending'),(159,'SQL',4,32,'pending'),(160,'Statistical Analysis',5,32,'pending'),(161,'Machine Learning',1,33,'pending'),(162,'Supervised Learning',2,33,'pending'),(163,'Unsupervised Learning',3,33,'pending'),(164,'Model Evaluation',4,33,'pending'),(165,'Data Preprocessing',5,33,'pending'),(166,'Project Management',1,34,'pending'),(167,'Data Cleaning',2,34,'pending'),(168,'Data Visualization',3,34,'pending'),(169,'Python Libraries',4,34,'pending'),(170,'Problem Solving',5,34,'pending'),(171,'Deep Learning',1,35,'pending'),(172,'Natural Language Processing',2,35,'pending'),(173,'Big Data',3,35,'pending'),(174,'Data Engineering',4,35,'pending'),(175,'Time Series Analysis',5,35,'pending'),(176,'Data-Driven Decision Making',1,36,'pending'),(177,'Advanced Statistical Analysis',2,36,'pending'),(178,'Predictive Modeling',3,36,'pending'),(179,'Communication Skills',4,36,'pending'),(180,'Business Acumen',5,36,'pending'),(181,'JavaScript Basics',6,8,'pending'),(182,'react Basics',7,8,'pending'),(183,'react Basics',8,9,'pending'),(184,'nextjs basics',9,9,'pending'),(185,'css basics',10,9,'pending'),(186,'html basics',6,10,'pending');
+INSERT INTO `skills` VALUES (1,'Adobe Creative Suite',1,1,'pending'),(2,'UI/UX Design',2,1,'pending'),(3,'Typography',3,1,'pending'),(4,'Color Theory',4,1,'pending'),(5,'Responsive Design',5,1,'pending'),(6,'User Research',1,2,'pending'),(7,'Wireframing',2,2,'pending'),(8,'Prototyping',3,2,'pending'),(9,'Usability Testing',4,2,'pending'),(10,'Information Architecture',5,2,'pending'),(11,'SEO',1,3,'pending'),(12,'Content Creation',2,3,'pending'),(13,'Social Media Management',3,3,'pending'),(14,'Analytics',4,3,'pending'),(15,'Campaign Management',5,3,'pending'),(16,'Leadership',1,4,'pending'),(17,'Project Management',2,4,'pending'),(18,'Creative Strategy',3,4,'pending'),(19,'Team Management',4,4,'pending'),(20,'Brand Development',5,4,'pending'),(21,'Team Leadership',1,5,'pending'),(22,'Conflict Resolution',2,5,'pending'),(23,'Performance Management',3,5,'pending'),(24,'Budgeting',4,5,'pending'),(25,'Resource Allocation',5,5,'pending'),(26,'Product Roadmapping',1,6,'pending'),(27,'Stakeholder Management',2,6,'pending'),(28,'Market Analysis',3,6,'pending'),(29,'Agile Methodologies',4,6,'pending'),(30,'Prioritization',5,6,'pending'),(31,'Visionary Leadership',1,7,'pending'),(32,'Strategic Planning',2,7,'pending'),(33,'Design Thinking',3,7,'pending'),(34,'Innovation',4,7,'pending'),(35,'Mentorship',5,7,'pending'),(36,'HTML/CSS',1,8,'pending'),(37,'JavaScript',2,8,'pending'),(38,'Version Control (Git)',3,8,'pending'),(39,'Responsive Design',4,8,'pending'),(40,'Cross-Browser Compatibility',5,8,'pending'),(41,'Node.js',1,9,'pending'),(42,'Database Management',2,9,'pending'),(43,'APIs',3,9,'pending'),(44,'Server-Side Logic',4,9,'pending'),(45,'Cloud Services',5,9,'pending'),(46,'Technical Leadership',1,10,'pending'),(47,'Code Review',2,10,'pending'),(48,'Architecture Design',3,10,'pending'),(49,'Continuous Integration',4,10,'pending'),(50,'Quality Assurance',5,10,'pending'),(51,'HTML',1,11,'pending'),(52,'CSS',2,11,'pending'),(53,'JavaScript',3,11,'pending'),(54,'Responsive Design',4,11,'pending'),(55,'DOM Manipulation',5,11,'pending'),(56,'Project Management',1,12,'pending'),(57,'Git/GitHub',2,12,'pending'),(58,'Web Design',3,12,'pending'),(59,'Debugging',4,12,'pending'),(60,'Code Optimization',5,12,'pending'),(61,'React',1,13,'pending'),(62,'Vue.js',2,13,'pending'),(63,'State Management',3,13,'pending'),(64,'Component-Based Architecture',4,13,'pending'),(65,'Single Page Applications',5,13,'pending'),(66,'Interviewing',1,14,'pending'),(67,'Technical Communication',2,14,'pending'),(68,'Problem Solving',3,14,'pending'),(69,'Team Collaboration',4,14,'pending'),(70,'Adaptability',5,14,'pending'),(71,'Advanced JavaScript',1,15,'pending'),(72,'Performance Optimization',2,15,'pending'),(73,'Security Best Practices',3,15,'pending'),(74,'Testing and Debugging',4,15,'pending'),(75,'Mentorship',5,15,'pending'),(76,'PHP',1,16,'pending'),(77,'HTML/CSS',2,16,'pending'),(78,'JavaScript',3,16,'pending'),(79,'WordPress CMS',4,16,'pending'),(80,'SEO',5,16,'pending'),(81,'Excel',1,17,'pending'),(82,'SQL',2,17,'pending'),(83,'Data Visualization',3,17,'pending'),(84,'Statistical Analysis',4,17,'pending'),(85,'Critical Thinking',5,17,'pending'),(86,'Data Science Basics',1,18,'pending'),(87,'Networking',2,18,'pending'),(88,'Problem-Solving',3,18,'pending'),(89,'Team Collaboration',4,18,'pending'),(90,'Project Management',5,18,'pending'),(91,'Portfolio Development',1,19,'pending'),(92,'Python for Data Science',2,19,'pending'),(93,'Data Cleaning',3,19,'pending'),(94,'Visualization Tools',4,19,'pending'),(95,'Git/GitHub',5,19,'pending'),(96,'Community Engagement',1,20,'pending'),(97,'Continuous Learning',2,20,'pending'),(98,'Mentorship',3,20,'pending'),(99,'Knowledge Sharing',4,20,'pending'),(100,'Networking',5,20,'pending'),(101,'Open Source Contribution',1,21,'pending'),(102,'Collaboration',2,21,'pending'),(103,'Coding Best Practices',3,21,'pending'),(104,'Version Control',4,21,'pending'),(105,'Problem Solving',5,21,'pending'),(106,'Leadership',1,22,'pending'),(107,'Communication',2,22,'pending'),(108,'Project Planning',3,22,'pending'),(109,'Budget Management',4,22,'pending'),(110,'Risk Management',5,22,'pending'),(111,'PMP Certification',1,23,'pending'),(112,'Agile Methodology',2,23,'pending'),(113,'Process Improvement',3,23,'pending'),(114,'Time Management',4,23,'pending'),(115,'Stakeholder Engagement',5,23,'pending'),(116,'Data Science Project Management',1,24,'pending'),(117,'Team Leadership',2,24,'pending'),(118,'Resource Allocation',3,24,'pending'),(119,'Performance Metrics',4,24,'pending'),(120,'Strategic Planning',5,24,'pending'),(121,'Team Building',1,25,'pending'),(122,'Advanced Data Science',2,25,'pending'),(123,'Business Acumen',3,25,'pending'),(124,'Decision Making',4,25,'pending'),(125,'Visionary Leadership',5,25,'pending'),(126,'Executive Leadership',1,26,'pending'),(127,'Strategic Vision',2,26,'pending'),(128,'Industry Expertise',3,26,'pending'),(129,'Organizational Development',4,26,'pending'),(130,'Innovation Management',5,26,'pending'),(131,'Python',1,27,'pending'),(132,'Data Structures',2,27,'pending'),(133,'Libraries (Pandas, NumPy)',3,27,'pending'),(134,'Data Manipulation',4,27,'pending'),(135,'Coding Best Practices',5,27,'pending'),(136,'Machine Learning',1,28,'pending'),(137,'Supervised Learning',2,28,'pending'),(138,'Unsupervised Learning',3,28,'pending'),(139,'Model Evaluation',4,28,'pending'),(140,'Python Libraries (scikit-learn)',5,28,'pending'),(141,'Competitive Analysis',1,29,'pending'),(142,'Problem Solving',2,29,'pending'),(143,'Algorithm Optimization',3,29,'pending'),(144,'Collaboration',4,29,'pending'),(145,'Critical Thinking',5,29,'pending'),(146,'Natural Language Processing',1,30,'pending'),(147,'Computer Vision',2,30,'pending'),(148,'Big Data Technologies',3,30,'pending'),(149,'Advanced Algorithms',4,30,'pending'),(150,'Research and Development',5,30,'pending'),(151,'Technical Leadership',1,31,'pending'),(152,'Mentorship',2,31,'pending'),(153,'Innovation',3,31,'pending'),(154,'Technical Strategy',4,31,'pending'),(155,'Cross-Functional Collaboration',5,31,'pending'),(156,'Data Analysis',1,32,'pending'),(157,'Python',2,32,'pending'),(158,'R Programming',3,32,'pending'),(159,'SQL',4,32,'pending'),(160,'Statistical Analysis',5,32,'pending'),(161,'Machine Learning',1,33,'pending'),(162,'Supervised Learning',2,33,'pending'),(163,'Unsupervised Learning',3,33,'pending'),(164,'Model Evaluation',4,33,'pending'),(165,'Data Preprocessing',5,33,'pending'),(166,'Project Management',1,34,'pending'),(167,'Data Cleaning',2,34,'pending'),(168,'Data Visualization',3,34,'pending'),(169,'Python Libraries',4,34,'pending'),(170,'Problem Solving',5,34,'pending'),(171,'Deep Learning',1,35,'pending'),(172,'Natural Language Processing',2,35,'pending'),(173,'Big Data',3,35,'pending'),(174,'Data Engineering',4,35,'pending'),(175,'Time Series Analysis',5,35,'pending'),(176,'Data-Driven Decision Making',1,36,'pending'),(177,'Advanced Statistical Analysis',2,36,'pending'),(178,'Predictive Modeling',3,36,'pending'),(179,'Communication Skills',4,36,'pending'),(180,'Business Acumen',5,36,'pending'),(181,'JavaScript Basics',6,8,'pending'),(182,'react Basics',7,8,'pending'),(183,'react Basics',8,9,'pending'),(184,'nextjs basics',9,9,'pending'),(185,'css basics',10,9,'pending'),(186,'html basics',6,10,'pending'),(187,'Video Editing',1,37,'pending'),(188,'Storytelling',2,37,'pending'),(189,'Creativity',3,37,'pending'),(190,'Attention to Detail',4,37,'pending'),(191,'Time Management',5,37,'pending'),(192,'Research Skills',1,38,'pending'),(193,'Networking',2,38,'pending'),(194,'Self-Learning',3,38,'pending'),(195,'Critical Thinking',4,38,'pending'),(196,'Communication',5,38,'pending'),(197,'Workshop Participation',1,39,'pending'),(198,'Technical Understanding',2,39,'pending'),(199,'Collaboration',3,39,'pending'),(200,'Inquiry Skills',4,39,'pending'),(201,'Note-taking',5,39,'pending'),(202,'Online Learning',1,40,'pending'),(203,'Basic Engineering Concepts',2,40,'pending'),(204,'Time Management',3,40,'pending'),(205,'Discipline',4,40,'pending'),(206,'Technical Skills',5,40,'pending'),(207,'Networking',1,41,'pending'),(208,'Professional Communication',2,41,'pending'),(209,'Mentoring',3,41,'pending'),(210,'Relationship Building',4,41,'pending'),(211,'Industry Insight',5,41,'pending'),(212,'Practical Experience',1,42,'pending'),(213,'Technical Application',2,42,'pending'),(214,'Teamwork',3,42,'pending'),(215,'Problem Solving',4,42,'pending'),(216,'Project Management',5,42,'pending'),(217,'Leadership',1,43,'pending'),(218,'Decision Making',2,43,'pending'),(219,'Team Management',3,43,'pending'),(220,'Conflict Resolution',4,43,'pending'),(221,'Motivation',5,43,'pending'),(222,'Project Planning',1,44,'pending'),(223,'Risk Management',2,44,'pending'),(224,'Budgeting',3,44,'pending'),(225,'Scheduling',4,44,'pending'),(226,'Resource Allocation',5,44,'pending'),(227,'Strategic Planning',1,45,'pending'),(228,'Operations Management',2,45,'pending'),(229,'Team Leadership',3,45,'pending'),(230,'Performance Evaluation',4,45,'pending'),(231,'Client Relations',5,45,'pending'),(232,'Executive Decision Making',1,46,'pending'),(233,'Advanced Leadership',2,46,'pending'),(234,'Organizational Strategy',3,46,'pending'),(235,'Change Management',4,46,'pending'),(236,'Innovation Management',5,46,'pending'),(237,'Visionary Leadership',1,47,'pending'),(238,'Cross-functional Leadership',2,47,'pending'),(239,'Executive Communication',3,47,'pending'),(240,'Strategic Alignment',4,47,'pending'),(241,'Stakeholder Management',5,47,'pending'),(242,'Advanced Technical Skills',1,48,'pending'),(243,'Analytical Skills',2,48,'pending'),(244,'Engineering Software Proficiency',3,48,'pending'),(245,'Complex Problem Solving',4,48,'pending'),(246,'Research and Development',5,48,'pending'),(247,'Structural Analysis',1,49,'pending'),(248,'Design Principles',2,49,'pending'),(249,'Load Calculations',3,49,'pending'),(250,'Material Science',4,49,'pending'),(251,'Safety Standards',5,49,'pending'),(252,'Technical Leadership',1,50,'pending'),(253,'Project Design',2,50,'pending'),(254,'Innovation',3,50,'pending'),(255,'Technical Mentorship',4,50,'pending'),(256,'Quality Assurance',5,50,'pending'),(257,'Research Skills',1,51,'pending'),(258,'Innovation',2,51,'pending'),(259,'Prototype Development',3,51,'pending'),(260,'Data Analysis',4,51,'pending'),(261,'Technical Writing',5,51,'pending'),(262,'Technical Vision',1,52,'pending'),(263,'Strategic Innovation',2,52,'pending'),(264,'Technology Leadership',3,52,'pending'),(265,'Cross-disciplinary Collaboration',4,52,'pending'),(266,'Industry Influence',5,52,'pending'),(267,'Basic Mathematics',1,53,'pending'),(268,'Physics',2,53,'pending'),(269,'Problem Solving',3,53,'pending'),(270,'Technical Literacy',4,53,'pending'),(271,'Analytical Thinking',5,53,'pending'),(272,'Engineering Principles',1,54,'pending'),(273,'Structural Design',2,54,'pending'),(274,'Surveying',3,54,'pending'),(275,'Construction Management',4,54,'pending'),(276,'Environmental Engineering',5,54,'pending'),(277,'Practical Application',1,55,'pending'),(278,'Field Work',2,55,'pending'),(279,'Technical Documentation',3,55,'pending'),(280,'Project Assistance',4,55,'pending'),(281,'Communication Skills',5,55,'pending'),(282,'Technical Expertise',1,56,'pending'),(283,'Regulatory Knowledge',2,56,'pending'),(284,'Ethical Practice',3,56,'pending'),(285,'Problem Solving',4,56,'pending'),(286,'Professional Responsibility',5,56,'pending'),(287,'Project Management',1,57,'pending'),(288,'Design and Analysis',2,57,'pending'),(289,'Construction Oversight',3,57,'pending'),(290,'Client Interaction',4,57,'pending'),(291,'Sustainability Practices',5,57,'pending');
 /*!40000 ALTER TABLE `skills` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -678,22 +679,22 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `steps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `steps` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `sort` tinyint NOT NULL,
-  `path_id` bigint DEFAULT NULL,
-  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `branch_id` bigint NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `sort` tinyint(4) NOT NULL,
+  `path_id` bigint(20) DEFAULT NULL,
+  `status` enum('pending','completed') DEFAULT 'pending',
+  `branch_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`path_id`),
   KEY `fk_steps_branch_id` (`branch_id`),
   CONSTRAINT `fk_path_id` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`),
   CONSTRAINT `fk_steps_branch_id` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`id`) ON DELETE CASCADE,
   CONSTRAINT `steps_ibfk_1` FOREIGN KEY (`path_id`) REFERENCES `path` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -702,7 +703,7 @@ CREATE TABLE `steps` (
 
 LOCK TABLES `steps` WRITE;
 /*!40000 ALTER TABLE `steps` DISABLE KEYS */;
-INSERT INTO `steps` VALUES (1,'Current Position: Graphic Designer','Leverage existing design skills and begin exploring frontend development.',1,1,'pending',1),(2,'Explore UI/UX Design','Deepen understanding of user interface and experience design.',1,1,'pending',2),(3,'Digital Marketing Specialist','Utilize design skills to create compelling digital marketing strategies.',2,1,'pending',2),(4,'Creative Director','Lead creative projects and guide design teams.',3,1,'pending',2),(5,'Design Team Lead','Manage a team of designers and oversee project delivery.',1,1,'pending',3),(6,'Product Manager','Bridge the gap between design and product development.',2,1,'pending',3),(7,'Chief Design Officer','Define the design vision and strategy for the company.',3,1,'pending',3),(8,'Frontend Developer','Transition to frontend development with a focus on design integration.',1,1,'pending',4),(9,'Full Stack Developer','Expand skills to include backend development.',2,1,'pending',4),(10,'Technical Lead','Lead a team of developers and oversee technical projects.',3,1,'pending',4),(11,'Learn HTML, CSS, and JavaScript','Develop foundational skills in frontend development.',2,1,'pending',1),(12,'Build a Portfolio of Web Projects','Create a portfolio showcasing frontend development projects.',3,1,'pending',1),(13,'Gain Experience with Frontend Frameworks','Learn and apply modern frontend frameworks like React or Vue.js.',4,1,'pending',1),(14,'Secure a Frontend Developer Position','Apply for and secure a position as a frontend developer.',5,1,'pending',1),(15,'Advance to Senior Frontend Developer','Enhance expertise and take on more complex projects.',6,1,'pending',1),(16,'Current WordPress Developer Role','Leverage current skills and projects to build a foundation for transition.',1,2,'pending',5),(17,'Explore Data Analysis Tools','Learn data analysis using tools like Excel and SQL.',1,2,'pending',6),(18,'Participate in Data Science Workshops','Attend workshops to gain practical insights into data science.',2,2,'pending',6),(19,'Build a Portfolio with Data Projects','Create a portfolio showcasing data analysis projects.',3,2,'pending',6),(20,'Join Data Science Communities','Engage with data science communities for learning and growth.',4,2,'pending',6),(21,'Contribute to Open Source Data Projects','Enhance skills by contributing to open source data projects.',5,2,'pending',6),(22,'Transition to Project Management','Shift focus to managing projects and teams.',1,2,'pending',7),(23,'Get Certified in Project Management','Obtain PMP or equivalent certifications.',2,2,'pending',7),(24,'Lead Data Science Projects','Manage data science projects within the organization.',3,2,'pending',7),(25,'Become a Data Science Manager','Oversee data science teams and initiatives.',4,2,'pending',7),(26,'Director of Data Science','Direct overall data science strategy and execution.',5,2,'pending',7),(27,'Learn Python for Data Science','Master Python programming with a focus on data science applications.',1,2,'pending',8),(28,'Master Machine Learning Algorithms','Deep dive into machine learning techniques and algorithms.',2,2,'pending',8),(29,'Engage in Data Science Competitions','Participate in competitions to solve real-world data problems.',3,2,'pending',8),(30,'Advanced Data Science Specialization','Specialize in fields like NLP, Computer Vision, or Big Data.',4,2,'pending',8),(31,'Become a Lead Data Scientist','Lead technical data science initiatives and mentor junior data scientists.',5,2,'pending',8),(32,'Learn Data Analysis Fundamentals','Develop a strong foundation in data analysis techniques and tools.',2,2,'pending',5),(33,'Acquire Machine Learning Skills','Gain proficiency in machine learning algorithms and their applications.',3,2,'pending',5),(34,'Work on Data Science Projects','Apply data science skills in real-world projects to gain practical experience.',4,2,'pending',5),(35,'Pursue Advanced Data Science Courses','Enroll in advanced courses to deepen understanding in specific areas of data science.',5,2,'pending',5),(36,'Achieve Data Scientist Role','Secure a position as a data scientist and contribute to data-driven decision making.',6,2,'pending',5);
+INSERT INTO `steps` VALUES (1,'Current Position: Graphic Designer','Leverage existing design skills and begin exploring frontend development.',1,1,'pending',1),(2,'Explore UI/UX Design','Deepen understanding of user interface and experience design.',1,1,'pending',2),(3,'Digital Marketing Specialist','Utilize design skills to create compelling digital marketing strategies.',2,1,'pending',2),(4,'Creative Director','Lead creative projects and guide design teams.',3,1,'pending',2),(5,'Design Team Lead','Manage a team of designers and oversee project delivery.',1,1,'pending',3),(6,'Product Manager','Bridge the gap between design and product development.',2,1,'pending',3),(7,'Chief Design Officer','Define the design vision and strategy for the company.',3,1,'pending',3),(8,'Frontend Developer','Transition to frontend development with a focus on design integration.',1,1,'pending',4),(9,'Full Stack Developer','Expand skills to include backend development.',2,1,'pending',4),(10,'Technical Lead','Lead a team of developers and oversee technical projects.',3,1,'pending',4),(11,'Learn HTML, CSS, and JavaScript','Develop foundational skills in frontend development.',2,1,'pending',1),(12,'Build a Portfolio of Web Projects','Create a portfolio showcasing frontend development projects.',3,1,'pending',1),(13,'Gain Experience with Frontend Frameworks','Learn and apply modern frontend frameworks like React or Vue.js.',4,1,'pending',1),(14,'Secure a Frontend Developer Position','Apply for and secure a position as a frontend developer.',5,1,'pending',1),(15,'Advance to Senior Frontend Developer','Enhance expertise and take on more complex projects.',6,1,'pending',1),(16,'Current WordPress Developer Role','Leverage current skills and projects to build a foundation for transition.',1,2,'pending',5),(17,'Explore Data Analysis Tools','Learn data analysis using tools like Excel and SQL.',1,2,'pending',6),(18,'Participate in Data Science Workshops','Attend workshops to gain practical insights into data science.',2,2,'pending',6),(19,'Build a Portfolio with Data Projects','Create a portfolio showcasing data analysis projects.',3,2,'pending',6),(20,'Join Data Science Communities','Engage with data science communities for learning and growth.',4,2,'pending',6),(21,'Contribute to Open Source Data Projects','Enhance skills by contributing to open source data projects.',5,2,'pending',6),(22,'Transition to Project Management','Shift focus to managing projects and teams.',1,2,'pending',7),(23,'Get Certified in Project Management','Obtain PMP or equivalent certifications.',2,2,'pending',7),(24,'Lead Data Science Projects','Manage data science projects within the organization.',3,2,'pending',7),(25,'Become a Data Science Manager','Oversee data science teams and initiatives.',4,2,'pending',7),(26,'Director of Data Science','Direct overall data science strategy and execution.',5,2,'pending',7),(27,'Learn Python for Data Science','Master Python programming with a focus on data science applications.',1,2,'pending',8),(28,'Master Machine Learning Algorithms','Deep dive into machine learning techniques and algorithms.',2,2,'pending',8),(29,'Engage in Data Science Competitions','Participate in competitions to solve real-world data problems.',3,2,'pending',8),(30,'Advanced Data Science Specialization','Specialize in fields like NLP, Computer Vision, or Big Data.',4,2,'pending',8),(31,'Become a Lead Data Scientist','Lead technical data science initiatives and mentor junior data scientists.',5,2,'pending',8),(32,'Learn Data Analysis Fundamentals','Develop a strong foundation in data analysis techniques and tools.',2,2,'pending',5),(33,'Acquire Machine Learning Skills','Gain proficiency in machine learning algorithms and their applications.',3,2,'pending',5),(34,'Work on Data Science Projects','Apply data science skills in real-world projects to gain practical experience.',4,2,'pending',5),(35,'Pursue Advanced Data Science Courses','Enroll in advanced courses to deepen understanding in specific areas of data science.',5,2,'pending',5),(36,'Achieve Data Scientist Role','Secure a position as a data scientist and contribute to data-driven decision making.',6,2,'pending',5),(37,'Current Role as Video Editor','Understand the current skills and responsibilities as a video editor.',1,10,'pending',9),(38,'Exploratory Research in Civil Engineering','Explore the field of civil engineering through online resources, webinars, and informational interviews.',1,10,'pending',10),(39,'Attend Civil Engineering Workshops','Participate in workshops and seminars to gain insight into the civil engineering field.',2,10,'pending',10),(40,'Online Courses in Civil Engineering','Enroll in online courses to learn basic concepts of civil engineering.',3,10,'pending',10),(41,'Networking with Civil Engineers','Connect with professionals in the civil engineering field for advice and mentorship.',4,10,'pending',10),(42,'Internship in Civil Engineering','Gain practical experience by interning with a civil engineering firm.',5,10,'pending',10),(43,'Develop Leadership Skills','Enhance leadership skills through workshops and training programs.',1,10,'pending',11),(44,'Project Management Certification','Obtain a certification in project management to handle engineering projects.',2,10,'pending',11),(45,'Management Role in Engineering Firm','Transition into a managerial role within an engineering firm.',3,10,'pending',11),(46,'Executive Management Training','Participate in executive training programs to prepare for high-level management roles.',4,10,'pending',11),(47,'Director of Engineering','Reach the role of Director of Engineering, overseeing multiple projects and teams.',5,10,'pending',11),(48,'Advanced Civil Engineering Courses','Pursue advanced courses to deepen technical knowledge in civil engineering.',1,10,'pending',12),(49,'Specialization in Structural Engineering','Specialize in structural engineering to focus on designing and analyzing structures.',2,10,'pending',12),(50,'Technical Lead in Engineering Projects','Take on a technical lead role in major engineering projects.',3,10,'pending',12),(51,'Research and Development Engineer','Engage in research and development to innovate in civil engineering.',4,10,'pending',12),(52,'Chief Technical Officer (CTO)','Achieve the position of CTO, overseeing all technical aspects of the engineering firm.',5,10,'pending',12),(53,'Gain Basic Engineering Knowledge','Start learning the fundamentals of engineering through online courses or community college classes.',2,10,'pending',9),(54,'Pursue a Degree in Civil Engineering','Enroll in a civil engineering degree program to gain a formal education in the field.',3,10,'pending',9),(55,'Internship or Entry-Level Position','Secure an internship or entry-level position in a civil engineering firm to gain practical experience.',4,10,'pending',9),(56,'Obtain Professional Engineer (PE) License','Pass the licensing exam to become a certified Professional Engineer.',5,10,'pending',9),(57,'Establish Career as Civil Engineer','Work as a civil engineer, designing and overseeing construction projects.',6,10,'pending',9);
 /*!40000 ALTER TABLE `steps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -712,16 +713,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `subscriptions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `subscriptions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `valid_till` int DEFAULT NULL,
-  `total_path` int DEFAULT NULL,
-  `total_training_plan` int DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `points` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `valid_till` int(11) DEFAULT NULL,
+  `total_path` int(11) DEFAULT NULL,
+  `total_training_plan` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `points` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -742,16 +743,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `training_activities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `training_activities` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `expected_outcomes` text COLLATE utf8mb4_general_ci NOT NULL,
-  `progress_measurement` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `duration` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `responsible` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint(20) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `expected_outcomes` text NOT NULL,
+  `progress_measurement` varchar(255) NOT NULL,
+  `duration` varchar(255) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `responsible` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `training_activities_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -774,11 +775,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `trainning_plan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `trainning_plan` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `plan_recommendation` text COLLATE utf8mb4_general_ci NOT NULL,
-  `branch_id` bigint NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `plan_recommendation` text NOT NULL,
+  `branch_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -799,23 +800,23 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_subscription` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `subscription_id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subscription_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `current_path` int DEFAULT NULL,
-  `current_training_plan` int DEFAULT NULL,
+  `payment_id` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `current_path` int(11) DEFAULT NULL,
+  `current_training_plan` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `subscription_id` (`subscription_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_subscription_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`id`),
   CONSTRAINT `user_subscription_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -824,7 +825,7 @@ CREATE TABLE `user_subscription` (
 
 LOCK TABLES `user_subscription` WRITE;
 /*!40000 ALTER TABLE `user_subscription` DISABLE KEYS */;
-INSERT INTO `user_subscription` VALUES (1,3,30,'2025-11-06 00:00:00','pi_3QI9axIILuhliL1z10hl3OKa','2024-11-06 13:48:30','2024-11-06 14:35:47',2,1);
+INSERT INTO `user_subscription` VALUES (1,3,30,'2025-11-06 00:00:00','pi_3QI9axIILuhliL1z10hl3OKa','2024-11-06 13:48:30','2024-11-06 14:35:47',2,1),(3,3,40,'2025-11-07 00:00:00','pi_3QIRTzIILuhliL1z1ydYrSJ3','2024-11-07 09:04:08','2024-11-07 09:05:21',1,NULL),(4,3,40,'2025-11-07 00:00:00','pi_3QIRTzIILuhliL1z1ydYrSJ3','2024-11-07 09:04:23','2024-11-07 09:05:21',1,NULL);
 /*!40000 ALTER TABLE `user_subscription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -834,19 +835,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `otp` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `otp` varchar(6) DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -855,7 +856,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'hussain21x','hussain12@gmail.com','8b117546c9cdd79b2f88159fd94e1195623f7f8b53b54a2bb3b7675ecd834a93',NULL,NULL,NULL),(2,'faris21x','faris12@gmail.com','8a91dbf39a7d58400d17676648461e8d9895a7a48ea02e6a641de439b402a656',NULL,NULL,NULL),(3,'talha17x','talha@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(4,'aiman12','aiman@gmail.com','1a62b2b12c469335995cced03433260373e0b975344059e1a1fbdc66e6aca914',NULL,NULL,NULL),(5,'haris12','haris12@gmail.com','cffd26c9ddbb65b048a0f714b704a5ed9a5ad7a66130b7a43963899528a97928',NULL,NULL,NULL),(6,'test1','test12@gmail.com','c42bd77fb632be76f683bc427943fb3f848170dc33c14b7d5dc1b771db078c84',NULL,NULL,NULL),(7,'one71x','one@gmail.com','4d312d42968237ea5e754e39580b0f7fbb906dbf8608847310df370ed45828dd',NULL,NULL,NULL),(8,'syed71x','syed@gmail.com','73f72fcd6f1108782be74a62f817922edfc021a5d6a68513ec8aa9af4fad3b45',NULL,NULL,NULL),(9,'mustafa69x','mustafa@gmail.com','8e352b24effd2b624844f3d5d0fb2a0960903bf8aee759c2226a98993329c702',NULL,NULL,NULL),(10,'shayan71x','shayan@gmail.com','506c78e44f2184e46a6467bb17cf6b5937821be63a6170a8b8a07331b1660e13',NULL,NULL,NULL),(11,'Two69x$','two@gmail.com','2e1d7dfa4ca32532c7d453db04da86afcf38f0cc4008e1f577854b32c51115a7','https://images.pexels.com/photos/2310713/pexels-photo-2310713.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',NULL,NULL),(13,'hunain69x','hunain@gmail.com','840dc021cf333401c6b8f854939c7065058c6468843a37610071ded8569902b6',NULL,NULL,NULL),(14,'three12','three12@gmail.com','b7af263584bc6e827fa262dd8eb99d8bb3b1b43d045d3643acc8d975e49d30a3',NULL,NULL,NULL),(15,'hassan','hassan123@gmail.com','5c80b9535206b56dc8d78543de507d3e3fe08636dc6a9d12deb1dac0e7e5bb87',NULL,'gQXel3','2024-08-19 14:40:39'),(19,'poka123','poka123@gmail.com','22306f9ad37b7be1e823c6a1ccbc2cb944e6c9962f8f9da5103dc3f70b622c77',NULL,NULL,NULL),(21,'anas71x','anas@gmail.com','5410327224be6b772e71705ef1c6e8f87d8d253754c56f1521f642cef16b3898',NULL,NULL,NULL),(22,'areeba12','areeba@gmail.com','8d080c78cd9eb424ad93536b6b4faf3e521661a1bab4068cdc5e902ac623651f',NULL,NULL,NULL),(23,'tassaract','tassaract@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(24,'tassaract1','tassaract1@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(27,'ahmed','ahmed@gmail.com','77a2e452cc950bddfa44fe8c61db107305166800b489adf97f31fad9e2ba72f6',NULL,NULL,NULL),(28,'hassan123','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,'puVzLQ','2024-10-08 13:13:09'),(29,'talha_83x','pc16777.syedtalhahussain@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(30,'syed899x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL),(31,'amna','amna@gmail.com','a24738c27f7a51a6079b03d7149a5c12e4608a356c4d17e316b71941d819c346',NULL,NULL,NULL),(32,'noor','noor@gmail.com','6913c81ff94fc68e7b04d1de8b226fcd528fcb3c939cacce6bb5859c7a6157b4',NULL,NULL,NULL),(33,'faizan_18x','faizan@gmail.com','49f606bc2b2239194f22b0f301ff6aec2860e636f5eed176e308f6fd2c55fcde',NULL,NULL,NULL),(34,'khan','khan@gmail.com','cad3fe7aae4d46b047d0164e64aed2b1a98b74bf45d0fc23be076005504bace6',NULL,NULL,NULL),(35,'hadi','hadi@gmail.com','b87622c28e68762bc12fd2e4fddc2daae09a09679d54b4e8d4de7814ec8207c4',NULL,NULL,NULL),(36,'Alroylewis','Alroylewis@hotmail.co.uk','f95a6ba11d2cdcfcf9a073ea603492139bd05f71709af61b73dc4594f3f4866d',NULL,NULL,NULL),(37,'hassan321','unitedfurniture75@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL),(38,'zaidworks515','zaid_works515@outlook.com','d4598a2752541ac5de8ebc3b1923b57f9052ede3f40ae572957b5fe9b984cb83',NULL,NULL,NULL),(39,'faris','faris@gmail.com','e0cf5c55783c2a22ef4f66e0a0f55c37719c285b445351b6deb081567349e357',NULL,NULL,NULL);
+INSERT INTO `users` VALUES (1,'hussain21x','hussain12@gmail.com','8b117546c9cdd79b2f88159fd94e1195623f7f8b53b54a2bb3b7675ecd834a93',NULL,NULL,NULL),(2,'faris21x','faris12@gmail.com','8a91dbf39a7d58400d17676648461e8d9895a7a48ea02e6a641de439b402a656',NULL,NULL,NULL),(3,'talha17x','talha@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(4,'aiman12','aiman@gmail.com','1a62b2b12c469335995cced03433260373e0b975344059e1a1fbdc66e6aca914',NULL,NULL,NULL),(5,'haris12','haris12@gmail.com','cffd26c9ddbb65b048a0f714b704a5ed9a5ad7a66130b7a43963899528a97928',NULL,NULL,NULL),(6,'test1','test12@gmail.com','c42bd77fb632be76f683bc427943fb3f848170dc33c14b7d5dc1b771db078c84',NULL,NULL,NULL),(7,'one71x','one@gmail.com','4d312d42968237ea5e754e39580b0f7fbb906dbf8608847310df370ed45828dd',NULL,NULL,NULL),(8,'syed71x','syed@gmail.com','73f72fcd6f1108782be74a62f817922edfc021a5d6a68513ec8aa9af4fad3b45',NULL,NULL,NULL),(9,'mustafa69x','mustafa@gmail.com','8e352b24effd2b624844f3d5d0fb2a0960903bf8aee759c2226a98993329c702',NULL,NULL,NULL),(10,'shayan71x','shayan@gmail.com','506c78e44f2184e46a6467bb17cf6b5937821be63a6170a8b8a07331b1660e13',NULL,NULL,NULL),(11,'Two69x$','two@gmail.com','2e1d7dfa4ca32532c7d453db04da86afcf38f0cc4008e1f577854b32c51115a7','https://images.pexels.com/photos/2310713/pexels-photo-2310713.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',NULL,NULL),(13,'hunain69x','hunain@gmail.com','840dc021cf333401c6b8f854939c7065058c6468843a37610071ded8569902b6',NULL,NULL,NULL),(14,'three12','three12@gmail.com','b7af263584bc6e827fa262dd8eb99d8bb3b1b43d045d3643acc8d975e49d30a3',NULL,NULL,NULL),(15,'hassan','hassan123@gmail.com','5c80b9535206b56dc8d78543de507d3e3fe08636dc6a9d12deb1dac0e7e5bb87',NULL,'gQXel3','2024-08-19 14:40:39'),(19,'poka123','poka123@gmail.com','22306f9ad37b7be1e823c6a1ccbc2cb944e6c9962f8f9da5103dc3f70b622c77',NULL,NULL,NULL),(21,'anas71x','anas@gmail.com','5410327224be6b772e71705ef1c6e8f87d8d253754c56f1521f642cef16b3898',NULL,NULL,NULL),(22,'areeba12','areeba@gmail.com','8d080c78cd9eb424ad93536b6b4faf3e521661a1bab4068cdc5e902ac623651f',NULL,NULL,NULL),(23,'tassaract','tassaract@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(24,'tassaract1','tassaract1@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(27,'ahmed','ahmed@gmail.com','77a2e452cc950bddfa44fe8c61db107305166800b489adf97f31fad9e2ba72f6',NULL,NULL,NULL),(28,'hassan123','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,'puVzLQ','2024-10-08 13:13:09'),(29,'talha_83x','pc16777.syedtalhahussain@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(30,'syed899x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL),(31,'amna','amna@gmail.com','a24738c27f7a51a6079b03d7149a5c12e4608a356c4d17e316b71941d819c346',NULL,NULL,NULL),(32,'noor','noor@gmail.com','6913c81ff94fc68e7b04d1de8b226fcd528fcb3c939cacce6bb5859c7a6157b4',NULL,NULL,NULL),(33,'faizan_18x','faizan@gmail.com','49f606bc2b2239194f22b0f301ff6aec2860e636f5eed176e308f6fd2c55fcde',NULL,NULL,NULL),(34,'khan','khan@gmail.com','cad3fe7aae4d46b047d0164e64aed2b1a98b74bf45d0fc23be076005504bace6',NULL,NULL,NULL),(35,'hadi','hadi@gmail.com','b87622c28e68762bc12fd2e4fddc2daae09a09679d54b4e8d4de7814ec8207c4',NULL,NULL,NULL),(36,'Alroylewis','Alroylewis@hotmail.co.uk','f95a6ba11d2cdcfcf9a073ea603492139bd05f71709af61b73dc4594f3f4866d',NULL,NULL,NULL),(37,'hassan321','unitedfurniture75@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL),(38,'zaidworks515','zaid_works515@outlook.com','d4598a2752541ac5de8ebc3b1923b57f9052ede3f40ae572957b5fe9b984cb83',NULL,NULL,NULL),(39,'faris','faris@gmail.com','e0cf5c55783c2a22ef4f66e0a0f55c37719c285b445351b6deb081567349e357',NULL,NULL,NULL),(40,'uzair','muhammaduzairilyas@gmail.com','af1abd7e6077af6e448753f5c5a0b0381beb86b5aec98db8f6d37ee1c680c4ba',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -868,4 +869,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-06 19:56:47
+-- Dump completed on 2024-11-07 10:25:15
