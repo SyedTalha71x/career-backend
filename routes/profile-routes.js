@@ -10,18 +10,18 @@ const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // specify the folder to save uploaded files
+        cb(null, 'uploads/'); 
     },
     filename: function (req, file, cb) {
-        cb(null, `${Date.now()}-${file.originalname}`); // specify the filename format
+        cb(null, `${Date.now()}-${file.originalname}`);
     },
 });
-// Initialize upload
+
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1024 * 1024 * 5 }, // limit the file size to 5MB
+    limits: { fileSize: 1024 * 1024 * 5 }, 
     fileFilter: function (req, file, cb) {
-        const filetypes = /jpeg|jpg|png/; // restrict file types to jpeg, jpg, and png
+        const filetypes = /jpeg|jpg|png/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = filetypes.test(file.mimetype);
 

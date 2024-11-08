@@ -63,7 +63,6 @@ export const auth = (requiredPermission = null) => {
           return res.status(403).json({ status: false, message: 'Access Denied - Missing Permission' });
         }
 
-        // User is authorized
         req.user = user;
         next();
       });

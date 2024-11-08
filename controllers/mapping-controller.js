@@ -222,7 +222,6 @@ export const getPathsWithDetails = async (req, res) => {
       });
     }
 
-    // Fetch all paths for the user
     const pathsQuery = `
       SELECT id, status, title 
       FROM path 
@@ -239,7 +238,6 @@ export const getPathsWithDetails = async (req, res) => {
         );
     }
 
-    // Collect all path IDs
     const pathIds = pathsResult.map((path) => path.id);
 
     // Fetch branches and steps for all paths

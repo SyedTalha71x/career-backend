@@ -16,15 +16,19 @@ const transporter = nodemailer.createTransport({
 })
 export const getProfileInfo = async (req, res) => {
     try {
-        const { userId, authType } = req.user; // Extract userId and authType from the token
+        const { userId, authType } = req.user; 
         console.log('User ID:', userId, 'Auth Type:', authType);
 
         if (!userId || !authType) {
             return res.status(400).json(failureResponse({}, 'User not authenticated'));
         }
 
+
+        const baseUrl = `${req.protocol}://${req.get('host')}/uploads`
+        console.log(baseUrl);
+        
+
         if (authType === 'standard') {
-            // Handle standard authentication
             pool.query(
                 'SELECT username, email, profile_picture FROM users WHERE id = ?',
                 [userId],
@@ -39,7 +43,7 @@ export const getProfileInfo = async (req, res) => {
                         const response = {
                             username: user.username,
                             email: user.email,
-                            profile_picture: user.profile_picture ? `http://192.168.18.194:8001/uploads/${user.profile_picture}` : null,
+                            profile_picture: user.profile_picture ? `${baseUrl}/${user.profile_picture}` : null,
                         };
                         return res.status(200).json(successResponse(response, 'User profile retrieved successfully'));
                     } else {
@@ -48,7 +52,7 @@ export const getProfileInfo = async (req, res) => {
                 }
             );
         } else {
-            // Handle social logins (Google, LinkedIn, Outlook, Facebook)
+
             let table, idField;
 
             switch (authType.toLowerCase()) {
@@ -161,14 +165,13 @@ export const updateUsername = async (req, res) => {
 };
 export const updateProfilePicture = async (req, res) => {
     try {
-        // Check if a file is uploaded
         if (!req.file) {
             return res.status(400).json(failureResponse({ error: 'No file uploaded' }, 'Profile Picture Update Failed'));
         }
 
         const profilePictureUrl = req.file.filename;
-        const userId = req.user?.userId; // Get the user ID from the request, assuming authentication middleware sets req.user
-        const authType = req.user?.authType; // Get the authentication type
+        const userId = req.user?.userId; 
+        const authType = req.user?.authType; 
 
         if (!userId) {
             return res.status(422).json(failureResponse({ error: 'User is not Authenticated' }, 'Profile Picture Update Failed'));
@@ -178,7 +181,6 @@ export const updateProfilePicture = async (req, res) => {
             return res.status(422).json(failureResponse({ error: 'Profile Picture Url is required' }, 'Profile Picture Update Failed'));
         }
 
-        // Determine which table to update based on the user authentication method
         let updateQuery = '';
         switch (authType) {
             case 'standard':
@@ -200,14 +202,12 @@ export const updateProfilePicture = async (req, res) => {
                 return res.status(400).json(failureResponse({ error: 'Invalid Authentication Type' }, 'Profile Picture Update Failed'));
         }
 
-        // Execute the update query
+
         pool.query(updateQuery, [profilePictureUrl, userId], (err, results) => {
             if (err) {
                 console.error("Database query error:", err);
                 return res.status(500).json(failureResponse({ error: 'Internal server error' }, 'Profile Picture Update Failed'));
             }
-
-            // Check if the user was actually updated
             if (results.affectedRows === 0) {
                 return res.status(404).json(failureResponse({ error: 'User not found or profile picture not updated' }, 'Profile Picture Update Failed'));
             }
@@ -223,7 +223,6 @@ export const requestForOtp = async (req, res) => {
     try {
         const { email } = req.body;
 
-        // Check if the email exists in the database
         const checkUserSql = 'SELECT * FROM users WHERE email = ?';
         pool.query(checkUserSql, [email], (err, results) => {
             if (err) {
@@ -313,7 +312,6 @@ export const resetPassword = async (req, res) => {
     try {
         const { email, newPassword, confirmPassword } = req.body;
 
-        // Validate request body
         if (!email || !newPassword || !confirmPassword) {
             return res.status(400).json(failureResponse({ error: 'All fields are required' }, 'Password Reset Failed'));
         }
@@ -358,8 +356,6 @@ export const resetPassword = async (req, res) => {
 export const changePasswordProfile = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
-
-        // Validate request body
         if (!currentPassword || !newPassword || !confirmPassword) {
             return res.status(400).json(failureResponse({ error: 'All fields are required' }, 'Password Change Failed'));
         }
