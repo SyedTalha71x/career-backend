@@ -3,7 +3,7 @@ import { connectToDB } from '../utils/db/db.js';
 
 const pool = connectToDB();
 
-export const checkRole = () => {
+export const SuperAdmin = () => {
   return async (req, res, next) => {
     try {
       const { authorization } = req.headers;
@@ -49,12 +49,12 @@ export const checkRole = () => {
           const roleId = roleResults[0].role_id;
           user.role_id = roleId;
 
-          if (roleId === 2) {
+          if (roleId === 1) {
             req.user = user;
             return next(); 
           }
 
-          return res.status(403).json({ status: false, message: 'Access Denied - Admin only' });
+          return res.status(403).json({ status: false, message: 'Access Denied - Super Admin only create Admin' });
         });
       });
     } catch (error) {

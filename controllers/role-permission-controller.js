@@ -161,7 +161,7 @@ export const updatePermission = async (req, res) => {
 };
 export const assignPermissionsToRole = async (req, res) => {
   try {
-    const { roleId, permissionIds } = req.body; // roleId is the ID of the role, permissionIds is an array of permission IDs
+    const { roleId, permissionIds } = req.body; 
 
     if (
       !roleId ||
@@ -493,61 +493,59 @@ export const createUser = async (req, res) => {
     }
 
     const insert_user_query =
-      "INSERT into users (username, email, password) VALUES (?,?,?)";
+      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    const hashedPassword = hashPassword(password);
 
-    const hashedpassword = hashPassword(password);
+    pool.query(insert_user_query, [username, email, hashedPassword], (err, results) => {
+      if (err) {
+        console.log("Database error:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
 
-    pool.query(
-      insert_user_query,
-      [username, email, hashedpassword],
-      (err, results) => {
-        if (err) {
-          console.log("Database error:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
+      const userId = results.insertId;
+
+      // Step to assign the Admin role (role ID 2)
+      const assign_role_query = "INSERT INTO role_to_users (user_id, role_id) VALUES (?, 2)";
+      pool.query(assign_role_query, [userId], (roleErr, roleResults) => {
+        if (roleErr) {
+          console.log("Role assignment error:", roleErr);
+          return res.status(500).json({ error: "Internal Server Error while assigning role" });
         }
 
         const data = {
-          userId: results.insertId,
-          message: 'User has been created'
-        }
+          userId: userId,
+          message: 'User has been created and assigned the Admin role'
+        };
         return res.status(200).json(data);
-      }
-    );
+      });
+    });
   } catch (error) {
     console.log("Unexpected error:", error);
-    return failureResponse(res, "Internal Server Error", null, 500);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const updateUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { password } = req.body;
     const userId = req.params.id;
 
     if (!userId) {
-      return res.status(400).json({ error: 'UserID not found' });
+      return res.status(400).json({ error: "UserID not found" });
     }
 
     const fieldsToUpdate = [];
     const values = [];
 
-    if (username !== undefined) {
-      fieldsToUpdate.push("username = ?");
-      values.push(username);
-    }
-
-    if (email !== undefined) {
-      fieldsToUpdate.push("email = ?");
-      values.push(email);
-    }
-
     if (password !== undefined) {
-      const hashedPassword = await hashPassword(password); 
+      const hashedPassword = await hashPassword(password);
       fieldsToUpdate.push("password = ?");
       values.push(hashedPassword);
     }
 
     if (fieldsToUpdate.length === 0) {
-      return res.status(400).json({ error: "No fields are provided to update" });
+      return res
+        .status(400)
+        .json({ error: "No fields are provided to update" });
     }
 
     const updateQuery = `
@@ -561,7 +559,7 @@ export const updateUser = async (req, res) => {
     pool.query(updateQuery, values, (err, result) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: "Internal Server Error" });
       }
 
       if (result.affectedRows === 0) {
@@ -570,30 +568,103 @@ export const updateUser = async (req, res) => {
 
       return res.status(200).json({ message: "User has been updated" });
     });
-
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
     if (!userId) {
-      return res.status(400).json({ error: 'UserID not found' });
+      return res.status(400).json({ error: "UserID not found" });
     }
 
-    const deleteQuery = 'DELETE FROM users WHERE id = ?';
+    const deleteQuery = "DELETE FROM users WHERE id = ?";
 
     pool.query(deleteQuery, [userId], (err, results) => {
       if (err) {
         console.log("Database error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      return res.status(200).json({ message: 'User has been deleted' });
+      return res.status(200).json({ message: "User has been deleted" });
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getUsers = async (req, res) => {
+  try {
+    const fetchAllUsersQuery = "SELECT id, username, email, created_at FROM users";
+    
+    pool.query(fetchAllUsersQuery, (userErr, userResults) => {
+      if (userErr) {
+        console.error("Database query error (users):", userErr);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (!userResults.length) {
+        return res.status(404).json({ error: "No users found" });
+      }
+
+      const users = userResults;
+      const usersWithRolesPromises = users.map((user) => {
+        return new Promise((resolve, reject) => {
+          const fetchRoleQuery = "SELECT role_id FROM role_to_users WHERE user_id = ?";
+          pool.query(fetchRoleQuery, [user.id], (roleErr, roleResults) => {
+            if (roleErr) {
+              console.error("Database query error (role_to_users):", roleErr);
+              return reject("Internal Server Error");
+            }
+
+            let roleId;
+            if (!roleResults.length) {
+              // Assign the default role ID (e.g., 3 for "user") if no role is found
+              roleId = 3;
+            } else {
+              roleId = roleResults[0].role_id;
+            }
+
+            const fetchRoleNameQuery = "SELECT name FROM roles WHERE id = ?";
+            pool.query(fetchRoleNameQuery, [roleId], (roleNameErr, roleNameResults) => {
+              if (roleNameErr) {
+                console.error("Database query error (roles):", roleNameErr);
+                return reject("Internal Server Error");
+              }
+
+              let roleName;
+              if (!roleNameResults.length) {
+                // Default role name for users without an explicit role
+                roleName = "user";
+              } else {
+                roleName = roleNameResults[0].name;
+              }
+
+              resolve({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                created_at: user.created_at,
+                role: roleName,
+              });
+            });
+          });
+        });
+      });
+
+      Promise.all(usersWithRolesPromises)
+        .then((usersWithRoles) => {
+          return res.status(200).json({ users: usersWithRoles });
+        })
+        .catch((error) => {
+          console.error("Error processing user roles:", error);
+          return res.status(500).json({ error: "Internal Server Error" });
+        });
+    });
+  } catch (error) {
+    console.error("Error in getUsers API:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+

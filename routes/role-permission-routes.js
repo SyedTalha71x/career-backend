@@ -8,25 +8,27 @@ import {
   createPermissionWithModule,
   createUser,
   deleteUser,
-  updateUser
+  updateUser,
+  getUsers
 } from "../controllers/role-permission-controller.js";
-import { checkRole } from "../middleware/checkRole.js";
+import { SuperAdmin } from "../middleware/SuperAdmin.js";
+import { AdminAccess } from "../middleware/AdminAccess.js";
 
 const router = express.Router();
 
 router.post("/create-role", createRole);
 router.put("/update-role/:id", updateRole);
 
-router.post("/create-permission-with-module", createPermissionWithModule)
-router.put("/update-permission/:id",updatePermission);
+router.post("/create-permission-with-module", SuperAdmin(), createPermissionWithModule)
+router.put("/update-permission/:id",SuperAdmin(),updatePermission);
 
-router.post("/assign-permissions-to-role",assignPermissionsToRole);
-router.post("/assign-roles-to-user",assignRolesToUser);
+router.post("/assign-permissions-to-role", AdminAccess(),assignPermissionsToRole);
+router.post("/assign-roles-to-user",AdminAccess(),assignRolesToUser);
 
-router.post('/create-user', checkRole(), createUser)
-router.put('/update-user/:id', checkRole(), updateUser)
-router.delete('/delete-user/:id', checkRole(), deleteUser)
-
+router.post('/create-user', SuperAdmin(), createUser)
+router.put('/update-user/:id', SuperAdmin(), updateUser)
+router.delete('/delete-user/:id', SuperAdmin(), deleteUser)
+router.get('/get-all-users', getUsers)
 
 
 export default router;

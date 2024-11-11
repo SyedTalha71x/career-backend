@@ -58,50 +58,60 @@ export const Login = async (req, res) => {
         const { email, password } = req.body;
         const authType = 'standard';
 
-        await pool.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
+        pool.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
             if (err) {
-                message = 'Email and Password is not Correct';
+                message = 'Email and Password are not correct';
                 return res.status(502).json(failureResponse({ email: message }, 'Login Failed'));
             }
+
             if (result.length > 0) {
                 const user = result[0];
+
                 if (verifyPassword(user.password, password)) {
                     console.log(user.id);
-                    
-                    const fetch_user_role = "SELECT role_id from role_to_users WHERE user_id = ?";
-                    pool.query(fetch_user_role, [user.id], (roleErr, roleResutls)=>{
-                        if (roleErr || roleResutls.length === 0) {
-                            message = 'Role ID not found for this user';
+
+                    const fetch_user_role = "SELECT role_id FROM role_to_users WHERE user_id = ?";
+                    pool.query(fetch_user_role, [user.id], (roleErr, roleResults) => {
+                        if (roleErr) {
+                            message = 'Error fetching role ID';
                             return res.status(502).json(failureResponse({ error: message }, 'Login Failed'));
                         }
-                        const roleID = roleResutls[0].role_id;
 
-                        const fetch_role_name = 'SELECT name from roles WHERE id = ?'
-                        pool.query(fetch_role_name, [roleID], (err, results)=>{
+                        let roleID;
+                        if (roleResults.length === 0) {
+                            roleID = 3;
+                        } else {
+                            roleID = roleResults[0].role_id;
+                        }
+
+                        const fetch_role_name = 'SELECT name FROM roles WHERE id = ?';
+                        pool.query(fetch_role_name, [roleID], (err, results) => {
                             if (err || results.length === 0) {
                                 message = 'Role name not found for this user';
                                 return res.status(502).json(failureResponse({ error: message }, 'Login Failed'));
                             }
-                            const roleName = results[0].name
+
+                            const roleName = results[0].name;
                             const AuthToken = generateToken(user.id, email, authType);
                             return res.status(200).json(successResponse({ AuthToken, roleName }, 'Login successful'));
-                        })
-                    })
+                        });
+                    });
                 } else {
                     message = 'Password does not match';
                     return res.status(422).json(failureResponse({ password: message }, 'Login Failed'));
                 }
             } else {
-                message = 'Email and Password is not Correct';
+                message = 'Email and Password are not correct';
                 return res.status(404).json(failureResponse({ email: message }, 'Login Failed'));
             }
         });
     } catch (error) {
         console.error('Error logging in user:', error);
-        api_message = 'Email and Password is not Correct'
+        const api_message = 'Email and Password are not correct';
         return res.status(500).json(failureResponse({ api_message }, 'Internal Server Error'));
     }
 };
+
 export const checkEmail = async (req, res) => {
     try {
         const { email } = req.body;
