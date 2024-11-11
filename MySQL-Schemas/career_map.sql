@@ -1,14 +1,13 @@
-/*!999999 enable the sandbox mode */ 
--- MariaDB dump 10.19  Distrib 10.6.18-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.37, for Linux (x86_64)
 --
 -- Host: localhost    Database: career_map
 -- ------------------------------------------------------
--- Server version	10.6.18-MariaDB-0ubuntu0.22.04.1
+-- Server version	8.0.37-0ubuntu0.23.10.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -22,12 +21,12 @@
 
 DROP TABLE IF EXISTS `action_plan_summary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `action_plan_summary` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `action` varchar(255) NOT NULL,
-  `responsiblity` enum('self','mentor','self/mentor') NOT NULL,
-  `plan_id` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `action` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `responsiblity` enum('self','mentor','self/mentor') COLLATE utf8mb4_general_ci NOT NULL,
+  `plan_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `action_plan_summary_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -50,12 +49,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `branch`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `branch` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `step_id` bigint(20) DEFAULT NULL,
-  `color` varchar(255) NOT NULL,
-  `path_id` bigint(20) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `step_id` bigint DEFAULT NULL,
+  `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `path_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`step_id`),
   KEY `fk_branch_path_id` (`path_id`),
@@ -80,13 +79,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `career_goals_overview`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `career_goals_overview` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `title` text NOT NULL,
-  `type` enum('s','l') NOT NULL,
-  `completion_date` varchar(350) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `title` text COLLATE utf8mb4_general_ci NOT NULL,
+  `type` enum('s','l') COLLATE utf8mb4_general_ci NOT NULL,
+  `completion_date` varchar(350) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `career_goals_overview_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -109,12 +108,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `career_path_progression_map`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `career_path_progression_map` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `role` varchar(255) NOT NULL,
-  `suggested_timing` text DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `role` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `suggested_timing` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `career_path_progression_map_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -137,15 +136,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `facebook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `facebook_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `facebook_id` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `facebook_id` (`facebook_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -166,15 +165,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `google_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `google_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `google_id` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `profile_picture` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `google_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`),
   UNIQUE KEY `email` (`email`)
@@ -197,14 +196,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `gpt_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gpt_data` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `result` text NOT NULL,
-  `step_id` bigint(20) NOT NULL,
-  `parent_gpt_id` varchar(350) DEFAULT NULL,
-  `created` timestamp NULL DEFAULT current_timestamp(),
-  `prompt` text NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `result` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `step_id` bigint NOT NULL,
+  `parent_gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `prompt` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `gpt_data_logs_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`)
@@ -227,14 +226,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `instagram_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `instagram_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `instagram_id` varchar(50) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `instagram_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `instagram_id` (`instagram_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -255,15 +254,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `linkedin_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `linkedin_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `linkedin_id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `linkedin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `linkedin_id` (`linkedin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -284,15 +283,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `model_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `model_subscription` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `payment_id` varchar(255) DEFAULT NULL,
-  `branch_id` int(11) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `payment_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `branch_id` int NOT NULL,
+  `amount` int NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -313,10 +312,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `modules` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `module_name` varchar(255) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -337,11 +336,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `next_steps_recommendations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `next_steps_recommendations` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `recommendations` text NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `recommendations` text COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `next_steps_recommendations_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -364,15 +363,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(350) NOT NULL,
-  `description` varchar(350) NOT NULL,
-  `link` varchar(255) DEFAULT NULL,
-  `read` tinyint(4) NOT NULL DEFAULT 0,
-  `seen` tinyint(4) NOT NULL DEFAULT 0,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `title` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(350) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `read` tinyint NOT NULL DEFAULT '0',
+  `seen` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
@@ -395,15 +394,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `outlook_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `outlook_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `outlook_id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `outlook_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `outlook_id` (`outlook_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -424,15 +423,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `path`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `path` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `prompt` longtext DEFAULT NULL,
-  `file` varchar(255) DEFAULT NULL,
-  `status` enum('pending','analysed','analysing') DEFAULT 'pending',
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(250) DEFAULT NULL,
-  `gpt_id` varchar(350) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `prompt` longtext COLLATE utf8mb4_unicode_ci,
+  `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('pending','analysed','analysing') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `user_id` int DEFAULT NULL,
+  `title` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
@@ -455,10 +454,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permission_modules` (
-  `permission_id` int(11) DEFAULT NULL,
-  `module_id` int(11) DEFAULT NULL,
+  `permission_id` int DEFAULT NULL,
+  `module_id` int DEFAULT NULL,
   KEY `permission_id` (`permission_id`),
   KEY `module_id` (`module_id`),
   CONSTRAINT `permission_modules_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`),
@@ -482,13 +481,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permission_to_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permission_to_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `role_id` int(11) NOT NULL,
-  `permission_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `role_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   KEY `permission_id` (`permission_id`),
@@ -513,13 +512,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permissions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `slug` varchar(255) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -540,10 +539,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `role_to_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `role_to_users` (
-  `role_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `role_id` int NOT NULL,
+  `user_id` int NOT NULL,
   KEY `role_id` (`role_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
@@ -557,7 +556,7 @@ CREATE TABLE `role_to_users` (
 
 LOCK TABLES `role_to_users` WRITE;
 /*!40000 ALTER TABLE `role_to_users` DISABLE KEYS */;
-INSERT INTO `role_to_users` VALUES (1,30),(2,35),(1,30),(2,35);
+INSERT INTO `role_to_users` VALUES (1,1),(2,2),(3,3),(3,4),(3,5),(2,7);
 /*!40000 ALTER TABLE `role_to_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -567,15 +566,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -584,7 +583,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'admin','2024-09-19 07:29:05','2024-09-19 07:39:58'),(2,'sub user','2024-09-19 08:04:12','2024-09-19 08:04:12');
+INSERT INTO `roles` VALUES (1,'Super Admin','2024-11-11 12:47:56','2024-11-11 12:47:56'),(2,'Admin','2024-11-11 12:50:19','2024-11-11 12:50:19'),(3,'User','2024-11-11 12:51:28','2024-11-11 12:51:28');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -594,13 +593,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_gap_analysis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skill_gap_analysis` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `title` text NOT NULL,
-  `priority` enum('High','Medium','Low') DEFAULT NULL,
-  `status` enum('pending','completed') NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `title` text COLLATE utf8mb4_general_ci NOT NULL,
+  `priority` enum('High','Medium','Low') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `skill_gap_analysis_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -623,13 +622,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skill_gap_analysis_resources`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skill_gap_analysis_resources` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `skill_gap_analysis_id` bigint(20) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `platform` varchar(255) NOT NULL,
-  `link` varchar(255) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `skill_gap_analysis_id` bigint NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `platform` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -650,13 +649,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `skills`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `skills` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `sort` tinyint(1) NOT NULL,
-  `step_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') DEFAULT 'pending',
+  `step_id` bigint DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE CASCADE
@@ -679,15 +678,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `steps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `steps` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `sort` tinyint(4) NOT NULL,
-  `path_id` bigint(20) DEFAULT NULL,
-  `status` enum('pending','completed') DEFAULT 'pending',
-  `branch_id` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `sort` tinyint NOT NULL,
+  `path_id` bigint DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `branch_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `path_id` (`path_id`),
   KEY `fk_steps_branch_id` (`branch_id`),
@@ -713,16 +712,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `subscriptions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subscriptions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `valid_till` int(11) DEFAULT NULL,
-  `total_path` int(11) DEFAULT NULL,
-  `total_training_plan` int(11) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `points` text DEFAULT NULL,
+  `valid_till` int DEFAULT NULL,
+  `total_path` int DEFAULT NULL,
+  `total_training_plan` int DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `points` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -743,16 +742,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `training_activities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `training_activities` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_id` bigint(20) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `expected_outcomes` text NOT NULL,
-  `progress_measurement` varchar(255) NOT NULL,
-  `duration` varchar(255) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `responsible` varchar(255) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_id` bigint NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `expected_outcomes` text COLLATE utf8mb4_general_ci NOT NULL,
+  `progress_measurement` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `duration` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `responsible` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `training_activities_ibfk_1` FOREIGN KEY (`plan_id`) REFERENCES `trainning_plan` (`id`)
@@ -775,11 +774,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `trainning_plan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `trainning_plan` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `plan_recommendation` text NOT NULL,
-  `branch_id` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_recommendation` text COLLATE utf8mb4_general_ci NOT NULL,
+  `branch_id` bigint NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -800,17 +799,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_subscription` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subscription_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `subscription_id` int NOT NULL,
+  `user_id` int NOT NULL,
   `expiry_date` datetime NOT NULL,
-  `payment_id` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `current_path` int(11) DEFAULT NULL,
-  `current_training_plan` int(11) DEFAULT NULL,
+  `payment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `current_path` int DEFAULT NULL,
+  `current_training_plan` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `subscription_id` (`subscription_id`),
   KEY `user_id` (`user_id`),
@@ -835,19 +834,20 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `otp` varchar(6) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `otp` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `otp_expiration` datetime DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -856,7 +856,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'hussain21x','hussain12@gmail.com','8b117546c9cdd79b2f88159fd94e1195623f7f8b53b54a2bb3b7675ecd834a93',NULL,NULL,NULL),(2,'faris21x','faris12@gmail.com','8a91dbf39a7d58400d17676648461e8d9895a7a48ea02e6a641de439b402a656',NULL,NULL,NULL),(3,'talha17x','talha@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(4,'aiman12','aiman@gmail.com','1a62b2b12c469335995cced03433260373e0b975344059e1a1fbdc66e6aca914',NULL,NULL,NULL),(5,'haris12','haris12@gmail.com','cffd26c9ddbb65b048a0f714b704a5ed9a5ad7a66130b7a43963899528a97928',NULL,NULL,NULL),(6,'test1','test12@gmail.com','c42bd77fb632be76f683bc427943fb3f848170dc33c14b7d5dc1b771db078c84',NULL,NULL,NULL),(7,'one71x','one@gmail.com','4d312d42968237ea5e754e39580b0f7fbb906dbf8608847310df370ed45828dd',NULL,NULL,NULL),(8,'syed71x','syed@gmail.com','73f72fcd6f1108782be74a62f817922edfc021a5d6a68513ec8aa9af4fad3b45',NULL,NULL,NULL),(9,'mustafa69x','mustafa@gmail.com','8e352b24effd2b624844f3d5d0fb2a0960903bf8aee759c2226a98993329c702',NULL,NULL,NULL),(10,'shayan71x','shayan@gmail.com','506c78e44f2184e46a6467bb17cf6b5937821be63a6170a8b8a07331b1660e13',NULL,NULL,NULL),(11,'Two69x$','two@gmail.com','2e1d7dfa4ca32532c7d453db04da86afcf38f0cc4008e1f577854b32c51115a7','https://images.pexels.com/photos/2310713/pexels-photo-2310713.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',NULL,NULL),(13,'hunain69x','hunain@gmail.com','840dc021cf333401c6b8f854939c7065058c6468843a37610071ded8569902b6',NULL,NULL,NULL),(14,'three12','three12@gmail.com','b7af263584bc6e827fa262dd8eb99d8bb3b1b43d045d3643acc8d975e49d30a3',NULL,NULL,NULL),(15,'hassan','hassan123@gmail.com','5c80b9535206b56dc8d78543de507d3e3fe08636dc6a9d12deb1dac0e7e5bb87',NULL,'gQXel3','2024-08-19 14:40:39'),(19,'poka123','poka123@gmail.com','22306f9ad37b7be1e823c6a1ccbc2cb944e6c9962f8f9da5103dc3f70b622c77',NULL,NULL,NULL),(21,'anas71x','anas@gmail.com','5410327224be6b772e71705ef1c6e8f87d8d253754c56f1521f642cef16b3898',NULL,NULL,NULL),(22,'areeba12','areeba@gmail.com','8d080c78cd9eb424ad93536b6b4faf3e521661a1bab4068cdc5e902ac623651f',NULL,NULL,NULL),(23,'tassaract','tassaract@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(24,'tassaract1','tassaract1@gmail.com','e07c1b21783643c0a9b33e3e80fe7f275a4ea3c20b0c00b910fc91f6177e3039',NULL,NULL,NULL),(27,'ahmed','ahmed@gmail.com','77a2e452cc950bddfa44fe8c61db107305166800b489adf97f31fad9e2ba72f6',NULL,NULL,NULL),(28,'hassan123','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,'puVzLQ','2024-10-08 13:13:09'),(29,'talha_83x','pc16777.syedtalhahussain@gmail.com','866d9540979b7e1b9686517bae7308eef0cb7c5217a3f49d5a0132190595b232',NULL,NULL,NULL),(30,'syed899x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL),(31,'amna','amna@gmail.com','a24738c27f7a51a6079b03d7149a5c12e4608a356c4d17e316b71941d819c346',NULL,NULL,NULL),(32,'noor','noor@gmail.com','6913c81ff94fc68e7b04d1de8b226fcd528fcb3c939cacce6bb5859c7a6157b4',NULL,NULL,NULL),(33,'faizan_18x','faizan@gmail.com','49f606bc2b2239194f22b0f301ff6aec2860e636f5eed176e308f6fd2c55fcde',NULL,NULL,NULL),(34,'khan','khan@gmail.com','cad3fe7aae4d46b047d0164e64aed2b1a98b74bf45d0fc23be076005504bace6',NULL,NULL,NULL),(35,'hadi','hadi@gmail.com','b87622c28e68762bc12fd2e4fddc2daae09a09679d54b4e8d4de7814ec8207c4',NULL,NULL,NULL),(36,'Alroylewis','Alroylewis@hotmail.co.uk','f95a6ba11d2cdcfcf9a073ea603492139bd05f71709af61b73dc4594f3f4866d',NULL,NULL,NULL),(37,'hassan321','unitedfurniture75@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL),(38,'zaidworks515','zaid_works515@outlook.com','d4598a2752541ac5de8ebc3b1923b57f9052ede3f40ae572957b5fe9b984cb83',NULL,NULL,NULL),(39,'faris','faris@gmail.com','e0cf5c55783c2a22ef4f66e0a0f55c37719c285b445351b6deb081567349e357',NULL,NULL,NULL),(40,'uzair','muhammaduzairilyas@gmail.com','af1abd7e6077af6e448753f5c5a0b0381beb86b5aec98db8f6d37ee1c680c4ba',NULL,NULL,NULL);
+INSERT INTO `users` VALUES (1,'talha71x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-11 15:00:35'),(3,'uzair','uzair12@gmail.com','2821b6a595c9277fde7b1c7b1f035dd94b91bf9aa7f9787924f968c3e85d399b',NULL,NULL,NULL,'2024-11-11 15:00:35'),(4,'demo12','demo12@gmail.com','a0798eca78b4198af00f17193328a4dd85b01482d2a5a3ddf16f5178f02c19f9',NULL,NULL,NULL,'2024-11-11 15:00:35'),(5,'demo13','demo13@gmail.com','01778d832cbdd1bc817f76640854bdda964ebf3772753a3cad6d5f98bbd36428',NULL,NULL,NULL,'2024-11-11 15:00:35'),(6,'hassan','hassanalirrajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-11 15:00:35'),(7,'demo16','demo16@gmail.com','f79b80275a4c252ccf246bda57ea01740726f2d59d0f8a524e70ed1f9aa97942',NULL,NULL,NULL,'2024-11-11 15:00:35'),(8,'Areeb','areeb12@gmail.com','e6ab729f8438cf2e08356a78c5ca2e9c620176eb1499e6cf3a45a8fca5f14fde',NULL,NULL,NULL,'2024-11-11 15:00:35');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -869,4 +869,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-07 10:25:15
+-- Dump completed on 2024-11-11 20:06:24
