@@ -5,7 +5,10 @@ import {
   updatePermission,
   assignPermissionsToRole,
   assignRolesToUser,
-  createPermissionWithModule
+  createPermissionWithModule,
+  createUser,
+  deleteUser,
+  updateUser
 } from "../controllers/role-permission-controller.js";
 import { auth } from "../middleware/auth.js";
 
@@ -19,6 +22,10 @@ router.put("/update-permission/:id",updatePermission);
 
 router.post("/assign-permissions-to-role",assignPermissionsToRole);
 router.post("/assign-roles-to-user",assignRolesToUser);
+
+router.post('/create-user', createUser)
+router.put('/update-user/:id', updateUser)
+router.delete('/delete-user/:id', deleteUser)
 
 
 

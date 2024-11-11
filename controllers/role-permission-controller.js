@@ -1,5 +1,6 @@
 import { connectToDB } from "../utils/db/db.js";
 import { successResponse, failureResponse } from "../Helper/helper.js";
+import { hashPassword } from "../Security/security.js";
 
 const pool = connectToDB();
 
@@ -482,6 +483,117 @@ export const createPermissionWithModule = async (req, res) => {
       );
   }
 };
+export const createUser = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
 
+    if (!username || !email || !password) {
+      console.log("Missing required fields");
+      return res.status(400).json({ error: "All fields are required" });
+    }
 
+    const insert_user_query =
+      "INSERT into users (username, email, password) VALUES (?,?,?)";
 
+    const hashedpassword = hashPassword(password);
+
+    pool.query(
+      insert_user_query,
+      [username, email, hashedpassword],
+      (err, results) => {
+        if (err) {
+          console.log("Database error:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        const data = {
+          userId: results.insertId,
+          message: 'User has been created'
+        }
+        return res.status(200).json(data);
+      }
+    );
+  } catch (error) {
+    console.log("Unexpected error:", error);
+    return failureResponse(res, "Internal Server Error", null, 500);
+  }
+};
+export const updateUser = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    const userId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'UserID not found' });
+    }
+
+    const fieldsToUpdate = [];
+    const values = [];
+
+    if (username !== undefined) {
+      fieldsToUpdate.push("username = ?");
+      values.push(username);
+    }
+
+    if (email !== undefined) {
+      fieldsToUpdate.push("email = ?");
+      values.push(email);
+    }
+
+    if (password !== undefined) {
+      const hashedPassword = await hashPassword(password); 
+      fieldsToUpdate.push("password = ?");
+      values.push(hashedPassword);
+    }
+
+    if (fieldsToUpdate.length === 0) {
+      return res.status(400).json({ error: "No fields are provided to update" });
+    }
+
+    const updateQuery = `
+      UPDATE users
+      SET ${fieldsToUpdate.join(", ")}
+      WHERE id = ?
+    `;
+
+    values.push(userId);
+
+    pool.query(updateQuery, values, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(400).json({ error: "Nothing is updated" });
+      }
+
+      return res.status(200).json({ message: "User has been updated" });
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+export const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(400).json({ error: 'UserID not found' });
+    }
+
+    const deleteQuery = 'DELETE FROM users WHERE id = ?';
+
+    pool.query(deleteQuery, [userId], (err, results) => {
+      if (err) {
+        console.log("Database error:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      return res.status(200).json({ message: 'User has been deleted' });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

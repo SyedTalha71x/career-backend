@@ -7,9 +7,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Use __dirname as needed
-
-
 const SECRET_KEY = process.env.KEY;
 const TOKEN_EXPIRATION = "1hr";
 
