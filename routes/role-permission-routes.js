@@ -10,7 +10,7 @@ import {
   deleteUser,
   updateUser
 } from "../controllers/role-permission-controller.js";
-import { auth } from "../middleware/auth.js";
+import { checkRole } from "../middleware/checkRole.js";
 
 const router = express.Router();
 
@@ -23,9 +23,9 @@ router.put("/update-permission/:id",updatePermission);
 router.post("/assign-permissions-to-role",assignPermissionsToRole);
 router.post("/assign-roles-to-user",assignRolesToUser);
 
-router.post('/create-user', createUser)
-router.put('/update-user/:id', updateUser)
-router.delete('/delete-user/:id', deleteUser)
+router.post('/create-user', checkRole(), createUser)
+router.put('/update-user/:id', checkRole(), updateUser)
+router.delete('/delete-user/:id', checkRole(), deleteUser)
 
 
 

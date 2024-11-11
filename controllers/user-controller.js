@@ -58,15 +58,6 @@ export const Login = async (req, res) => {
         const { email, password } = req.body;
         const authType = 'standard';
 
-        // if (!validateEmail(email)) {
-        //     message = 'Invalid Email Format'
-        //     return res.status(422).json(failureResponse({ message }, 'Login Failed'));
-        // }
-        // if (!validatePassword(password)) {
-        //     message = 'Password must be at least 8 characters long, contain at least one letter and one number'
-        //     return res.status(422).json(failureResponse({ message }, 'Login Failed'));
-        // }
-
         await pool.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
             if (err) {
                 message = 'Email and Password is not Correct';
@@ -75,8 +66,27 @@ export const Login = async (req, res) => {
             if (result.length > 0) {
                 const user = result[0];
                 if (verifyPassword(user.password, password)) {
-                    const AuthToken = generateToken(user.id, email, authType);
-                    return res.status(200).json(successResponse({ AuthToken }, 'Login successful'));
+                    console.log(user.id);
+                    
+                    const fetch_user_role = "SELECT role_id from role_to_users WHERE user_id = ?";
+                    pool.query(fetch_user_role, [user.id], (roleErr, roleResutls)=>{
+                        if (roleErr || roleResutls.length === 0) {
+                            message = 'Role ID not found for this user';
+                            return res.status(502).json(failureResponse({ error: message }, 'Login Failed'));
+                        }
+                        const roleID = roleResutls[0].role_id;
+
+                        const fetch_role_name = 'SELECT name from roles WHERE id = ?'
+                        pool.query(fetch_role_name, [roleID], (err, results)=>{
+                            if (err || results.length === 0) {
+                                message = 'Role name not found for this user';
+                                return res.status(502).json(failureResponse({ error: message }, 'Login Failed'));
+                            }
+                            const roleName = results[0].name
+                            const AuthToken = generateToken(user.id, email, authType);
+                            return res.status(200).json(successResponse({ AuthToken, roleName }, 'Login successful'));
+                        })
+                    })
                 } else {
                     message = 'Password does not match';
                     return res.status(422).json(failureResponse({ password: message }, 'Login Failed'));
