@@ -161,7 +161,7 @@ export const updatePermission = async (req, res) => {
 };
 export const assignPermissionsToRole = async (req, res) => {
   try {
-    const { roleId, permissionIds } = req.body; 
+    const { roleId, permissionIds } = req.body;
 
     if (
       !roleId ||
@@ -496,29 +496,37 @@ export const createUser = async (req, res) => {
       "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
     const hashedPassword = hashPassword(password);
 
-    pool.query(insert_user_query, [username, email, hashedPassword], (err, results) => {
-      if (err) {
-        console.log("Database error:", err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-
-      const userId = results.insertId;
-
-      // Step to assign the Admin role (role ID 2)
-      const assign_role_query = "INSERT INTO role_to_users (user_id, role_id) VALUES (?, 2)";
-      pool.query(assign_role_query, [userId], (roleErr, roleResults) => {
-        if (roleErr) {
-          console.log("Role assignment error:", roleErr);
-          return res.status(500).json({ error: "Internal Server Error while assigning role" });
+    pool.query(
+      insert_user_query,
+      [username, email, hashedPassword],
+      (err, results) => {
+        if (err) {
+          console.log("Database error:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
         }
 
-        const data = {
-          userId: userId,
-          message: 'User has been created and assigned the Admin role'
-        };
-        return res.status(200).json(data);
-      });
-    });
+        const userId = results.insertId;
+
+        // Step to assign the Admin role (role ID 2)
+        const assign_role_query =
+          "INSERT INTO role_to_users (user_id, role_id) VALUES (?, 2)";
+        pool.query(assign_role_query, [userId], (roleErr, roleResults) => {
+          if (roleErr) {
+            console.log("Role assignment error:", roleErr);
+            return res
+              .status(500)
+              .json({ error: "Internal Server Error while assigning role" });
+          }
+
+          const data = {
+            userId: userId,
+            message:
+              "User has been created and Admin role has been assigned to him",
+          };
+          return res.status(200).json(data);
+        });
+      }
+    );
   } catch (error) {
     console.log("Unexpected error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -596,8 +604,9 @@ export const deleteUser = async (req, res) => {
 };
 export const getUsers = async (req, res) => {
   try {
-    const fetchAllUsersQuery = "SELECT id, username, email, created_at FROM users";
-    
+    const fetchAllUsersQuery =
+      "SELECT id, username, email, created_at FROM users";
+
     pool.query(fetchAllUsersQuery, (userErr, userResults) => {
       if (userErr) {
         console.error("Database query error (users):", userErr);
@@ -611,7 +620,8 @@ export const getUsers = async (req, res) => {
       const users = userResults;
       const usersWithRolesPromises = users.map((user) => {
         return new Promise((resolve, reject) => {
-          const fetchRoleQuery = "SELECT role_id FROM role_to_users WHERE user_id = ?";
+          const fetchRoleQuery =
+            "SELECT role_id FROM role_to_users WHERE user_id = ?";
           pool.query(fetchRoleQuery, [user.id], (roleErr, roleResults) => {
             if (roleErr) {
               console.error("Database query error (role_to_users):", roleErr);
@@ -627,28 +637,28 @@ export const getUsers = async (req, res) => {
             }
 
             const fetchRoleNameQuery = "SELECT name FROM roles WHERE id = ?";
-            pool.query(fetchRoleNameQuery, [roleId], (roleNameErr, roleNameResults) => {
-              if (roleNameErr) {
-                console.error("Database query error (roles):", roleNameErr);
-                return reject("Internal Server Error");
-              }
+            pool.query(
+              fetchRoleNameQuery,
+              [roleId],
+              (roleNameErr, roleNameResults) => {
+                if (roleNameErr) {
+                  console.error("Database query error (roles):", roleNameErr);
+                  return reject("Internal Server Error");
+                }
 
-              let roleName;
-              if (!roleNameResults.length) {
-                // Default role name for users without an explicit role
-                roleName = "user";
-              } else {
+                let roleName;
+
                 roleName = roleNameResults[0].name;
-              }
 
-              resolve({
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                created_at: user.created_at,
-                role: roleName,
-              });
-            });
+                resolve({
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  created_at: user.created_at,
+                  role: roleName,
+                });
+              }
+            );
           });
         });
       });
@@ -667,4 +677,3 @@ export const getUsers = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-

@@ -3,7 +3,7 @@ import { connectToDB } from '../utils/db/db.js';
 
 const pool = connectToDB();
 
-export const AdminAccess = () => {
+export const FullAccess = () => {
   return async (req, res, next) => {
     try {
       const { authorization } = req.headers;
@@ -31,7 +31,7 @@ export const AdminAccess = () => {
         }
 
         if (!userResults.length) {
-          return res.status(403).json({ status: false, message: 'Forbidden' });
+          return res.status(403).json({ status: false, message: 'Forbidden No Roles Found ' });
         }
 
         const user = userResults[0];
@@ -43,18 +43,19 @@ export const AdminAccess = () => {
           }
 
           if (!roleResults.length) {
-            return res.status(403).json({ status: false, message: 'Forbidden' });
+            return res.status(403).json({ status: false, message: 'Forbidden No Roles Found ' });
           }
 
           const roleId = roleResults[0].role_id;
           user.role_id = roleId;
 
+          // Admin and Super Admin both have access
           if (roleId === 2 && roleId === 1) {
             req.user = user;
             return next(); 
           }
 
-          return res.status(403).json({ status: false, message: 'Access Denied - Admin and Super Admin only ' });
+          return res.status(403).json({ status: false, message: 'Access Denied - Admin and Super Admin only have access ' });
         });
       });
     } catch (error) {

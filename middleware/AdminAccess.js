@@ -31,7 +31,7 @@ export const AdminAccess = () => {
         }
 
         if (!userResults.length) {
-          return res.status(403).json({ status: false, message: 'Forbidden' });
+          return res.status(403).json({ status: false, message: 'Forbidden No Roles Found' });
         }
 
         const user = userResults[0];
@@ -43,18 +43,20 @@ export const AdminAccess = () => {
           }
 
           if (!roleResults.length) {
-            return res.status(403).json({ status: false, message: 'Forbidden' });
+            return res.status(403).json({ status: false, message: 'Forbidden No Roles Found' });
           }
 
           const roleId = roleResults[0].role_id;
           user.role_id = roleId;
 
+
+          // If user is admin then he has access
           if (roleId === 2) {
             req.user = user;
             return next(); 
           }
 
-          return res.status(403).json({ status: false, message: 'Access Denied - Admin only create Admin' });
+          return res.status(403).json({ status: false, message: 'Access Denied - Admin only have access' });
         });
       });
     } catch (error) {

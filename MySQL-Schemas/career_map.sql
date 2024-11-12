@@ -493,7 +493,7 @@ CREATE TABLE `permission_to_role` (
   KEY `permission_id` (`permission_id`),
   CONSTRAINT `permission_to_role_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
   CONSTRAINT `permission_to_role_ibfk_2` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -502,7 +502,6 @@ CREATE TABLE `permission_to_role` (
 
 LOCK TABLES `permission_to_role` WRITE;
 /*!40000 ALTER TABLE `permission_to_role` DISABLE KEYS */;
-INSERT INTO `permission_to_role` VALUES (6,2,4,'2024-09-19 08:09:57','2024-09-19 08:09:57'),(7,2,5,'2024-09-19 08:09:57','2024-09-19 08:09:57');
 /*!40000 ALTER TABLE `permission_to_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -543,11 +542,13 @@ DROP TABLE IF EXISTS `role_to_users`;
 CREATE TABLE `role_to_users` (
   `role_id` int NOT NULL,
   `user_id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
   CONSTRAINT `role_to_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -556,7 +557,7 @@ CREATE TABLE `role_to_users` (
 
 LOCK TABLES `role_to_users` WRITE;
 /*!40000 ALTER TABLE `role_to_users` DISABLE KEYS */;
-INSERT INTO `role_to_users` VALUES (1,1),(2,2),(3,3),(3,4),(3,5),(2,7);
+INSERT INTO `role_to_users` VALUES (1,1,1),(2,2,2),(3,3,3),(3,4,4);
 /*!40000 ALTER TABLE `role_to_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -847,7 +848,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -856,7 +857,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'talha71x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-11 15:00:35'),(3,'uzair','uzair12@gmail.com','2821b6a595c9277fde7b1c7b1f035dd94b91bf9aa7f9787924f968c3e85d399b',NULL,NULL,NULL,'2024-11-11 15:00:35'),(4,'demo12','demo12@gmail.com','a0798eca78b4198af00f17193328a4dd85b01482d2a5a3ddf16f5178f02c19f9',NULL,NULL,NULL,'2024-11-11 15:00:35'),(5,'demo13','demo13@gmail.com','01778d832cbdd1bc817f76640854bdda964ebf3772753a3cad6d5f98bbd36428',NULL,NULL,NULL,'2024-11-11 15:00:35'),(6,'hassan','hassanalirrajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-11 15:00:35'),(7,'demo16','demo16@gmail.com','f79b80275a4c252ccf246bda57ea01740726f2d59d0f8a524e70ed1f9aa97942',NULL,NULL,NULL,'2024-11-11 15:00:35'),(8,'Areeb','areeb12@gmail.com','e6ab729f8438cf2e08356a78c5ca2e9c620176eb1499e6cf3a45a8fca5f14fde',NULL,NULL,NULL,'2024-11-11 15:00:35');
+INSERT INTO `users` VALUES (1,'syedtalha71x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-12 05:16:56'),(2,'hassan','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-12 05:35:47'),(3,'uzair','uzair@gmail.com','2821b6a595c9277fde7b1c7b1f035dd94b91bf9aa7f9787924f968c3e85d399b',NULL,NULL,NULL,'2024-11-12 05:38:41'),(4,'areeba12','areeba@gmail.com','467077ff0d9698da101a2643bfb968dda5c5cb63d9902809acd1b6b6d0aef5db',NULL,NULL,NULL,'2024-11-12 06:06:10');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -869,4 +870,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-11 20:06:24
+-- Dump completed on 2024-11-12 11:08:36
