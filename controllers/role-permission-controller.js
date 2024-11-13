@@ -122,7 +122,6 @@ export const getRole = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
 export const updatePermission = async (req, res) => {
   try {
     const { id } = req.params;
@@ -686,7 +685,7 @@ export const getUsers = async (req, res) => {
 export const listPermissions = async (req, res) => {
   try {
     const fetchAllModules = "SELECT id, module_name FROM modules";
-    const fetchAllPermissions = "SELECT id, name FROM permissions";
+    const fetchAllPermissions = "SELECT id, name, created_at FROM permissions";
     const fetchAllPermissionModules = "SELECT module_id, permission_id FROM permission_modules";
 
     const [moduleResults, permissionResults, permissionModuleResults] = await Promise.all([
@@ -716,7 +715,9 @@ export const listPermissions = async (req, res) => {
         .map((pm) => {
           const permission = permissionResults.find((perm) => perm.id === pm.permission_id);
           return {
+            permissionId: permission.id,
             permissionName: permission.name,
+            createdAt: permission.created_at
           };
         });
 
