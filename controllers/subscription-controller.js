@@ -351,14 +351,21 @@ export const checkUserSubscription = async (req, res) => {
 export const checkPathSubscription = (req, res) => {
   try {
     const userId = req.user?.userId;
+
     if (!userId) {
-      return res.status(401).json(
-        failureResponse(
-          { error: "User not authenticated" },
-          "Failed to check Subscription"
-        )
-      );
+      return res.status(401).json({
+        error: "User not authenticated",
+        Subscription_Status: false,
+      });
     }
+
+    const checkPathQuery = `
+      SELECT COUNT(*) as pathCount
+      FROM path
+      WHERE user_id = ?
+    `;
+
+    // Query to check the user's active subscription
     const query = `
       SELECT 
         us.current_path, 
@@ -369,47 +376,70 @@ export const checkPathSubscription = (req, res) => {
       WHERE us.user_id = ? AND us.expiry_date > NOW()
     `;
 
-    pool.query(query, [userId], (err, results) => {
+    pool.query(checkPathQuery, [userId], (err, pathResults) => {
       if (err) {
         console.error("Database error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      if (!results.length) {
-        return res.status(200).json({
-          error: "No active subscription found. Please purchase a subscription to create paths.",
-          Subscription_Status: false
-        });
-      }
+      const pathCount = pathResults[0]?.pathCount || 0;
 
-      const { current_path, subscription_id } = results[0];
-      
-      let pathLimit;
-      switch (subscription_id) {
-        case 1: // Pioneer 
-          pathLimit = 15;
-          break;
-        case 2: // Navigator 
-          pathLimit = 6;
-          break;
-        case 3: // Explorer 
-          pathLimit = 2;
-          break;
-        default:
-          return res.status(400).json({ error: "Unknown subscription type" });
-      }
-      if (current_path >= pathLimit) {
+      // If the user has not created any paths and has no active subscription, allow the first path for free
+      if (pathCount === 0) {
         return res.status(200).json({
-          error: "Subscription limit reached. Upgrade your plan.", Subscription_Status: false
+          message: "You can create your first path for free.",
+          Subscription_Status: true,
         });
       }
-      res.status(200).json({ message: "Path creation is allowed.", Subscription_Status: true });
+      pool.query(query, [userId], (err, subResults) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        if (!subResults.length) {
+          return res.status(200).json({
+            error: "No active subscription found. Please purchase a subscription to create more paths.",
+            Subscription_Status: false,
+          });
+        }
+
+        const { current_path, subscription_id } = subResults[0];
+        
+        let pathLimit;
+        switch (subscription_id) {
+          case 1: // Pioneer
+            pathLimit = 15;
+            break;
+          case 2: // Navigator
+            pathLimit = 6;
+            break;
+          case 3: // Explorer
+            pathLimit = 2;
+            break;
+          default:
+            return res.status(400).json({ error: "Unknown subscription type" });
+        }
+
+        if (current_path >= pathLimit) {
+          return res.status(200).json({
+            error: "Subscription limit reached. Upgrade your plan.",
+            Subscription_Status: false,
+          });
+        }
+
+        res.status(200).json({
+          message: "Path creation is allowed.",
+          Subscription_Status: true,
+        });
+      });
     });
   } catch (error) {
-    console.log(error);
+    console.error("Unexpected error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 export const checkTrainingPlanSubscription = (req, res) => {
   try {
     const userId = req.user?.userId;

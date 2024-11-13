@@ -715,13 +715,14 @@ export const listPermissions = async (req, res) => {
         .map((pm) => {
           const permission = permissionResults.find((perm) => perm.id === pm.permission_id);
           return {
-            permissionId: permission.id,
+      
             permissionName: permission.name,
             createdAt: permission.created_at
           };
         });
 
       return {
+        id: module.id,
         moduleName: module.module_name,
         permissions: modulePermissions,
       };
