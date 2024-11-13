@@ -103,7 +103,7 @@ export const updateRole = async (req, res) => {
 };
 export const getRole = async (req, res) => {
   try {
-    const get_roles = "SELECT id, name FROM roles";
+    const get_roles = "SELECT id, name, created_at FROM roles";
     
     pool.query(get_roles, (err, results) => {
       if (err) {
@@ -124,49 +124,52 @@ export const getRole = async (req, res) => {
 };
 export const updatePermission = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { permission } = req.body;
+    const { permissions } = req.body; 
 
-    if (!permission) {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "Permission name is required" },
-            "Bad Request"
-          )
-        );
+    if (!permissions || !Array.isArray(permissions) || permissions.length === 0) {
+      return res.status(400).json(
+        failureResponse(
+          { error: "Permissions array is required and cannot be empty" },
+          "Bad Request"
+        )
+      );
     }
 
-    const sqlQry = "UPDATE permissions SET name = ? WHERE id = ?";
-
-    pool.query(sqlQry, [permission, id], (err, results) => {
-      if (err) {
-        console.log("Database Error--------------", err);
-        return res
-          .status(500)
-          .json(
-            failureResponse(
-              { error: "Failed to update permission" },
-              "Internal Server Error"
-            )
-          );
-      }
-      if (results.affectedRows === 0) {
-        return res
-          .status(404)
-          .json(
-            failureResponse(
-              { error: "Permission not found" },
-              "Permission with the specified ID does not exist"
-            )
-          );
-      }
-      return res
-        .status(200)
-        .json(
-          successResponse({ id: results.id }, "Permission updated successfully")
+    const updatePromises = permissions.map(({ id, name }) => {
+      if (!id || !name) {
+        return Promise.reject(
+          `Invalid entry: each permission should have an id and a new name`
         );
+      }
+
+      const sqlQry = "UPDATE permissions SET name = ? WHERE id = ?";
+      return new Promise((resolve, reject) => {
+        pool.query(sqlQry, [name, id], (err, results) => {
+          if (err) {
+            console.log("Database Error--------------", err);
+            reject({ id, error: "Failed to update permission" });
+          } else if (results.affectedRows === 0) {
+            reject({ id, error: "Permission not found" });
+          } else {
+            resolve({ id, message: "Permission updated successfully" });
+          }
+        });
+      });
+    });
+
+    const updateResults = await Promise.allSettled(updatePromises);
+
+    const successes = updateResults
+      .filter(result => result.status === "fulfilled")
+      .map(result => result.value);
+    const errors = updateResults
+      .filter(result => result.status === "rejected")
+      .map(result => result.reason);
+
+    return res.status(200).json({
+      updated: successes,
+      failed: errors,
+      message: "Batch permission update completed",
     });
   } catch (error) {
     console.log(error);
@@ -734,4 +737,70 @@ export const listPermissions = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getRolePermissions = async (req, res) => {
+  try {
+    const roleId = req.params.roleId; 
+
+    const query = `
+      SELECT
+        m.module_name AS moduleName,
+        p.id AS permissionId,
+        p.name AS permissionName,
+        CASE 
+          WHEN pr.role_id IS NOT NULL THEN 1  -- Permission assigned to the role, return true
+          ELSE 0  -- No permission assigned, return false
+        END AS status
+      FROM
+        permissions p
+      LEFT JOIN
+        permission_modules pm ON p.id = pm.permission_id
+      LEFT JOIN
+        modules m ON m.id = pm.module_id
+      LEFT JOIN
+        permission_to_role pr ON p.id = pr.permission_id AND pr.role_id = ?
+      ORDER BY
+        m.module_name, p.name;
+    `;
+
+    pool.query(query, [roleId], (error, results) => {
+      if (error) {
+        return res.status(500).json({ status: false, message: 'Error fetching role permissions', error });
+      }
+
+      // Customizing the result to ensure `status` is `true` or `false`
+      const formattedResults = results.reduce((acc, row) => {
+        let module = acc.find(m => m.moduleName === row.moduleName);
+        if (!module) {
+          module = {
+            moduleName: row.moduleName,
+            permissions: []
+          };
+          acc.push(module);
+        }
+
+        module.permissions.push({
+          permissionId: row.permissionId,
+          permissionName: row.permissionName,
+          status: row.status === 1 // Convert `1` to `true` and `0` to `false`
+        });
+
+        return acc;
+      }, []);
+
+      res.json({ status: true, data: formattedResults, message: 'Permissions retrieved successfully' });
+    });
+  } catch (err) {
+    res.status(500).json({ status: false, message: 'Server error', error: err.message });
+  }
+};
+
+
+
+
+
+
+
+
+
+
 

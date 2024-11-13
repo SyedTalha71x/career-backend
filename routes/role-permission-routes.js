@@ -11,7 +11,8 @@ import {
   updateUser,
   getUsers,
   listPermissions,
-  getRole
+  getRole,
+  getRolePermissions
 } from "../controllers/role-permission-controller.js";
 import { SuperAdmin } from "../middleware/SuperAdmin.js";
 import { AdminAccess } from "../middleware/AdminAccess.js";
@@ -23,14 +24,12 @@ router.post("/create-role",FullAccess(),createRole);
 router.put("/update-role/:id",FullAccess(), updateRole);
 router.get("/get-role", getRole);
 
-
-
 router.post("/create-permission-with-module", SuperAdmin(), createPermissionWithModule)
 router.put("/update-permission/:id",SuperAdmin(),updatePermission);
 router.get("/get-all-permissions",listPermissions);
+router.get("/get-all-permissions-with-role/:roleId", SuperAdmin(),getRolePermissions);
 
-
-router.post("/assign-permissions-to-role", AdminAccess(),assignPermissionsToRole);
+router.post("/assign-permissions-to-role", SuperAdmin(),assignPermissionsToRole);
 router.post("/assign-roles-to-user",AdminAccess(),assignRolesToUser);
 
 router.post('/create-user', SuperAdmin(), createUser)
