@@ -317,7 +317,7 @@ CREATE TABLE `modules` (
   `id` int NOT NULL AUTO_INCREMENT,
   `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,7 +326,7 @@ CREATE TABLE `modules` (
 
 LOCK TABLES `modules` WRITE;
 /*!40000 ALTER TABLE `modules` DISABLE KEYS */;
-INSERT INTO `modules` VALUES (1,'Transaction'),(6,'Pricing'),(7,'Subscription');
+INSERT INTO `modules` VALUES (1,'Inventory'),(2,'Subscriptions');
 /*!40000 ALTER TABLE `modules` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -471,7 +471,7 @@ CREATE TABLE `permission_modules` (
 
 LOCK TABLES `permission_modules` WRITE;
 /*!40000 ALTER TABLE `permission_modules` DISABLE KEYS */;
-INSERT INTO `permission_modules` VALUES (13,6),(14,7),(15,7),(13,6),(14,7),(15,7);
+INSERT INTO `permission_modules` VALUES (1,1),(2,1),(3,2),(4,2),(5,2);
 /*!40000 ALTER TABLE `permission_modules` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -519,7 +519,7 @@ CREATE TABLE `permissions` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -528,7 +528,7 @@ CREATE TABLE `permissions` (
 
 LOCK TABLES `permissions` WRITE;
 /*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (4,'index','2024-09-19 07:50:57','2024-09-19 08:00:13','transaction-index'),(5,'create','2024-09-19 07:50:57','2024-09-19 07:50:57','transaction-create'),(6,'update','2024-09-19 07:50:57','2024-09-19 07:50:57','transaction-update'),(13,'index','2024-09-19 11:27:53','2024-09-19 11:27:53','pricing-index'),(14,'createIndex','2024-09-19 11:29:12','2024-09-19 11:29:12','subscription-create-index'),(15,'viewIndex','2024-09-19 11:29:12','2024-09-19 11:29:12','subscription-view-index');
+INSERT INTO `permissions` VALUES (1,'billing history','2024-11-13 06:09:55','2024-11-13 06:09:55','inventory-billing history'),(2,'manage','2024-11-13 06:09:55','2024-11-13 06:09:55','inventory-manage'),(3,'create','2024-11-13 06:10:25','2024-11-13 06:10:25','subscriptions-create'),(4,'update','2024-11-13 06:10:25','2024-11-13 06:10:25','subscriptions-update'),(5,'delete','2024-11-13 06:10:25','2024-11-13 06:10:25','subscriptions-delete');
 /*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -870,4 +870,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-12 11:08:36
+-- Dump completed on 2024-11-13 11:12:19

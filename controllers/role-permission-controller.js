@@ -311,7 +311,7 @@ export const assignRolesToUser = async (req, res) => {
 };
 export const createPermissionWithModule = async (req, res) => {
   try {
-    const { moduleName, permissions, slugs } = req.body;
+    const { moduleName, permissions } = req.body;
 
     if (!moduleName) {
       return res
@@ -334,22 +334,6 @@ export const createPermissionWithModule = async (req, res) => {
         .json(
           failureResponse(
             { error: "Permissions array is required and cannot be empty" },
-            "Bad Request"
-          )
-        );
-    }
-
-    if (
-      !slugs ||
-      !Array.isArray(slugs) ||
-      slugs.length === 0 ||
-      slugs.length !== permissions.length
-    ) {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "Slugs array must match the length of permissions array" },
             "Bad Request"
           )
         );
@@ -409,7 +393,7 @@ export const createPermissionWithModule = async (req, res) => {
 
         const permissionValues = permissions.map((permission, index) => [
           permission,
-          slugs[index],
+          `${moduleName.toLowerCase()}-${permission.toLowerCase()}`,
         ]);
 
         pool.query(
@@ -677,3 +661,53 @@ export const getUsers = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const listPermissions = async (req, res) => {
+  try {
+    const fetchAllModules = "SELECT id, module_name FROM modules";
+    const fetchAllPermissions = "SELECT id, name FROM permissions";
+    const fetchAllPermissionModules = "SELECT module_id, permission_id FROM permission_modules";
+
+    const [moduleResults, permissionResults, permissionModuleResults] = await Promise.all([
+      new Promise((resolve, reject) =>
+        pool.query(fetchAllModules, (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        })
+      ),
+      new Promise((resolve, reject) =>
+        pool.query(fetchAllPermissions, (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        })
+      ),
+      new Promise((resolve, reject) =>
+        pool.query(fetchAllPermissionModules, (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        })
+      ),
+    ]);
+
+    const permissionsByModule = moduleResults.map((module) => {
+      const modulePermissions = permissionModuleResults
+        .filter((pm) => pm.module_id === module.id)
+        .map((pm) => {
+          const permission = permissionResults.find((perm) => perm.id === pm.permission_id);
+          return {
+            permissionName: permission.name,
+          };
+        });
+
+      return {
+        moduleName: module.module_name,
+        permissions: modulePermissions,
+      };
+    });
+
+    return res.status(200).json({ permissionsByModule });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
