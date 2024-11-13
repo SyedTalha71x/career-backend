@@ -50,7 +50,7 @@ export const FullAccess = () => {
           user.role_id = roleId;
 
           // Admin and Super Admin both have access
-          if (roleId === 2 && roleId === 1) {
+          if (roleId === 2 || roleId === 1) {
             req.user = user;
             return next(); 
           }

@@ -101,6 +101,28 @@ export const updateRole = async (req, res) => {
       );
   }
 };
+export const getRole = async (req, res) => {
+  try {
+    const get_roles = "SELECT id, name FROM roles";
+    
+    pool.query(get_roles, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      if (results && results.length > 0) {
+        return res.status(200).json({ results });
+      } else {
+        return res.status(404).json({ message: 'No roles found' });
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 export const updatePermission = async (req, res) => {
   try {
     const { id } = req.params;
