@@ -103,13 +103,14 @@ export const updateRole = async (req, res) => {
 };
 export const getRole = async (req, res) => {
   try {
-    const get_roles = "SELECT id, name, created_at FROM roles ORDER BY created_at DESC";
+    const get_roles = "SELECT id, name, created_at FROM roles WHERE name NOT IN ('Super Admin','User') ORDER BY created_at DESC";
     
     pool.query(get_roles, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ error: 'Internal Server Error' });
       }
+      
 
       if (results && results.length > 0) {
         return res.status(200).json({ results });
@@ -493,9 +494,9 @@ export const createPermissionWithModule = async (req, res) => {
 };
 export const createUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, roleId } = req.body;
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !roleId) {
       console.log("Missing required fields");
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -515,11 +516,18 @@ export const createUser = async (req, res) => {
 
         const userId = results.insertId;
 
-        const data = {
-          userId: userId,
-          message: "User has been created successfully",
-        };
-        return res.status(200).json(data);
+        pool.query('INSERT INTO role_to_users (role_id, user_id) VALUES (?,?)', [roleId, userId], (err, roleResults)=>{
+          if (err) {
+            console.log("Database error:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+
+          const data = {
+            userId: userId,
+            message: "User has been created successfully and role has been assigned",
+          };
+          return res.status(200).json(data);
+        })
       }
     );
   } catch (error) {
