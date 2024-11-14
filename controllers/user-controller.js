@@ -32,30 +32,26 @@ export const Signup = async (req, res) => {
       );
   }
   if (!validateUsername(username)) {
-    return res
-      .status(422)
-      .json(
-        failureResponse(
-          {
-            username:
-              "Username must be 3-30 characters long and can only contain letters, numbers, and underscores",
-          },
-          "Validation Failed"
-        )
-      );
+    return res.status(422).json(
+      failureResponse(
+        {
+          username:
+            "Username must be 3-30 characters long and can only contain letters, numbers, and underscores",
+        },
+        "Validation Failed"
+      )
+    );
   }
   if (!validatePassword(password)) {
-    return res
-      .status(422)
-      .json(
-        failureResponse(
-          {
-            password:
-              "Password must be at least 8 characters long, contain at least one letter and one number",
-          },
-          "Validation Failed"
-        )
-      );
+    return res.status(422).json(
+      failureResponse(
+        {
+          password:
+            "Password must be at least 8 characters long, contain at least one letter and one number",
+        },
+        "Validation Failed"
+      )
+    );
   }
 
   try {
@@ -111,17 +107,14 @@ export const Signup = async (req, res) => {
               (err, result) => {
                 if (err) {
                   console.error("Error inserting new user into database:", err);
-                  return res
-                    .status(500)
-                    .json(
-                      failureResponse(
-                        {
-                          database:
-                            "Server error while inserting into database",
-                        },
-                        "Signup Failed"
-                      )
-                    );
+                  return res.status(500).json(
+                    failureResponse(
+                      {
+                        database: "Server error while inserting into database",
+                      },
+                      "Signup Failed"
+                    )
+                  );
                 }
 
                 const userId = result.insertId;
@@ -169,7 +162,6 @@ export const Signup = async (req, res) => {
       );
   }
 };
-
 export const Login = async (req, res) => {
   let message;
   try {
@@ -215,12 +207,33 @@ export const Login = async (req, res) => {
                 }
 
                 const roleName = results[0].name;
-                const AuthToken = generateToken(user.id, email, authType);
-                return res
-                  .status(200)
-                  .json(
-                    successResponse({ AuthToken, roleName }, "Login successful")
-                  );
+
+                const permissionsQUERY =
+                  "SELECT p.slug FROM permissions p LEFT JOIN permission_to_role pr ON pr.permission_id = p.id WHERE pr.role_id = ?";
+                pool.query(
+                  permissionsQUERY,
+                  [roleID],
+                  (err, permissionResults) => {
+                    if (err || results.length === 0) {
+                      message = "permissions not found for this role";
+                      return res
+                        .status(502)
+                        .json(failureResponse({ error: message }, "Failure"));
+                    }
+                    const permissionSlugs = permissionResults.map(row => row.slug)
+
+                    const AuthToken = generateToken(user.id, email, authType);
+
+                    return res
+                      .status(200)
+                      .json(
+                        successResponse(
+                          { AuthToken, roleName, permissionSlugs },
+                          "Login successful"
+                        )
+                      );
+                  }
+                );
               });
             });
           } else {
@@ -245,7 +258,6 @@ export const Login = async (req, res) => {
       .json(failureResponse({ api_message }, "Internal Server Error"));
   }
 };
-
 export const checkEmail = async (req, res) => {
   try {
     const { email } = req.body;
@@ -310,17 +322,15 @@ export const changePassword = async (req, res) => {
     const { newPassword, confirmPassword } = req.body;
 
     if (!validatePassword(newPassword)) {
-      return res
-        .status(422)
-        .json(
-          failureResponse(
-            {
-              password:
-                "Password must be at least 8 characters long, contain at least one letter and one number",
-            },
-            "Validation Failed"
-          )
-        );
+      return res.status(422).json(
+        failureResponse(
+          {
+            password:
+              "Password must be at least 8 characters long, contain at least one letter and one number",
+          },
+          "Validation Failed"
+        )
+      );
     }
 
     if (!newPassword || !confirmPassword) {
@@ -902,4 +912,26 @@ export const outlookLogin = async (req, res) => {
     console.error("Error verifying Outlook token:", error);
     res.status(500).json(failureResponse(error, "Internal server error"));
   }
+};
+
+
+export const repo = async (id, permission) => {
+  permission = Array.isArray(permission)
+    ? `id IN ( ${permission.map((i) => i)} ) `
+    : `id="${permission}" `;
+  const query =
+    `SELECT users.*, roles.*, CONCAT('[', GROUP_CONCAT('"', permissions.permission, '"' SEPARATOR ','), ']') as permissions
+FROM users
+INNER JOIN role_to_users
+ON role_to_users.user_id = users.id
+INNER JOIN roles
+ON roles.id = role_to_users.role_id
+INNER JOIN permission_to_role
+ON permission_to_role.role_id = role_to_users.role_id
+INNER JOIN permissions
+ON permissions.id = permission_to_role.permission_id
+WHERE users.id = ${id} AND permissions.` +
+   permission +
+    `GROUP BY permission_to_role.role_id`;
+  const [rows, _fields] = await sqlConnection().execute(query);
 };

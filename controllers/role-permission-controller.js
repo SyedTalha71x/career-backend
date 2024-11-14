@@ -515,24 +515,11 @@ export const createUser = async (req, res) => {
 
         const userId = results.insertId;
 
-        // Step to assign the Admin role (role ID 2)
-        const assign_role_query =
-          "INSERT INTO role_to_users (user_id, role_id) VALUES (?, 2)";
-        pool.query(assign_role_query, [userId], (roleErr, roleResults) => {
-          if (roleErr) {
-            console.log("Role assignment error:", roleErr);
-            return res
-              .status(500)
-              .json({ error: "Internal Server Error while assigning role" });
-          }
-
-          const data = {
-            userId: userId,
-            message:
-              "User has been created and Admin role has been assigned to him",
-          };
-          return res.status(200).json(data);
-        });
+        const data = {
+          userId: userId,
+          message: "User has been created successfully",
+        };
+        return res.status(200).json(data);
       }
     );
   } catch (error) {
