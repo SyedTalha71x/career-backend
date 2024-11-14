@@ -12,7 +12,8 @@ import {
   getUsers,
   listPermissions,
   getRole,
-  getRolePermissions
+  getRolePermissions,
+  getMostPaths
 } from "../controllers/role-permission-controller.js";
 import { SuperAdmin } from "../middleware/SuperAdmin.js";
 import { AdminAccess } from "../middleware/AdminAccess.js";
@@ -36,6 +37,9 @@ router.post('/create-user', SuperAdmin(), createUser)
 router.put('/update-user/:id', SuperAdmin(), updateUser)
 router.delete('/delete-user/:id', SuperAdmin(), deleteUser)
 router.get('/get-all-users', getUsers)
+
+router.get('/get-most-created-paths', FullAccess(), getMostPaths)
+
 
 
 export default router;

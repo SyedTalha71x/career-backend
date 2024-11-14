@@ -11,7 +11,7 @@ import {
   getSpecificSkillsWithStepId,
   sendMessage,
   getMessage,
-  addSkill, updateSkill, deleteSkill
+  addSkill, updateSkill, deleteSkill,
 } from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";

@@ -103,7 +103,7 @@ export const updateRole = async (req, res) => {
 };
 export const getRole = async (req, res) => {
   try {
-    const get_roles = "SELECT id, name, created_at FROM roles";
+    const get_roles = "SELECT id, name, created_at FROM roles ORDER BY created_at DESC";
     
     pool.query(get_roles, (err, results) => {
       if (err) {
@@ -613,7 +613,7 @@ export const deleteUser = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const fetchAllUsersQuery =
-      "SELECT id, username, email, created_at FROM users";
+      "SELECT id, username, email, created_at FROM users ORDER BY created_at DESC";
 
     pool.query(fetchAllUsersQuery, (userErr, userResults) => {
       if (userErr) {
@@ -793,7 +793,45 @@ export const getRolePermissions = async (req, res) => {
     res.status(500).json({ status: false, message: 'Server error', error: err.message });
   }
 };
+export const getMostPaths = async (req, res) => {
+  try {
+    const sqlQuery = `
+      SELECT title, COUNT(*) as count, 
+      ROUND((COUNT(*) / (SELECT COUNT(*) FROM path) * 100), 2) as percentage
+      FROM path
+      GROUP BY title
+      ORDER BY count DESC
+    `;
 
+    pool.query(sqlQuery, (err, results) => {
+      if (err) {
+        console.error("Error fetching most created paths:", err);
+        return res
+          .status(500)
+          .json(failureResponse({ error: "Internal Server Error" }, "Failed to fetch data"));
+      }
+
+      if (results.length === 0) {
+        return res
+          .status(404)
+          .json(failureResponse({ error: "No paths found" }, "No data available"));
+      }
+
+      const data = results.map(row =>({
+        title: row.title,
+        percentage: row.percentage
+      }))
+      
+
+      res.status(200).json(successResponse(data, "Most created paths with percentages fetched successfully"));
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res
+      .status(500)
+      .json(failureResponse({ error: "Internal Server Error" }, "Failed to fetch data"));
+  }
+};
 
 
 
