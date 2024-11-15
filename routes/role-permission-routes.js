@@ -2,7 +2,7 @@ import express from "express";
 import {
   createRole,
   updateRole,
-  updatePermission,
+  updateModuleAndPermissions,
   assignPermissionsToRole,
   assignRolesToUser,
   createPermissionWithModule,
@@ -27,7 +27,7 @@ router.put("/update-role/:id",FullAccess(), updateRole);
 router.get("/get-role", getRole);
 
 router.post("/create-permission-with-module", SuperAdmin(), createPermissionWithModule)
-router.put("/update-permission/:id",SuperAdmin(),updatePermission);
+router.post("/update-permission",SuperAdmin(),updateModuleAndPermissions);
 router.get("/get-all-permissions", FullAccess(),listPermissions);
 router.get("/get-all-permissions-with-role/:roleId", FullAccess(),getRolePermissions);
 

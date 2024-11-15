@@ -123,65 +123,178 @@ export const getRole = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-export const updatePermission = async (req, res) => {
+export const updateModuleAndPermissions = async (req, res) => {
   try {
-    const { permissions } = req.body; 
-
-    if (!permissions || !Array.isArray(permissions) || permissions.length === 0) {
+    const { moduleId, moduleName, permissions } = req.body;
+    if (!moduleId) {
       return res.status(400).json(
         failureResponse(
-          { error: "Permissions array is required and cannot be empty" },
+          { error: "Module ID is required and cannot be empty" },
           "Bad Request"
         )
       );
     }
 
-    const updatePromises = permissions.map(({ id, name }) => {
-      if (!id || !name) {
-        return Promise.reject(
-          `Invalid entry: each permission should have an id and a new name`
-        );
+    // Handle module name update
+    if (moduleName) {
+      const updateModuleQuery = "UPDATE modules SET module_name = ? WHERE id = ?";
+      pool.query(updateModuleQuery, [moduleName, moduleId], (err, moduleUpdateResult) => {
+        if (err) {
+          console.error("Error updating module:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        if (moduleUpdateResult.affectedRows === 0) {
+          return res.status(404).json(
+            failureResponse(
+              { error: "Module not found" },
+              "Not Found"
+            )
+          );
+        }
+
+        console.log("Module updated successfully");
+      });
+    }
+
+    // Handle add and delete operations for permissions
+    if (permissions && Array.isArray(permissions)) {
+      const results = {
+        added: [],
+        deleted: [],
+        failed: []
+      };
+
+      for (const permission of permissions) {
+        // Add permission
+        if (permission.action === "add" && permission.name) {
+          const slug = `${moduleName}-${permission.name}`.toLowerCase().replace(/ /g, "-");
+          const addPermissionQuery = "INSERT INTO permissions (name, slug) VALUES (?, ?)";
+
+          pool.query(addPermissionQuery, [permission.name, slug], (err, addResult) => {
+            if (err) {
+              console.error("Error adding permission:", err);
+              results.failed.push({
+                name: permission.name,
+                error: "Failed to add permission"
+              });
+              return;
+            }
+
+            if (addResult.affectedRows > 0) {
+              const permissionId = addResult.insertId;
+              console.log(`Permission '${permission.name}' added with ID: ${permissionId}`);
+
+              const addToPermissionModulesQuery = "INSERT INTO permission_modules (module_id, permission_id) VALUES (?, ?)";
+              pool.query(addToPermissionModulesQuery, [moduleId, permissionId], (err, addToPermissionModulesResult) => {
+                if (err) {
+                  console.error("Error linking permission to module:", err);
+                  results.failed.push({
+                    name: permission.name,
+                    error: "Failed to link permission to module"
+                  });
+                  return;
+                }
+
+                if (addToPermissionModulesResult.affectedRows > 0) {
+                  results.added.push({
+                    id: permissionId,
+                    moduleId: moduleId,
+                    message: `Permission '${permission.name}' added successfully to module '${moduleName}'`
+                  });
+                }
+              });
+            }
+          });
+        }
+
+        // Delete permission
+        if (permission.action === "delete" && permission.id) {
+          console.log(`Attempting to delete permission with ID: ${permission.id}`);
+          
+          // Check if the permission exists
+          const checkPermissionQuery = "SELECT * FROM permissions WHERE id = ?";
+          pool.query(checkPermissionQuery, [permission.id], (err, permissionExists) => {
+            if (err) {
+              console.error("Error checking permission existence:", err);
+              results.failed.push({
+                id: permission.id,
+                error: "Failed to check permission existence"
+              });
+              return;
+            }
+
+            if (permissionExists.length === 0) {
+              results.failed.push({
+                id: permission.id,
+                error: "Permission not found"
+              });
+              return;
+            }
+
+            // Remove the permission from the permission_modules table first
+            const deleteFromPermissionModulesQuery = "DELETE FROM permission_modules WHERE permission_id = ?";
+            pool.query(deleteFromPermissionModulesQuery, [permission.id], (err, deletePermissionModuleResults) => {
+              if (err) {
+                console.error("Error deleting permission from permission_modules:", err);
+                results.failed.push({
+                  id: permission.id,
+                  error: "Failed to delete from permission_modules"
+                });
+                return;
+              }
+
+              // Now delete the permission
+              const deletePermissionQuery = "DELETE FROM permissions WHERE id = ?";
+              pool.query(deletePermissionQuery, [permission.id], (err, deleteResult) => {
+                if (err) {
+                  console.error("Error deleting permission:", err);
+                  results.failed.push({
+                    id: permission.id,
+                    error: "Failed to delete permission"
+                  });
+                  return;
+                }
+
+                if (deleteResult.affectedRows > 0) {
+                  results.deleted.push({
+                    id: permission.id,
+                    message: "Permission deleted successfully"
+                  });
+                } else {
+                  results.failed.push({
+                    id: permission.id,
+                    error: "Failed to delete permission"
+                  });
+                }
+              });
+            });
+          });
+        }
       }
 
-      const sqlQry = "UPDATE permissions SET name = ? WHERE id = ?";
-      return new Promise((resolve, reject) => {
-        pool.query(sqlQry, [name, id], (err, results) => {
-          if (err) {
-            console.log("Database Error--------------", err);
-            reject({ id, error: "Failed to update permission" });
-          } else if (results.affectedRows === 0) {
-            reject({ id, error: "Permission not found" });
-          } else {
-            resolve({ id, message: "Permission updated successfully" });
-          }
+      // Send the results after processing all permissions
+      setTimeout(() => {
+        return res.status(200).json({
+          results: results
         });
-      });
-    });
-
-    const updateResults = await Promise.allSettled(updatePromises);
-
-    const successes = updateResults
-      .filter(result => result.status === "fulfilled")
-      .map(result => result.value);
-    const errors = updateResults
-      .filter(result => result.status === "rejected")
-      .map(result => result.reason);
-
-    return res.status(200).json({
-      updated: successes,
-      failed: errors,
-      message: "Batch permission update completed",
-    });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json(
+      }, 500); // Add a slight delay to allow async processing to complete
+    } else {
+      return res.status(400).json(
         failureResponse(
-          { error: "Internal Server Error" },
-          "Internal Server Error"
+          { error: "Permissions array is required" },
+          "Bad Request"
         )
       );
+    }
+  } catch (error) {
+    console.error("Error occurred during processing:", error);
+    return res.status(500).json(
+      failureResponse(
+        { error: "Internal Server Error" },
+        "Internal Server Error"
+      )
+    );
   }
 };
 export const assignPermissionsToRole = async (req, res) => {
