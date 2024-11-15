@@ -317,7 +317,7 @@ CREATE TABLE `modules` (
   `id` int NOT NULL AUTO_INCREMENT,
   `module_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,7 +326,7 @@ CREATE TABLE `modules` (
 
 LOCK TABLES `modules` WRITE;
 /*!40000 ALTER TABLE `modules` DISABLE KEYS */;
-INSERT INTO `modules` VALUES (1,'Inventory'),(2,'Subscriptions'),(3,'Transaction'),(4,'investment');
+INSERT INTO `modules` VALUES (1,'Transaction');
 /*!40000 ALTER TABLE `modules` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -471,7 +471,7 @@ CREATE TABLE `permission_modules` (
 
 LOCK TABLES `permission_modules` WRITE;
 /*!40000 ALTER TABLE `permission_modules` DISABLE KEYS */;
-INSERT INTO `permission_modules` VALUES (1,1),(2,1),(3,2),(4,2),(5,2),(6,3),(7,3),(8,3),(9,3),(10,4),(11,4),(12,4),(13,4);
+INSERT INTO `permission_modules` VALUES (1,1);
 /*!40000 ALTER TABLE `permission_modules` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -493,7 +493,7 @@ CREATE TABLE `permission_to_role` (
   KEY `permission_id` (`permission_id`),
   CONSTRAINT `permission_to_role_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
   CONSTRAINT `permission_to_role_ibfk_2` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -502,7 +502,6 @@ CREATE TABLE `permission_to_role` (
 
 LOCK TABLES `permission_to_role` WRITE;
 /*!40000 ALTER TABLE `permission_to_role` DISABLE KEYS */;
-INSERT INTO `permission_to_role` VALUES (1,3,4,'2024-11-13 15:44:22','2024-11-13 15:44:22'),(2,3,5,'2024-11-13 15:44:22','2024-11-13 15:44:22'),(3,3,3,'2024-11-13 15:48:24','2024-11-13 15:48:24'),(4,3,7,'2024-11-13 15:48:24','2024-11-13 15:48:24'),(5,4,8,'2024-11-13 16:53:43','2024-11-13 16:53:43'),(6,2,1,'2024-11-13 17:16:26','2024-11-13 17:16:26'),(7,2,8,'2024-11-13 17:16:26','2024-11-13 17:16:26'),(8,3,3,'2024-11-13 17:16:38','2024-11-13 17:16:38'),(9,3,5,'2024-11-13 17:16:38','2024-11-13 17:16:38'),(10,3,4,'2024-11-13 17:16:38','2024-11-13 17:16:38'),(11,3,7,'2024-11-13 17:16:38','2024-11-13 17:16:38'),(12,3,8,'2024-11-13 17:16:38','2024-11-13 17:16:38');
 /*!40000 ALTER TABLE `permission_to_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -520,7 +519,7 @@ CREATE TABLE `permissions` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -529,7 +528,7 @@ CREATE TABLE `permissions` (
 
 LOCK TABLES `permissions` WRITE;
 /*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (1,'billing history','2024-11-13 06:09:55','2024-11-13 06:09:55','inventory-billing history'),(2,'manage','2024-11-13 06:09:55','2024-11-13 06:09:55','inventory-manage'),(3,'create','2024-11-13 06:10:25','2024-11-13 06:10:25','subscriptions-create'),(4,'update','2024-11-13 06:10:25','2024-11-13 06:10:25','subscriptions-update'),(5,'delete','2024-11-13 06:10:25','2024-11-13 06:10:25','subscriptions-delete'),(6,'Index','2024-11-13 13:17:04','2024-11-13 13:17:04','transaction-index'),(7,'Create','2024-11-13 13:17:04','2024-11-13 13:17:04','transaction-create'),(8,'View','2024-11-13 13:17:04','2024-11-13 13:17:04','transaction-view'),(9,'Delete','2024-11-13 13:17:04','2024-11-13 13:17:04','transaction-delete'),(10,'Index','2024-11-13 17:17:12','2024-11-13 17:17:12','investment-index'),(11,'Create','2024-11-13 17:17:12','2024-11-13 17:17:12','investment-create'),(12,'View','2024-11-13 17:17:12','2024-11-13 17:17:12','investment-view'),(13,'Edit/Update','2024-11-13 17:17:12','2024-11-13 17:17:12','investment-edit/update');
+INSERT INTO `permissions` VALUES (1,'create','2024-11-15 10:04:32','2024-11-15 10:04:32','subscriptions-create');
 /*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -549,7 +548,7 @@ CREATE TABLE `role_to_users` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
   CONSTRAINT `role_to_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -558,7 +557,7 @@ CREATE TABLE `role_to_users` (
 
 LOCK TABLES `role_to_users` WRITE;
 /*!40000 ALTER TABLE `role_to_users` DISABLE KEYS */;
-INSERT INTO `role_to_users` VALUES (1,1,1),(2,2,2),(3,3,3),(3,4,4),(4,4,7),(3,7,8);
+INSERT INTO `role_to_users` VALUES (1,1,1),(2,2,2),(2,3,3),(3,4,4),(2,6,6),(2,7,7);
 /*!40000 ALTER TABLE `role_to_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -576,7 +575,7 @@ CREATE TABLE `roles` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -849,7 +848,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -858,7 +857,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'syedtalha71x','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-12 05:16:56'),(2,'hassan','hassanalirajput2004@gmail.com','f081545ef9908372bf0cc24ecdbdbbd83eb98e45dc416f9c12e4388c65478033',NULL,NULL,NULL,'2024-11-12 05:35:47'),(3,'uzair','uzair@gmail.com','2821b6a595c9277fde7b1c7b1f035dd94b91bf9aa7f9787924f968c3e85d399b',NULL,NULL,NULL,'2024-11-12 05:38:41'),(4,'areeba12','areeba@gmail.com','467077ff0d9698da101a2643bfb968dda5c5cb63d9902809acd1b6b6d0aef5db',NULL,NULL,NULL,'2024-11-12 06:06:10'),(7,'united123','unitedfurniture75@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-13 14:32:47');
+INSERT INTO `users` VALUES (1,'talha','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-14 12:22:05'),(2,'hassan','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-14 12:26:14'),(3,'uzair','uzair@gmail.com','af1abd7e6077af6e448753f5c5a0b0381beb86b5aec98db8f6d37ee1c680c4ba',NULL,NULL,NULL,'2024-11-14 12:29:50'),(4,'checking','checking@gmail.com','8439c887e770b87564eeb7575ab935947b3d771ea812d8894068de3ba1855b6d',NULL,NULL,NULL,'2024-11-14 12:31:41'),(6,'daniyal','daniyal@gmail.com','29cf8b1808bfedf71270ecb7e096199a671e4dc27e4b6a0e5cebd50632a64fa0',NULL,NULL,NULL,'2024-11-14 14:01:32'),(7,'hadi','hadi@gmail.com','21531406955bb2b6b59816dc059ab1db65cc749776114b5370e26f58a13d82cd',NULL,NULL,NULL,'2024-11-14 14:33:13');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -871,4 +870,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-13 22:19:16
+-- Dump completed on 2024-11-15 16:09:19
