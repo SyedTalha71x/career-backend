@@ -126,6 +126,7 @@ export const getRole = async (req, res) => {
 export const updateModuleAndPermissions = async (req, res) => {
   try {
     const { moduleId, moduleName, permissions } = req.body;
+
     if (!moduleId) {
       return res.status(400).json(
         failureResponse(
@@ -135,7 +136,7 @@ export const updateModuleAndPermissions = async (req, res) => {
       );
     }
 
-    // Handle module name update
+    // Step 1: Update Module Name if provided
     if (moduleName) {
       const updateModuleQuery = "UPDATE modules SET module_name = ? WHERE id = ?";
       pool.query(updateModuleQuery, [moduleName, moduleId], (err, moduleUpdateResult) => {
@@ -157,128 +158,182 @@ export const updateModuleAndPermissions = async (req, res) => {
       });
     }
 
-    // Handle add and delete operations for permissions
+    // Step 2: Handle Permissions
     if (permissions && Array.isArray(permissions)) {
-      const results = {
-        added: [],
-        deleted: [],
-        failed: []
-      };
+      const fetchPermissionsQuery = `
+        SELECT p.id, p.name 
+        FROM permissions p
+        JOIN permission_modules pm ON p.id = pm.permission_id
+        WHERE pm.module_id = ?`;
 
-      for (const permission of permissions) {
-        // Add permission
-        if (permission.action === "add" && permission.name) {
-          const slug = `${moduleName}-${permission.name}`.toLowerCase().replace(/ /g, "-");
-          const addPermissionQuery = "INSERT INTO permissions (name, slug) VALUES (?, ?)";
-
-          pool.query(addPermissionQuery, [permission.name, slug], (err, addResult) => {
-            if (err) {
-              console.error("Error adding permission:", err);
-              results.failed.push({
-                name: permission.name,
-                error: "Failed to add permission"
-              });
-              return;
-            }
-
-            if (addResult.affectedRows > 0) {
-              const permissionId = addResult.insertId;
-              console.log(`Permission '${permission.name}' added with ID: ${permissionId}`);
-
-              const addToPermissionModulesQuery = "INSERT INTO permission_modules (module_id, permission_id) VALUES (?, ?)";
-              pool.query(addToPermissionModulesQuery, [moduleId, permissionId], (err, addToPermissionModulesResult) => {
-                if (err) {
-                  console.error("Error linking permission to module:", err);
-                  results.failed.push({
-                    name: permission.name,
-                    error: "Failed to link permission to module"
-                  });
-                  return;
-                }
-
-                if (addToPermissionModulesResult.affectedRows > 0) {
-                  results.added.push({
-                    id: permissionId,
-                    moduleId: moduleId,
-                    message: `Permission '${permission.name}' added successfully to module '${moduleName}'`
-                  });
-                }
-              });
-            }
-          });
+      pool.query(fetchPermissionsQuery, [moduleId], (err, existingPermissions) => {
+        if (err) {
+          console.error("Error fetching existing permissions:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
         }
 
-        // Delete permission
-        if (permission.action === "delete" && permission.id) {
-          console.log(`Attempting to delete permission with ID: ${permission.id}`);
-          
-          // Check if the permission exists
-          const checkPermissionQuery = "SELECT * FROM permissions WHERE id = ?";
-          pool.query(checkPermissionQuery, [permission.id], (err, permissionExists) => {
-            if (err) {
-              console.error("Error checking permission existence:", err);
-              results.failed.push({
-                id: permission.id,
-                error: "Failed to check permission existence"
-              });
-              return;
-            }
+        // Create a map for quick lookup of existing permissions
+        const existingPermissionsMap = new Map();
+        existingPermissions.forEach(permission => {
+          existingPermissionsMap.set(permission.name, permission.id);
+        });
 
-            if (permissionExists.length === 0) {
-              results.failed.push({
-                id: permission.id,
-                error: "Permission not found"
-              });
-              return;
-            }
+        // Identify permissions to delete
+        const frontendPermissionNames = permissions.map(p => p.name);
+        const permissionsToDelete = existingPermissions
+          .filter(p => !frontendPermissionNames.includes(p.name))
+          .map(p => p.id);
 
-            // Remove the permission from the permission_modules table first
-            const deleteFromPermissionModulesQuery = "DELETE FROM permission_modules WHERE permission_id = ?";
-            pool.query(deleteFromPermissionModulesQuery, [permission.id], (err, deletePermissionModuleResults) => {
+        // Identify permissions to add
+        const permissionsToAdd = permissions.filter(p => !existingPermissionsMap.has(p.name));
+
+        const results = {
+          added: [],
+          deleted: [],
+          failed: []
+        };
+
+        // Step 3: Delete Permissions that are no longer needed
+        if (permissionsToDelete.length > 0) {
+          permissionsToDelete.forEach(permissionId => {
+            // Check if the permission is assigned to any role before deletion
+            const checkRoleAssignmentsQuery = "SELECT * FROM permission_to_role WHERE permission_id = ?";
+            pool.query(checkRoleAssignmentsQuery, [permissionId], (err, roleAssignments) => {
               if (err) {
-                console.error("Error deleting permission from permission_modules:", err);
+                console.error("Error checking role assignments:", err);
                 results.failed.push({
-                  id: permission.id,
-                  error: "Failed to delete from permission_modules"
+                  id: permissionId,
+                  error: "Failed to check role assignments"
                 });
                 return;
               }
 
-              // Now delete the permission
-              const deletePermissionQuery = "DELETE FROM permissions WHERE id = ?";
-              pool.query(deletePermissionQuery, [permission.id], (err, deleteResult) => {
+              if (roleAssignments.length > 0) {
+                // Delete the permission assignments from roles first
+                const deleteFromRoleAssignmentsQuery = "DELETE FROM permission_to_role WHERE permission_id = ?";
+                pool.query(deleteFromRoleAssignmentsQuery, [permissionId], (err) => {
+                  if (err) {
+                    console.error("Error deleting role assignments:", err);
+                    results.failed.push({
+                      id: permissionId,
+                      error: "Failed to delete role assignments"
+                    });
+                    return;
+                  }
+
+                  console.log(`Deleted role assignments for permission ID: ${permissionId}`);
+                });
+              }
+
+              // Delete from permission_modules
+              const deleteFromPermissionModulesQuery = "DELETE FROM permission_modules WHERE permission_id = ?";
+              pool.query(deleteFromPermissionModulesQuery, [permissionId], (err) => {
                 if (err) {
-                  console.error("Error deleting permission:", err);
+                  console.error("Error deleting from permission_modules:", err);
                   results.failed.push({
-                    id: permission.id,
-                    error: "Failed to delete permission"
+                    id: permissionId,
+                    error: "Failed to delete from permission_modules"
                   });
                   return;
                 }
 
-                if (deleteResult.affectedRows > 0) {
-                  results.deleted.push({
-                    id: permission.id,
-                    message: "Permission deleted successfully"
-                  });
-                } else {
-                  results.failed.push({
-                    id: permission.id,
-                    error: "Failed to delete permission"
-                  });
-                }
+                // Finally, delete the permission itself
+                const deletePermissionQuery = "DELETE FROM permissions WHERE id = ?";
+                pool.query(deletePermissionQuery, [permissionId], (err, deleteResult) => {
+                  if (err) {
+                    console.error("Error deleting permission:", err);
+                    results.failed.push({
+                      id: permissionId,
+                      error: "Failed to delete permission"
+                    });
+                    return;
+                  }
+
+                  if (deleteResult.affectedRows > 0) {
+                    results.deleted.push({
+                      id: permissionId,
+                      name: existingPermissionsMap.get(permissionId),  // Include permission name in response
+                      message: "Permission deleted successfully"
+                    });
+                    console.log(`Permission with ID ${permissionId} deleted successfully`);
+                  } else {
+                    results.failed.push({
+                      id: permissionId,
+                      error: "Failed to delete permission"
+                    });
+                  }
+                });
               });
             });
           });
         }
-      }
 
-      // Send the results after processing all permissions
-      setTimeout(() => {
-        return res.status(200).json({
-          results: results
+        // Step 4: Add New Permissions
+        permissionsToAdd.forEach(permission => {
+          const slug = `${moduleName}-${permission.name}`.toLowerCase().replace(/ /g, "-");
+
+          // Check if permission already exists in the database before adding
+          const checkExistingPermissionQuery = "SELECT id FROM permissions WHERE name = ?";
+          pool.query(checkExistingPermissionQuery, [permission.name], (err, existingPermission) => {
+            if (err) {
+              console.error("Error checking if permission exists:", err);
+              results.failed.push({
+                name: permission.name,
+                error: "Failed to check if permission exists"
+              });
+              return;
+            }
+
+            // If permission does not exist, insert it
+            if (existingPermission.length === 0) {
+              const addPermissionQuery = "INSERT INTO permissions (name, slug) VALUES (?, ?)";
+              pool.query(addPermissionQuery, [permission.name, slug], (err, addResult) => {
+                if (err) {
+                  console.error("Error adding permission:", err);
+                  results.failed.push({
+                    name: permission.name,
+                    error: "Failed to add permission"
+                  });
+                  return;
+                }
+
+                if (addResult.affectedRows > 0) {
+                  const permissionId = addResult.insertId;
+                  console.log(`Permission '${permission.name}' added with ID: ${permissionId}`);
+
+                  const addToPermissionModulesQuery = "INSERT INTO permission_modules (module_id, permission_id) VALUES (?, ?)";
+                  pool.query(addToPermissionModulesQuery, [moduleId, permissionId], (err) => {
+                    if (err) {
+                      console.error("Error linking permission to module:", err);
+                      results.failed.push({
+                        name: permission.name,
+                        error: "Failed to link permission to module"
+                      });
+                      return;
+                    }
+
+                    results.added.push({
+                      id: permissionId,
+                      moduleId: moduleId,
+                      name: permission.name,
+                      message: `Permission '${permission.name}' added successfully to module '${moduleName}'`
+                    });
+                  });
+                }
+              });
+            } else {
+              console.log(`Permission '${permission.name}' already exists in the database, skipping add.`);
+            }
+          });
         });
-      }, 500); // Add a slight delay to allow async processing to complete
+
+        // Wait for a moment to ensure queries finish before sending response
+        setTimeout(() => {
+          return res.status(200).json({
+            results: results
+          });
+        }, 500);
+      });
     } else {
       return res.status(400).json(
         failureResponse(
@@ -826,7 +881,7 @@ export const listPermissions = async (req, res) => {
         .map((pm) => {
           const permission = permissionResults.find((perm) => perm.id === pm.permission_id);
           return {
-      
+            permissionId: permission.id,
             permissionName: permission.name,
             createdAt: permission.created_at
           };
