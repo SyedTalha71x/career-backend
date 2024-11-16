@@ -753,20 +753,54 @@ export const deleteUser = async (req, res) => {
       return res.status(400).json({ error: "UserID not found" });
     }
 
-    const deleteQuery = "DELETE FROM users WHERE id = ?";
+    // Query to check if the user has an Admin role (role ID 2)
+    const checkRoleQuery = `
+      SELECT r.id AS role_id
+      FROM roles r
+      JOIN role_to_users rt ON r.id = rt.role_id
+      WHERE rt.user_id = ? AND r.id = 2
+    `;
 
-    pool.query(deleteQuery, [userId], (err, results) => {
-      if (err) {
-        console.log("Database error:", err);
+    pool.query(checkRoleQuery, [userId], (checkErr, checkResults) => {
+      if (checkErr) {
+        console.log("Role check error:", checkErr);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      return res.status(200).json({ message: "User has been deleted" });
+
+      console.log("Check role results:", checkResults);
+
+      if (checkResults.length === 0) {
+        return res.status(403).json({ error: "Sorry you cannot delete this user because he is not assigned to the Admin role" });
+      }
+
+      const deleteRoleQuery = "DELETE FROM role_to_users WHERE user_id = ?";
+      pool.query(deleteRoleQuery, [userId], (roleErr, roleResults) => {
+        if (roleErr) {
+          console.log("Role deletion error:", roleErr);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        console.log("Role relation deleted successfully:", roleResults);
+
+        const deleteUserQuery = "DELETE FROM users WHERE id = ?";
+        pool.query(deleteUserQuery, [userId], (userErr, userResults) => {
+          if (userErr) {
+            console.log("User deletion error:", userErr);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+
+          console.log("User deleted successfully:", userResults);
+          return res.status(200).json({ message: "User has been deleted" });
+        });
+      });
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
 export const getUsers = async (req, res) => {
   try {
     const fetchAllUsersQuery =

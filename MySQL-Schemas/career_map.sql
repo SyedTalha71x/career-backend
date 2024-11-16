@@ -549,7 +549,7 @@ CREATE TABLE `role_to_users` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
   CONSTRAINT `role_to_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -558,7 +558,7 @@ CREATE TABLE `role_to_users` (
 
 LOCK TABLES `role_to_users` WRITE;
 /*!40000 ALTER TABLE `role_to_users` DISABLE KEYS */;
-INSERT INTO `role_to_users` VALUES (1,1,1),(2,2,2),(3,4,4),(2,7,7),(2,8,8);
+INSERT INTO `role_to_users` VALUES (1,1,1),(2,2,2),(3,4,4),(3,10,10);
 /*!40000 ALTER TABLE `role_to_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -849,7 +849,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -858,7 +858,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'talha','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-14 12:22:05'),(2,'hassan','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-14 12:26:14'),(4,'checking','checking@gmail.com','8439c887e770b87564eeb7575ab935947b3d771ea812d8894068de3ba1855b6d',NULL,NULL,NULL,'2024-11-14 12:31:41'),(7,'hadi','hadi@gmail.com','21531406955bb2b6b59816dc059ab1db65cc749776114b5370e26f58a13d82cd',NULL,NULL,NULL,'2024-11-14 14:33:13'),(8,'test','test@gmail.com','e1651337c7229d4ff7ec129d4beee029a68e621d824581efffcf622546690b7e',NULL,NULL,NULL,'2024-11-15 11:14:03');
+INSERT INTO `users` VALUES (1,'talha','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-14 12:22:05'),(2,'hassan','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-14 12:26:14'),(4,'checking','checking@gmail.com','8439c887e770b87564eeb7575ab935947b3d771ea812d8894068de3ba1855b6d',NULL,NULL,NULL,'2024-11-14 12:31:41'),(10,'random','random@gmail.com','9bcc4e44e74721fd3af328803efdd905b004a751b1db4cb3e153d9b9ddd14629',NULL,NULL,NULL,'2024-11-16 13:41:50');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -871,4 +871,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-16 12:21:40
+-- Dump completed on 2024-11-16 18:45:56
