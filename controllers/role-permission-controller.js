@@ -136,7 +136,6 @@ export const updateModuleAndPermissions = async (req, res) => {
       );
     }
 
-    // Step 1: Update Module Name if provided
     if (moduleName) {
       const updateModuleQuery = "UPDATE modules SET module_name = ? WHERE id = ?";
       pool.query(updateModuleQuery, [moduleName, moduleId], (err, moduleUpdateResult) => {
@@ -184,7 +183,6 @@ export const updateModuleAndPermissions = async (req, res) => {
           .filter(p => !frontendPermissionNames.includes(p.name))
           .map(p => p.id);
 
-        // Identify permissions to add
         const permissionsToAdd = permissions.filter(p => !existingPermissionsMap.has(p.name));
 
         const results = {
@@ -196,7 +194,6 @@ export const updateModuleAndPermissions = async (req, res) => {
         // Step 3: Delete Permissions that are no longer needed
         if (permissionsToDelete.length > 0) {
           permissionsToDelete.forEach(permissionId => {
-            // Check if the permission is assigned to any role before deletion
             const checkRoleAssignmentsQuery = "SELECT * FROM permission_to_role WHERE permission_id = ?";
             pool.query(checkRoleAssignmentsQuery, [permissionId], (err, roleAssignments) => {
               if (err) {
@@ -209,7 +206,6 @@ export const updateModuleAndPermissions = async (req, res) => {
               }
 
               if (roleAssignments.length > 0) {
-                // Delete the permission assignments from roles first
                 const deleteFromRoleAssignmentsQuery = "DELETE FROM permission_to_role WHERE permission_id = ?";
                 pool.query(deleteFromRoleAssignmentsQuery, [permissionId], (err) => {
                   if (err) {
@@ -225,7 +221,6 @@ export const updateModuleAndPermissions = async (req, res) => {
                 });
               }
 
-              // Delete from permission_modules
               const deleteFromPermissionModulesQuery = "DELETE FROM permission_modules WHERE permission_id = ?";
               pool.query(deleteFromPermissionModulesQuery, [permissionId], (err) => {
                 if (err) {
@@ -237,7 +232,6 @@ export const updateModuleAndPermissions = async (req, res) => {
                   return;
                 }
 
-                // Finally, delete the permission itself
                 const deletePermissionQuery = "DELETE FROM permissions WHERE id = ?";
                 pool.query(deletePermissionQuery, [permissionId], (err, deleteResult) => {
                   if (err) {
@@ -252,7 +246,7 @@ export const updateModuleAndPermissions = async (req, res) => {
                   if (deleteResult.affectedRows > 0) {
                     results.deleted.push({
                       id: permissionId,
-                      name: existingPermissionsMap.get(permissionId),  // Include permission name in response
+                      name: existingPermissionsMap.get(permissionId), 
                       message: "Permission deleted successfully"
                     });
                     console.log(`Permission with ID ${permissionId} deleted successfully`);
