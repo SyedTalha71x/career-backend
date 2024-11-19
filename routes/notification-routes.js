@@ -5,7 +5,7 @@ import authenticate from '../middleware/authentication.js';
 const router = express.Router();
 
 // router.post('/create-notification', authenticate, createNotifications)
-router.get('/get-notifications', getNotifications)
+router.get('/get-notifications', authenticate, getNotifications)
 router.put('/update-seen-all-notifications-for-specific-user', authenticate, updateSeenAllNotificationsForSpecificUser)
 router.put('/update-read-all-notifications-for-specfic-user', authenticate, updateReadAllNotificationsForSpecificUser)
 router.put('/update-read-notification-for-specfic-user/:id', authenticate, updateReadNotificationForSpecificUser)

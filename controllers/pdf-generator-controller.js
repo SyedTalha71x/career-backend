@@ -353,7 +353,17 @@ export const generatePdfReport = async (req, res) => {
       })),
     };
 
-    // Step 9: Increment current_training_plan in user_subscription table
+    const insert_into_activity_logs = "INSERT INTO activity_logs (name, user_id) VALUES (?,?)"
+
+    const trainingPlanTitle = trainingPlanResults[0]?.plan_recommendation.slice(0,20);
+    pool.query(insert_into_activity_logs, [`Created Training Plan: ${trainingPlanTitle}`, userId], (err)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'})
+        
+      }
+    })
+
     const updateSubscriptionQuery = `
       UPDATE user_subscription
       SET current_training_plan = IFNULL(current_training_plan, 0) + 1

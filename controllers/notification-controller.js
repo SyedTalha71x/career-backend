@@ -58,17 +58,29 @@ const pool = connectToDB();
 // };
 export const getNotifications = (req, res) => {
   try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User is not authorized" });
+    }
+
     const sqlQuery = `
-    SELECT * FROM notifications ORDER BY id DESC LIMIT 10;`;
+SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC LIMIT 10;`;
     const unseenCountQuery =
       "SELECT COUNT(*) AS unseenCount FROM notifications WHERE seen = 0";
 
-    pool.query(sqlQuery, (err, notifications) => {
+    pool.query(sqlQuery, [userId], (err, notifications) => {
       if (err) {
         console.error(err);
         return res
           .status(500)
           .json(failureResponse({}, "Internal server error"));
+      }
+
+      if (notifications.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "No notifications found for this user" });
       }
       pool.query(unseenCountQuery, (err, unseenResult) => {
         if (err) {
@@ -378,14 +390,12 @@ export const createPathNotification = (req, res) => {
               .json({ err: "Failed to create notification" });
           }
 
-          return res
-            .status(200)
-            .json(
-              successResponse({
-                message: "Notification created",
-                notificationId: results.insertId,
-              })
-            );
+          return res.status(200).json(
+            successResponse({
+              message: "Notification created",
+              notificationId: results.insertId,
+            })
+          );
         }
       );
     });

@@ -60,9 +60,9 @@ router.get("/get-single-branch/:id", authenticate, getSingleBranch);
 router.get("/get-skills-for-single-step/:id", authenticate, getSpecificSkillsWithStepId);
 router.post("/send-message", authenticate,  sendMessage);
 router.get("/get-message/:id", authenticate, getMessage)
-router.post("/add-skill", addSkill)
-router.post("/update-skill/:id", updateSkill)
-router.delete("/delete-skill/:id", deleteSkill)
+router.post("/add-skill", authenticate, addSkill)
+router.post("/update-skill/:id", authenticate, updateSkill)
+router.delete("/delete-skill/:id",authenticate, deleteSkill)
 
 // Error handling middleware
 router.use((err, req, res, next) => {

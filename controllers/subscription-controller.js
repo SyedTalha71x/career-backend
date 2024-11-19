@@ -116,6 +116,15 @@ export const purchaseSubscription = async (req, res) => {
       client_reference_id: subscriptionId,
     });
 
+    const insert_activity_logs = "INSERT INTO activity_logs (name, user_id) VALUES (?,?)"
+
+    pool.query(insert_activity_logs, [`Subscription purchased: ${subscription.name}`, userId], (err)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'})
+      }
+    })
+
     if (session) {
       return res
         .status(200)
@@ -176,7 +185,6 @@ export const getSubscription = async (req, res) => {
       );
   }
 };
-
 export const confirmSubscription = async (req, res) => {
   try {
     const { sessionId } = req.body;
@@ -439,7 +447,6 @@ export const checkPathSubscription = (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 export const checkTrainingPlanSubscription = (req, res) => {
   try {
     const userId = req.user?.userId;

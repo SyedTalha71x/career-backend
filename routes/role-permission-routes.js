@@ -13,7 +13,13 @@ import {
   listPermissions,
   getRole,
   getRolePermissions,
-  getMostPaths
+  getMostPaths,
+  getActivitylogs,
+  adminDeleteSkill,
+  adminUpdateSkill,
+  getAllSkills,
+  getAllPaths,
+  updatePathPrompt
 } from "../controllers/role-permission-controller.js";
 import { SuperAdmin } from "../middleware/SuperAdmin.js";
 import { AdminAccess } from "../middleware/AdminAccess.js";
@@ -39,7 +45,15 @@ router.put('/update-user/:id', SuperAdmin(), updateUser)
 router.delete('/delete-user/:id', SuperAdmin(), deleteUser)
 router.get('/get-all-users', getUsers)
 
-router.delete('/delete-user/:id', SuperAdmin(), deleteUser)
+router.get('/get-activity-logs', FullAccess(), getActivitylogs)
+
+//Permissions wali api's
+router.post('/update-skill-for-admin-panel/:skillId', AdminAccess(), adminUpdateSkill)
+router.delete('/delete-skill-for-admin-panel/:skillId', AdminAccess(), adminDeleteSkill)
+router.get('/get-all-skills-for-admin-panel', FullAccess(), getAllSkills )
+router.get('/get-all-paths-for-admin-panel', FullAccess(), getAllPaths)
+router.post('/update-path-prompt-for-admin-panel/:pathId', AdminAccess(), updatePathPrompt)
+
 router.get('/get-most-created-paths', FullAccess(), getMostPaths)
 
 router.get('/manage', checkPermission('manage'), (req,res)=>{

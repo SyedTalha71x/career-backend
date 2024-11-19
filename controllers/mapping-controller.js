@@ -69,6 +69,22 @@ export const createPath = async (req, res) => {
         }
 
         try {
+
+          const insert_activity_logs = "INSERT INTO activity_logs (name, user_id) VALUES (?,?)"
+
+          pool.query(insert_activity_logs, [`Created Path: ${title}`, userId], (err)=>{
+            if(err){
+              console.log(err);
+              return res
+              .status(500)
+              .json(
+                failureResponse(
+                  { error: "Internal Server Error" },
+                  "Failed to create the path"
+                )
+              );
+            }
+          })
           const updateSubscriptionQuery = `
               UPDATE user_subscription 
               SET current_path = COALESCE(current_path, 0) + 1 
@@ -963,10 +979,14 @@ export const getMessage = async (req, res) => {
   }
 };
 export const addSkill = async (req, res) => {
-  console.log("addSkill API called");
   try {
     const { title, step_id, status } = req.body;
+    const userId = req.user?.userId;
 
+    if(!userId){
+      return res.status(400).json({error: 'User is not authorized'})
+    }
+    
     if (!step_id) {
       return res.status(400).json({ error: "StepId should be provided" });
     }
@@ -988,6 +1008,15 @@ export const addSkill = async (req, res) => {
       nextSort,
     ]);
 
+    const insert_activity_logs = 'INSERT INTO activity_logs (name, user_id) VALUES (?,?)'
+
+    pool.query(insert_activity_logs, [`Skill Created: ${title}`, userId], (err)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'})
+      }
+    })
+
     console.log(results);
     return res.status(200).json({ message: "Skill created successfully" });
   } catch (error) {
@@ -996,9 +1025,13 @@ export const addSkill = async (req, res) => {
   }
 };
 export const updateSkill = async (req, res) => {
-  console.log("updateSkill API called");
   try {
     const skillId = req.params.id;
+    const userId = req.user?.userId;
+
+    if(!userId){
+      return res.status(400).json({error: 'User is not authorized'})
+    }
 
     if (!skillId) {
       return res.status(400).json({ error: "SkillIs should be provided" });
@@ -1042,6 +1075,15 @@ export const updateSkill = async (req, res) => {
       return res.status(400).json({ error: "skill not found" });
     }
 
+    const insert_activity_logs = 'INSERT INTO activity_logs (name, user_id) VALUES (?,?)'
+
+    pool.query(insert_activity_logs, [`Skill Updated: ${title}`, userId], (err)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'})
+      }
+    })
+
     return res.status(200).json({ message: "skill has been updated" });
   } catch (error) {
     console.error("Error in updateSkill API:", error);
@@ -1049,9 +1091,13 @@ export const updateSkill = async (req, res) => {
   }
 };
 export const deleteSkill = async (req, res) => {
-  console.log("deleteSkill API called");
   try {
     const skillId = req.params.id;
+    const userId = req.user?.userId;
+
+    if(!userId){
+      return res.status(400).json({error: 'User is not authorized'})
+    }
 
     if (!skillId) {
       return res.status(400).json({ error: "SkillIs should be provided" });
@@ -1067,6 +1113,15 @@ export const deleteSkill = async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(400).json({ error: "Skill not found" });
     }
+
+    const insert_activity_logs = 'INSERT INTO activity_logs (name, user_id) VALUES (?,?)'
+
+    pool.query(insert_activity_logs, [`Skill Deleted: ${title}`, userId], (err)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'})
+      }
+    })
 
     return res.status(200).json({ message: "Skill has been deleted" });
   } catch (error) {

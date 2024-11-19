@@ -103,24 +103,24 @@ export const updateRole = async (req, res) => {
 };
 export const getRole = async (req, res) => {
   try {
-    const get_roles = "SELECT id, name, created_at FROM roles WHERE name NOT IN ('Super Admin','User') ORDER BY created_at DESC";
-    
+    const get_roles =
+      "SELECT id, name, created_at FROM roles WHERE name NOT IN ('Super Admin','User') ORDER BY created_at DESC";
+
     pool.query(get_roles, (err, results) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: "Internal Server Error" });
       }
-      
 
       if (results && results.length > 0) {
         return res.status(200).json({ results });
       } else {
-        return res.status(404).json({ message: 'No roles found' });
+        return res.status(404).json({ message: "No roles found" });
       }
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const updateModuleAndPermissions = async (req, res) => {
@@ -128,33 +128,39 @@ export const updateModuleAndPermissions = async (req, res) => {
     const { moduleId, moduleName, permissions } = req.body;
 
     if (!moduleId) {
-      return res.status(400).json(
-        failureResponse(
-          { error: "Module ID is required and cannot be empty" },
-          "Bad Request"
-        )
-      );
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Module ID is required and cannot be empty" },
+            "Bad Request"
+          )
+        );
     }
 
     if (moduleName) {
-      const updateModuleQuery = "UPDATE modules SET module_name = ? WHERE id = ?";
-      pool.query(updateModuleQuery, [moduleName, moduleId], (err, moduleUpdateResult) => {
-        if (err) {
-          console.error("Error updating module:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
+      const updateModuleQuery =
+        "UPDATE modules SET module_name = ? WHERE id = ?";
+      pool.query(
+        updateModuleQuery,
+        [moduleName, moduleId],
+        (err, moduleUpdateResult) => {
+          if (err) {
+            console.error("Error updating module:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
 
-        if (moduleUpdateResult.affectedRows === 0) {
-          return res.status(404).json(
-            failureResponse(
-              { error: "Module not found" },
-              "Not Found"
-            )
-          );
-        }
+          if (moduleUpdateResult.affectedRows === 0) {
+            return res
+              .status(404)
+              .json(
+                failureResponse({ error: "Module not found" }, "Not Found")
+              );
+          }
 
-        console.log("Module updated successfully");
-      });
+          console.log("Module updated successfully");
+        }
+      );
     }
 
     // Step 2: Handle Permissions
@@ -165,185 +171,249 @@ export const updateModuleAndPermissions = async (req, res) => {
         JOIN permission_modules pm ON p.id = pm.permission_id
         WHERE pm.module_id = ?`;
 
-      pool.query(fetchPermissionsQuery, [moduleId], (err, existingPermissions) => {
-        if (err) {
-          console.error("Error fetching existing permissions:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
+      pool.query(
+        fetchPermissionsQuery,
+        [moduleId],
+        (err, existingPermissions) => {
+          if (err) {
+            console.error("Error fetching existing permissions:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
 
-        // Create a map for quick lookup of existing permissions
-        const existingPermissionsMap = new Map();
-        existingPermissions.forEach(permission => {
-          existingPermissionsMap.set(permission.name, permission.id);
-        });
-
-        // Identify permissions to delete
-        const frontendPermissionNames = permissions.map(p => p.name);
-        const permissionsToDelete = existingPermissions
-          .filter(p => !frontendPermissionNames.includes(p.name))
-          .map(p => p.id);
-
-        const permissionsToAdd = permissions.filter(p => !existingPermissionsMap.has(p.name));
-
-        const results = {
-          added: [],
-          deleted: [],
-          failed: []
-        };
-
-        // Step 3: Delete Permissions that are no longer needed
-        if (permissionsToDelete.length > 0) {
-          permissionsToDelete.forEach(permissionId => {
-            const checkRoleAssignmentsQuery = "SELECT * FROM permission_to_role WHERE permission_id = ?";
-            pool.query(checkRoleAssignmentsQuery, [permissionId], (err, roleAssignments) => {
-              if (err) {
-                console.error("Error checking role assignments:", err);
-                results.failed.push({
-                  id: permissionId,
-                  error: "Failed to check role assignments"
-                });
-                return;
-              }
-
-              if (roleAssignments.length > 0) {
-                const deleteFromRoleAssignmentsQuery = "DELETE FROM permission_to_role WHERE permission_id = ?";
-                pool.query(deleteFromRoleAssignmentsQuery, [permissionId], (err) => {
-                  if (err) {
-                    console.error("Error deleting role assignments:", err);
-                    results.failed.push({
-                      id: permissionId,
-                      error: "Failed to delete role assignments"
-                    });
-                    return;
-                  }
-
-                  console.log(`Deleted role assignments for permission ID: ${permissionId}`);
-                });
-              }
-
-              const deleteFromPermissionModulesQuery = "DELETE FROM permission_modules WHERE permission_id = ?";
-              pool.query(deleteFromPermissionModulesQuery, [permissionId], (err) => {
-                if (err) {
-                  console.error("Error deleting from permission_modules:", err);
-                  results.failed.push({
-                    id: permissionId,
-                    error: "Failed to delete from permission_modules"
-                  });
-                  return;
-                }
-
-                const deletePermissionQuery = "DELETE FROM permissions WHERE id = ?";
-                pool.query(deletePermissionQuery, [permissionId], (err, deleteResult) => {
-                  if (err) {
-                    console.error("Error deleting permission:", err);
-                    results.failed.push({
-                      id: permissionId,
-                      error: "Failed to delete permission"
-                    });
-                    return;
-                  }
-
-                  if (deleteResult.affectedRows > 0) {
-                    results.deleted.push({
-                      id: permissionId,
-                      name: existingPermissionsMap.get(permissionId), 
-                      message: "Permission deleted successfully"
-                    });
-                    console.log(`Permission with ID ${permissionId} deleted successfully`);
-                  } else {
-                    results.failed.push({
-                      id: permissionId,
-                      error: "Failed to delete permission"
-                    });
-                  }
-                });
-              });
-            });
+          // Create a map for quick lookup of existing permissions
+          const existingPermissionsMap = new Map();
+          existingPermissions.forEach((permission) => {
+            existingPermissionsMap.set(permission.name, permission.id);
           });
-        }
 
-        // Step 4: Add New Permissions
-        permissionsToAdd.forEach(permission => {
-          const slug = `${moduleName}-${permission.name}`.toLowerCase().replace(/ /g, "-");
+          // Identify permissions to delete
+          const frontendPermissionNames = permissions.map((p) => p.name);
+          const permissionsToDelete = existingPermissions
+            .filter((p) => !frontendPermissionNames.includes(p.name))
+            .map((p) => p.id);
 
-          // Check if permission already exists in the database before adding
-          const checkExistingPermissionQuery = "SELECT id FROM permissions WHERE name = ?";
-          pool.query(checkExistingPermissionQuery, [permission.name], (err, existingPermission) => {
-            if (err) {
-              console.error("Error checking if permission exists:", err);
-              results.failed.push({
-                name: permission.name,
-                error: "Failed to check if permission exists"
-              });
-              return;
-            }
+          const permissionsToAdd = permissions.filter(
+            (p) => !existingPermissionsMap.has(p.name)
+          );
 
-            // If permission does not exist, insert it
-            if (existingPermission.length === 0) {
-              const addPermissionQuery = "INSERT INTO permissions (name, slug) VALUES (?, ?)";
-              pool.query(addPermissionQuery, [permission.name, slug], (err, addResult) => {
+          const results = {
+            added: [],
+            deleted: [],
+            failed: [],
+          };
+
+          // Step 3: Delete Permissions that are no longer needed
+          if (permissionsToDelete.length > 0) {
+            permissionsToDelete.forEach((permissionId) => {
+              const checkRoleAssignmentsQuery =
+                "SELECT * FROM permission_to_role WHERE permission_id = ?";
+              pool.query(
+                checkRoleAssignmentsQuery,
+                [permissionId],
+                (err, roleAssignments) => {
+                  if (err) {
+                    console.error("Error checking role assignments:", err);
+                    results.failed.push({
+                      id: permissionId,
+                      error: "Failed to check role assignments",
+                    });
+                    return;
+                  }
+
+                  if (roleAssignments.length > 0) {
+                    const deleteFromRoleAssignmentsQuery =
+                      "DELETE FROM permission_to_role WHERE permission_id = ?";
+                    pool.query(
+                      deleteFromRoleAssignmentsQuery,
+                      [permissionId],
+                      (err) => {
+                        if (err) {
+                          console.error(
+                            "Error deleting role assignments:",
+                            err
+                          );
+                          results.failed.push({
+                            id: permissionId,
+                            error: "Failed to delete role assignments",
+                          });
+                          return;
+                        }
+
+                        console.log(
+                          `Deleted role assignments for permission ID: ${permissionId}`
+                        );
+                      }
+                    );
+                  }
+
+                  const deleteFromPermissionModulesQuery =
+                    "DELETE FROM permission_modules WHERE permission_id = ?";
+                  pool.query(
+                    deleteFromPermissionModulesQuery,
+                    [permissionId],
+                    (err) => {
+                      if (err) {
+                        console.error(
+                          "Error deleting from permission_modules:",
+                          err
+                        );
+                        results.failed.push({
+                          id: permissionId,
+                          error: "Failed to delete from permission_modules",
+                        });
+                        return;
+                      }
+
+                      const deletePermissionQuery =
+                        "DELETE FROM permissions WHERE id = ?";
+                      pool.query(
+                        deletePermissionQuery,
+                        [permissionId],
+                        (err, deleteResult) => {
+                          if (err) {
+                            console.error("Error deleting permission:", err);
+                            results.failed.push({
+                              id: permissionId,
+                              error: "Failed to delete permission",
+                            });
+                            return;
+                          }
+
+                          if (deleteResult.affectedRows > 0) {
+                            results.deleted.push({
+                              id: permissionId,
+                              name: existingPermissionsMap.get(permissionId),
+                              message: "Permission deleted successfully",
+                            });
+                            console.log(
+                              `Permission with ID ${permissionId} deleted successfully`
+                            );
+                          } else {
+                            results.failed.push({
+                              id: permissionId,
+                              error: "Failed to delete permission",
+                            });
+                          }
+                        }
+                      );
+                    }
+                  );
+                }
+              );
+            });
+          }
+
+          // Step 4: Add New Permissions
+          permissionsToAdd.forEach((permission) => {
+            const slug = `${moduleName}-${permission.name}`
+              .toLowerCase()
+              .replace(/ /g, "-");
+
+            // Check if permission already exists in the database before adding
+            const checkExistingPermissionQuery =
+              "SELECT id FROM permissions WHERE name = ?";
+            pool.query(
+              checkExistingPermissionQuery,
+              [permission.name],
+              (err, existingPermission) => {
                 if (err) {
-                  console.error("Error adding permission:", err);
+                  console.error("Error checking if permission exists:", err);
                   results.failed.push({
                     name: permission.name,
-                    error: "Failed to add permission"
+                    error: "Failed to check if permission exists",
                   });
                   return;
                 }
 
-                if (addResult.affectedRows > 0) {
-                  const permissionId = addResult.insertId;
-                  console.log(`Permission '${permission.name}' added with ID: ${permissionId}`);
+                // If permission does not exist, insert it
+                if (existingPermission.length === 0) {
+                  const addPermissionQuery =
+                    "INSERT INTO permissions (name, slug) VALUES (?, ?)";
+                  pool.query(
+                    addPermissionQuery,
+                    [permission.name, slug],
+                    (err, addResult) => {
+                      if (err) {
+                        console.error("Error adding permission:", err);
+                        results.failed.push({
+                          name: permission.name,
+                          error: "Failed to add permission",
+                        });
+                        return;
+                      }
 
-                  const addToPermissionModulesQuery = "INSERT INTO permission_modules (module_id, permission_id) VALUES (?, ?)";
-                  pool.query(addToPermissionModulesQuery, [moduleId, permissionId], (err) => {
-                    if (err) {
-                      console.error("Error linking permission to module:", err);
-                      results.failed.push({
-                        name: permission.name,
-                        error: "Failed to link permission to module"
-                      });
-                      return;
+                      if (addResult.affectedRows > 0) {
+                        const permissionId = addResult.insertId;
+                        console.log(
+                          `Permission '${permission.name}' added with ID: ${permissionId}`
+                        );
+
+                        const addToPermissionModulesQuery =
+                          "INSERT INTO permission_modules (module_id, permission_id) VALUES (?, ?)";
+                        pool.query(
+                          addToPermissionModulesQuery,
+                          [moduleId, permissionId],
+                          (err) => {
+                            if (err) {
+                              console.error(
+                                "Error linking permission to module:",
+                                err
+                              );
+                              results.failed.push({
+                                name: permission.name,
+                                error: "Failed to link permission to module",
+                              });
+                              return;
+                            }
+
+                            results.added.push({
+                              id: permissionId,
+                              moduleId: moduleId,
+                              name: permission.name,
+                              message: `Permission '${permission.name}' added successfully to module '${moduleName}'`,
+                            });
+                          }
+                        );
+                      }
                     }
-
-                    results.added.push({
-                      id: permissionId,
-                      moduleId: moduleId,
-                      name: permission.name,
-                      message: `Permission '${permission.name}' added successfully to module '${moduleName}'`
-                    });
-                  });
+                  );
+                } else {
+                  console.log(
+                    `Permission '${permission.name}' already exists in the database, skipping add.`
+                  );
                 }
-              });
-            } else {
-              console.log(`Permission '${permission.name}' already exists in the database, skipping add.`);
-            }
+              }
+            );
           });
-        });
 
-        // Wait for a moment to ensure queries finish before sending response
-        setTimeout(() => {
-          return res.status(200).json({
-            results: results
-          });
-        }, 500);
-      });
-    } else {
-      return res.status(400).json(
-        failureResponse(
-          { error: "Permissions array is required" },
-          "Bad Request"
-        )
+          // Wait for a moment to ensure queries finish before sending response
+          setTimeout(() => {
+            return res.status(200).json({
+              results: results,
+            });
+          }, 500);
+        }
       );
+    } else {
+      return res
+        .status(400)
+        .json(
+          failureResponse(
+            { error: "Permissions array is required" },
+            "Bad Request"
+          )
+        );
     }
   } catch (error) {
     console.error("Error occurred during processing:", error);
-    return res.status(500).json(
-      failureResponse(
-        { error: "Internal Server Error" },
-        "Internal Server Error"
-      )
-    );
+    return res
+      .status(500)
+      .json(
+        failureResponse(
+          { error: "Internal Server Error" },
+          "Internal Server Error"
+        )
+      );
   }
 };
 export const assignPermissionsToRole = async (req, res) => {
@@ -678,18 +748,23 @@ export const createUser = async (req, res) => {
 
         const userId = results.insertId;
 
-        pool.query('INSERT INTO role_to_users (role_id, user_id) VALUES (?,?)', [roleId, userId], (err, roleResults)=>{
-          if (err) {
-            console.log("Database error:", err);
-            return res.status(500).json({ error: "Internal Server Error" });
-          }
+        pool.query(
+          "INSERT INTO role_to_users (role_id, user_id) VALUES (?,?)",
+          [roleId, userId],
+          (err, roleResults) => {
+            if (err) {
+              console.log("Database error:", err);
+              return res.status(500).json({ error: "Internal Server Error" });
+            }
 
-          const data = {
-            userId: userId,
-            message: "User has been created successfully and role has been assigned",
-          };
-          return res.status(200).json(data);
-        })
+            const data = {
+              userId: userId,
+              message:
+                "User has been created successfully and role has been assigned",
+            };
+            return res.status(200).json(data);
+          }
+        );
       }
     );
   } catch (error) {
@@ -770,7 +845,10 @@ export const deleteUser = async (req, res) => {
       console.log("Check role results:", checkResults);
 
       if (checkResults.length === 0) {
-        return res.status(403).json({ error: "Sorry you cannot delete this user because he is not assigned to the Admin role" });
+        return res.status(403).json({
+          error:
+            "Sorry you cannot delete this user because he is not assigned to the Admin role",
+        });
       }
 
       const deleteRoleQuery = "DELETE FROM role_to_users WHERE user_id = ?";
@@ -799,8 +877,6 @@ export const deleteUser = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
 export const getUsers = async (req, res) => {
   try {
     const fetchAllUsersQuery =
@@ -878,42 +954,49 @@ export const getUsers = async (req, res) => {
 };
 export const listPermissions = async (req, res) => {
   try {
-    const fetchAllModules = "SELECT id, module_name FROM modules";
-    const fetchAllPermissions = "SELECT id, name, created_at FROM permissions";
-    const fetchAllPermissionModules = "SELECT module_id, permission_id FROM permission_modules";
+    const fetchAllModules =
+      "SELECT id, module_name FROM modules ORDER BY id DESC  ";
+    const fetchAllPermissions =
+      "SELECT id, name, created_at FROM permissions ORDER BY id DESC ";
+    const fetchAllPermissionModules =
+      "SELECT module_id, permission_id FROM permission_modules";
 
-    const [moduleResults, permissionResults, permissionModuleResults] = await Promise.all([
-      new Promise((resolve, reject) =>
-        pool.query(fetchAllModules, (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        })
-      ),
-      new Promise((resolve, reject) =>
-        pool.query(fetchAllPermissions, (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        })
-      ),
-      new Promise((resolve, reject) =>
-        pool.query(fetchAllPermissionModules, (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        })
-      ),
-    ]);
+    const [moduleResults, permissionResults, permissionModuleResults] =
+      await Promise.all([
+        new Promise((resolve, reject) =>
+          pool.query(fetchAllModules, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          })
+        ),
+        new Promise((resolve, reject) =>
+          pool.query(fetchAllPermissions, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          })
+        ),
+        new Promise((resolve, reject) =>
+          pool.query(fetchAllPermissionModules, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          })
+        ),
+      ]);
 
     const permissionsByModule = moduleResults.map((module) => {
       const modulePermissions = permissionModuleResults
         .filter((pm) => pm.module_id === module.id)
         .map((pm) => {
-          const permission = permissionResults.find((perm) => perm.id === pm.permission_id);
+          const permission = permissionResults.find(
+            (perm) => perm.id === pm.permission_id
+          );
           return {
             permissionId: permission.id,
             permissionName: permission.name,
-            createdAt: permission.created_at
+            createdAt: permission.created_at,
           };
-        });
+        })
+        .sort((a, b) => b.permissionId - a.permissionId);
 
       return {
         id: module.id,
@@ -930,7 +1013,7 @@ export const listPermissions = async (req, res) => {
 };
 export const getRolePermissions = async (req, res) => {
   try {
-    const roleId = req.params.roleId; 
+    const roleId = req.params.roleId;
 
     const query = `
       SELECT
@@ -955,16 +1038,20 @@ export const getRolePermissions = async (req, res) => {
 
     pool.query(query, [roleId], (error, results) => {
       if (error) {
-        return res.status(500).json({ status: false, message: 'Error fetching role permissions', error });
+        return res.status(500).json({
+          status: false,
+          message: "Error fetching role permissions",
+          error,
+        });
       }
 
       // Customizing the result to ensure `status` is `true` or `false`
       const formattedResults = results.reduce((acc, row) => {
-        let module = acc.find(m => m.moduleName === row.moduleName);
+        let module = acc.find((m) => m.moduleName === row.moduleName);
         if (!module) {
           module = {
             moduleName: row.moduleName,
-            permissions: []
+            permissions: [],
           };
           acc.push(module);
         }
@@ -972,16 +1059,22 @@ export const getRolePermissions = async (req, res) => {
         module.permissions.push({
           permissionId: row.permissionId,
           permissionName: row.permissionName,
-          status: row.status === 1 // Convert `1` to `true` and `0` to `false`
+          status: row.status === 1, // Convert `1` to `true` and `0` to `false`
         });
 
         return acc;
       }, []);
 
-      res.json({ status: true, data: formattedResults, message: 'Permissions retrieved successfully' });
+      res.json({
+        status: true,
+        data: formattedResults,
+        message: "Permissions retrieved successfully",
+      });
     });
   } catch (err) {
-    res.status(500).json({ status: false, message: 'Server error', error: err.message });
+    res
+      .status(500)
+      .json({ status: false, message: "Server error", error: err.message });
   }
 };
 export const getMostPaths = async (req, res) => {
@@ -999,37 +1092,296 @@ export const getMostPaths = async (req, res) => {
         console.error("Error fetching most created paths:", err);
         return res
           .status(500)
-          .json(failureResponse({ error: "Internal Server Error" }, "Failed to fetch data"));
+          .json(
+            failureResponse(
+              { error: "Internal Server Error" },
+              "Failed to fetch data"
+            )
+          );
       }
 
       if (results.length === 0) {
         return res
           .status(404)
-          .json(failureResponse({ error: "No paths found" }, "No data available"));
+          .json(
+            failureResponse({ error: "No paths found" }, "No data available")
+          );
       }
 
-      const data = results.map(row =>({
+      const data = results.map((row) => ({
         title: row.title,
-        percentage: row.percentage
-      }))
-      
+        percentage: row.percentage,
+      }));
 
-      res.status(200).json(successResponse(data, "Most created paths with percentages fetched successfully"));
+      res
+        .status(200)
+        .json(
+          successResponse(
+            data,
+            "Most created paths with percentages fetched successfully"
+          )
+        );
     });
   } catch (error) {
     console.error("Unexpected error:", error);
     return res
       .status(500)
-      .json(failureResponse({ error: "Internal Server Error" }, "Failed to fetch data"));
+      .json(
+        failureResponse(
+          { error: "Internal Server Error" },
+          "Failed to fetch data"
+        )
+      );
   }
 };
+export const getActivitylogs = async (req, res) => {
+  try {
+    const fetch_all_logs =
+      "SELECT id, name, user_id FROM activity_logs ORDER BY created_at DESC";
+    pool.query(fetch_all_logs, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Sorry no activity logs found" });
+      }
+      return res.status(200).json({ results });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const adminUpdateSkill = async (req, res) => {
+  console.log("adminUpdateSkill API called");
+  try {
+    const { skillId } = req.params;
 
+    if (!skillId) {
+      return res.status(400).json({ error: "SkillId must be provided" });
+    }
 
+    const { title, sort, step_id, status } = req.body;
 
+    const fieldsToUpdate = [];
+    const values = [];
 
+    if (title !== undefined) {
+      fieldsToUpdate.push("title = ?");
+      values.push(title);
+    }
+    if (sort !== undefined) {
+      fieldsToUpdate.push("sort = ?");
+      values.push(sort);
+    }
+    if (step_id !== undefined) {
+      fieldsToUpdate.push("step_id = ?");
+      values.push(step_id);
+    }
+    if (status !== undefined) {
+      fieldsToUpdate.push("status = ?");
+      values.push(status);
+    }
 
+    if (fieldsToUpdate.length === 0) {
+      return res.status(400).json({ error: "No fields provided to update" });
+    }
 
+    const updateQuery = `
+      UPDATE skills
+      SET ${fieldsToUpdate.join(", ")}
+      WHERE id = ?
+    `;
 
+    values.push(skillId);
+    pool.query(updateQuery, values, (err, result)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'})
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Skill not found" });
+      }
 
+      return res
+      .status(200)
+      .json({ message: "Skill has been updated successfully" });
+    });
+  } catch (error) {
+    console.error("Error in adminUpdateSkill API:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const adminDeleteSkill = async (req, res) => {
+  console.log("adminDeleteSkill API called");
+  try {
+    const { skillId } = req.params;
 
+    if (!skillId) {
+      return res.status(400).json({ error: "SkillId must be provided" });
+    }
 
+    const deleteQuery = `
+      DELETE FROM skills
+      WHERE id = ?
+    `;
+
+     pool.query(deleteQuery, [skillId], (err, result)=>{
+      if(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'})
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Skill not found" });
+      }
+      return res
+      .status(200)
+      .json({ message: "Skill has been deleted successfully" });
+     });
+  
+  } catch (error) {
+    console.error("Error in adminDeleteSkill API:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const getAllSkills = async (req, res) => {
+  try {
+    const { page = 1 } = req.query;
+    const itemsPerPage = 10;
+    const offset = (page - 1) * itemsPerPage; // calculating the starting point
+
+    // fetch skills with pagination
+    const fetchSkillsQuery = `
+      SELECT id, title, sort, step_id, status 
+      FROM skills 
+      ORDER BY id DESC 
+      LIMIT ? OFFSET ?
+    `;
+
+    const countQuery = "SELECT COUNT(*) AS total FROM skills";
+
+    const [skills, totalCount] = await Promise.all([
+      new Promise((resolve, reject) =>
+        pool.query(fetchSkillsQuery, [itemsPerPage, offset], (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        })
+      ),
+      new Promise((resolve, reject) =>
+        pool.query(countQuery, (err, results) => {
+          if (err) return reject(err);
+          resolve(results[0].total);
+        })
+      ),
+    ]);
+
+    if (skills.length === 0) {
+      return res.status(404).json({ message: "No skills found" });
+    }
+
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+    return res.status(200).json({
+      currentPage: Number(page),
+      totalPages,
+      totalSkills: totalCount,
+      skills,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const getAllPaths = async (req, res) => {
+  try {
+    const { page = 1 } = req.query;
+    const itemsPerPage = 10;
+    const offset = (page - 1) * itemsPerPage; // calculating the starting point
+
+    // fetch skills with pagination
+    const fetchpathsQuery = `
+      SELECT id, prompt, status, user_id, title 
+      FROM path 
+      ORDER BY id DESC 
+      LIMIT ? OFFSET ?
+    `;
+
+    const countQuery = "SELECT COUNT(*) AS total FROM path";
+
+    const [paths, totalCount] = await Promise.all([
+      new Promise((resolve, reject) =>
+        pool.query(fetchpathsQuery, [itemsPerPage, offset], (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        })
+      ),
+      new Promise((resolve, reject) =>
+        pool.query(countQuery, (err, results) => {
+          if (err) return reject(err);
+          resolve(results[0].total);
+        })
+      ),
+    ]);
+
+    if (paths.length === 0) {
+      return res.status(404).json({ message: "No paths found" });
+    }
+
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+    return res.status(200).json({
+      currentPage: Number(page),
+      totalPages,
+      totalPaths: totalCount,
+      paths,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const updatePathPrompt = async (req, res) => {
+  const { pathId } = req.params;
+
+  const { newPrompt } = req.body;
+
+  if (!pathId) {
+    return res.status(400).json({ error: "Path ID is required" });
+  }
+
+  if (!newPrompt) {
+    return res.status(400).json({ error: "New prompt are required." });
+  }
+
+  try {
+    const updatePathquery = `
+      UPDATE path 
+      SET prompt = ? 
+      WHERE id = ?;
+    `;
+    pool.query(updatePathquery, [newPrompt, pathId], (err, result)=>{
+
+      if(err){
+        console.log(err);
+        return res.status(500).json({err: 'Internal Server Error'})
+      }
+
+      if (result.affectedRows === 0) {
+        return res
+          .status(404)
+          .json({ error: "Path not found or no changes made." });
+      }
+  
+      return res.status(200).json({ message: "Prompt updateds successfully." });
+
+    });
+
+   
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
