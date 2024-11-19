@@ -48,11 +48,11 @@ router.get('/get-all-users', getUsers)
 router.get('/get-activity-logs', FullAccess(), getActivitylogs)
 
 //Permissions wali api's
-router.post('/update-skill-for-admin-panel/:skillId', AdminAccess(), adminUpdateSkill)
-router.delete('/delete-skill-for-admin-panel/:skillId', AdminAccess(), adminDeleteSkill)
+router.post('/update-skill-for-admin-panel/:skillId', FullAccess(), adminUpdateSkill)
+router.delete('/delete-skill-for-admin-panel/:skillId', FullAccess(), adminDeleteSkill)
 router.get('/get-all-skills-for-admin-panel', FullAccess(), getAllSkills )
 router.get('/get-all-paths-for-admin-panel', FullAccess(), getAllPaths)
-router.post('/update-path-prompt-for-admin-panel/:pathId', AdminAccess(), updatePathPrompt)
+router.post('/update-path-prompt-for-admin-panel/:pathId', FullAccess(), updatePathPrompt)
 
 router.get('/get-most-created-paths', FullAccess(), getMostPaths)
 
