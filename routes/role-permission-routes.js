@@ -56,6 +56,8 @@ router.post('/update-path-prompt-for-admin-panel/:pathId', AdminAccess(), update
 
 router.get('/get-most-created-paths', FullAccess(), getMostPaths)
 
+
+//for testing
 router.get('/manage', checkPermission('manage'), (req,res)=>{
   res.status(200).json({message: 'Yes you can view the reports'})
 })

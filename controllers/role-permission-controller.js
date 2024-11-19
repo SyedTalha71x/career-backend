@@ -1136,20 +1136,66 @@ export const getMostPaths = async (req, res) => {
 };
 export const getActivitylogs = async (req, res) => {
   try {
-    const fetch_all_logs =
-      "SELECT id, name, user_id FROM activity_logs ORDER BY created_at DESC";
-    pool.query(fetch_all_logs, (err, results) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-      if (results.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Sorry no activity logs found" });
-      }
-      return res.status(200).json({ results });
-    });
+    const {page = 1} = req.query;
+    const itemsPerPage = 10;
+    const offset = (page - 1) * itemsPerPage
+
+    const fetch_all_logs = `SELECT 
+      activity_logs .id,
+      activity_logs .name,
+      activity_logs.user_id,
+      users.username
+      FROM 
+      activity_logs 
+      JOIN
+      users
+      ON  
+      activity_logs .user_id = users.id
+      ORDER BY 
+      activity_logs.created_at DESC 
+      LIMIT ? OFFSET ?
+`;
+
+    const countQuery = 'SELECT COUNT(*) AS total FROM activity_logs'
+
+    const [activity_logs, totalCount] = await Promise.all([
+      new Promise((resolve, reject)=>{
+        pool.query(fetch_all_logs, [itemsPerPage, offset], (err, results)=>{
+          if(err){
+            console.log(err); 
+            return reject(err)
+          }
+          resolve(results);
+        })
+
+      }),
+      new Promise((resolve, reject)=>{
+        pool.query(countQuery, (err, results)=>{
+          if(err){
+            console.log(err); 
+            return reject(err)
+          }
+          resolve(results[0].total);
+        })
+
+      })
+    ])
+
+    if (activity_logs.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Sorry no activity logs found" });
+    }
+
+    const totalPages = Math.ceil((totalCount / itemsPerPage))
+
+    return res.status(200).json({
+      currentPage: page,
+      totalPages: totalPages,
+      totalActivityLogs: totalCount,
+      activity_logs
+    })
+
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -1164,7 +1210,7 @@ export const adminUpdateSkill = async (req, res) => {
       return res.status(400).json({ error: "SkillId must be provided" });
     }
 
-    const { title, sort, step_id, status } = req.body;
+    const { title, step_id, status } = req.body;
 
     const fieldsToUpdate = [];
     const values = [];
@@ -1172,10 +1218,6 @@ export const adminUpdateSkill = async (req, res) => {
     if (title !== undefined) {
       fieldsToUpdate.push("title = ?");
       values.push(title);
-    }
-    if (sort !== undefined) {
-      fieldsToUpdate.push("sort = ?");
-      values.push(sort);
     }
     if (step_id !== undefined) {
       fieldsToUpdate.push("step_id = ?");
@@ -1197,18 +1239,18 @@ export const adminUpdateSkill = async (req, res) => {
     `;
 
     values.push(skillId);
-    pool.query(updateQuery, values, (err, result)=>{
-      if(err){
+    pool.query(updateQuery, values, (err, result) => {
+      if (err) {
         console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'})
+        return res.status(500).json({ error: "Internal Server Error" });
       }
       if (result.affectedRows === 0) {
         return res.status(404).json({ error: "Skill not found" });
       }
 
       return res
-      .status(200)
-      .json({ message: "Skill has been updated successfully" });
+        .status(200)
+        .json({ message: "Skill has been updated successfully" });
     });
   } catch (error) {
     console.error("Error in adminUpdateSkill API:", error);
@@ -1229,19 +1271,18 @@ export const adminDeleteSkill = async (req, res) => {
       WHERE id = ?
     `;
 
-     pool.query(deleteQuery, [skillId], (err, result)=>{
-      if(err){
+    pool.query(deleteQuery, [skillId], (err, result) => {
+      if (err) {
         console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'})
+        return res.status(500).json({ error: "Internal Server Error" });
       }
       if (result.affectedRows === 0) {
         return res.status(404).json({ error: "Skill not found" });
       }
       return res
-      .status(200)
-      .json({ message: "Skill has been deleted successfully" });
-     });
-  
+        .status(200)
+        .json({ message: "Skill has been deleted successfully" });
+    });
   } catch (error) {
     console.error("Error in adminDeleteSkill API:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -1251,36 +1292,93 @@ export const getAllSkills = async (req, res) => {
   try {
     const { page = 1 } = req.query;
     const itemsPerPage = 10;
-    const offset = (page - 1) * itemsPerPage; // calculating the starting point
+    const offset = (page - 1) * itemsPerPage;
 
-    // fetch skills with pagination
+    // Step 1: Fetch skills with pagination
     const fetchSkillsQuery = `
-      SELECT id, title, sort, step_id, status 
+      SELECT id, title, step_id, status 
       FROM skills 
       ORDER BY id DESC 
-      LIMIT ? OFFSET ?
+      LIMIT ? OFFSET ?;
     `;
 
-    const countQuery = "SELECT COUNT(*) AS total FROM skills";
-
-    const [skills, totalCount] = await Promise.all([
-      new Promise((resolve, reject) =>
-        pool.query(fetchSkillsQuery, [itemsPerPage, offset], (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        })
-      ),
-      new Promise((resolve, reject) =>
-        pool.query(countQuery, (err, results) => {
-          if (err) return reject(err);
-          resolve(results[0].total);
-        })
-      ),
-    ]);
+    const skills = await new Promise((resolve, reject) => {
+      pool.query(fetchSkillsQuery, [itemsPerPage, offset], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
 
     if (skills.length === 0) {
       return res.status(404).json({ message: "No skills found" });
     }
+
+    // Step 2: Fetch steps for the fetched skills
+    const stepIds = skills.map((skill) => skill.step_id).filter(Boolean); // Remove null/undefined step_ids
+    const steps = await new Promise((resolve, reject) => {
+      if (stepIds.length === 0) return resolve([]);
+      pool.query(
+        `SELECT id, path_id FROM steps WHERE id IN (?);`,
+        [stepIds],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
+
+    // Step 3: Fetch paths for the fetched steps
+    const pathIds = steps.map((step) => step.path_id).filter(Boolean);
+    const paths = await new Promise((resolve, reject) => {
+      if (pathIds.length === 0) return resolve([]);
+      pool.query(
+        `SELECT id, user_id FROM path WHERE id IN (?);`,
+        [pathIds],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
+
+    // Step 4: Fetch users for the fetched paths
+    const userIds = paths.map((path) => path.user_id).filter(Boolean);
+    const users = await new Promise((resolve, reject) => {
+      if (userIds.length === 0) return resolve([]);
+      pool.query(
+        `SELECT id, username FROM users WHERE id IN (?);`,
+        [userIds],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
+
+    // Step 5: Map everything together
+    const userMap = Object.fromEntries(users.map((user) => [user.id, user.username]));
+    const pathMap = Object.fromEntries(paths.map((path) => [path.id, path.user_id]));
+    const stepMap = Object.fromEntries(steps.map((step) => [step.id, step.path_id]));
+
+    const enrichedSkills = skills.map((skill) => {
+      const stepId = skill.step_id;
+      const pathId = stepMap[stepId];
+      const userId = pathMap[pathId];
+      const username = userMap[userId];
+
+      return {
+        ...skill,
+        username: username || 'Unknown', // Include username if found
+      };
+    });
+
+    // Step 6: Count total skills for pagination
+    const totalCount = await new Promise((resolve, reject) => {
+      pool.query("SELECT COUNT(*) AS total FROM skills", (err, results) => {
+        if (err) return reject(err);
+        resolve(results[0].total);
+      });
+    });
 
     const totalPages = Math.ceil(totalCount / itemsPerPage);
 
@@ -1288,10 +1386,10 @@ export const getAllSkills = async (req, res) => {
       currentPage: Number(page),
       totalPages,
       totalSkills: totalCount,
-      skills,
+      skills: enrichedSkills,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching skills:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -1301,8 +1399,8 @@ export const getAllPaths = async (req, res) => {
     const itemsPerPage = 10;
     const offset = (page - 1) * itemsPerPage; // calculating the starting point
 
-    // fetch skills with pagination
-    const fetchpathsQuery = `
+    // Fetch paths with pagination
+    const fetchPathsQuery = `
       SELECT id, prompt, status, user_id, title 
       FROM path 
       ORDER BY id DESC 
@@ -1311,9 +1409,10 @@ export const getAllPaths = async (req, res) => {
 
     const countQuery = "SELECT COUNT(*) AS total FROM path";
 
+    // Fetch paths and total count in parallel
     const [paths, totalCount] = await Promise.all([
       new Promise((resolve, reject) =>
-        pool.query(fetchpathsQuery, [itemsPerPage, offset], (err, results) => {
+        pool.query(fetchPathsQuery, [itemsPerPage, offset], (err, results) => {
           if (err) return reject(err);
           resolve(results);
         })
@@ -1330,13 +1429,37 @@ export const getAllPaths = async (req, res) => {
       return res.status(404).json({ message: "No paths found" });
     }
 
+    // Fetch users based on user_ids in paths
+    const userIds = paths.map(path => path.user_id).filter(Boolean); // Filter out null or undefined
+    const users = userIds.length
+      ? await new Promise((resolve, reject) =>
+          pool.query(
+            `SELECT id, username FROM users WHERE id IN (?)`,
+            [userIds],
+            (err, results) => {
+              if (err) return reject(err);
+              resolve(results);
+            }
+          )
+        )
+      : [];
+
+    // Create a user map for easy lookup
+    const userMap = Object.fromEntries(users.map(user => [user.id, user.username]));
+
+    // Enrich paths with username
+    const enrichedPaths = paths.map(path => ({
+      ...path,
+      username: userMap[path.user_id] || 'Unknown', // Add username or null if not found
+    }));
+
     const totalPages = Math.ceil(totalCount / itemsPerPage);
 
     return res.status(200).json({
       currentPage: Number(page),
       totalPages,
       totalPaths: totalCount,
-      paths,
+      paths: enrichedPaths,
     });
   } catch (error) {
     console.error(error);
@@ -1362,11 +1485,10 @@ export const updatePathPrompt = async (req, res) => {
       SET prompt = ? 
       WHERE id = ?;
     `;
-    pool.query(updatePathquery, [newPrompt, pathId], (err, result)=>{
-
-      if(err){
+    pool.query(updatePathquery, [newPrompt, pathId], (err, result) => {
+      if (err) {
         console.log(err);
-        return res.status(500).json({err: 'Internal Server Error'})
+        return res.status(500).json({ err: "Internal Server Error" });
       }
 
       if (result.affectedRows === 0) {
@@ -1374,12 +1496,9 @@ export const updatePathPrompt = async (req, res) => {
           .status(404)
           .json({ error: "Path not found or no changes made." });
       }
-  
+
       return res.status(200).json({ message: "Prompt updateds successfully." });
-
     });
-
-   
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal Server Error" });
