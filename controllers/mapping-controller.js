@@ -1129,5 +1129,150 @@ export const deleteSkill = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getSinglePathDetailWithMap = async (req,res) =>{
+  try {
+    const userId = req.user?.userId;
+    const {pathId} = req.params
+
+    if(!pathId){
+      return res.status(400).json({error: 'PathID is required'})
+    }
+
+    const pathsQuery = `
+    SELECT p.id, p.status, p.title, p.prompt, u.username 
+    FROM path p
+    JOIN users u ON p.user_id = u.id
+    WHERE p.id = ? 
+    ORDER BY p.id DESC
+  `;
+
+    const pathsResult = await query(pathsQuery, [pathId]);
+
+    if (pathsResult.length === 0) {
+      return res
+        .status(404)
+        .json(
+          failureResponse({ status: 404 }, "No paths found for this user.")
+        );
+    }
+
+    const pathIds = pathsResult.map((path) => path.id);
+
+    // Fetch branches and steps for all paths
+    const branchesQuery = `
+      SELECT id, color, step_id, path_id 
+      FROM branch 
+      WHERE path_id IN (?)
+    `;
+    const branchesResult = await query(branchesQuery, [pathIds]);
+
+    const stepsQuery = `
+      SELECT id, title, description, branch_id, path_id, status
+      FROM steps 
+      WHERE path_id IN (?)
+    `;
+    const stepsResult = await query(stepsQuery, [pathIds]);
+
+    // Fetch skills for each step
+    // const skillsQuery = `
+    //   SELECT title, step_id
+    //   FROM skills
+    //   WHERE step_id IN (?)
+    // `;
+    // const skillsResult = await query(skillsQuery, [
+    //   stepsResult.map((step) => step.id),
+    // ]);
+
+    // Function to find branches by step_id
+    const findBranchByStepId = (branches, step_id = null) => {
+      const branchArr = [];
+      for (const value of branches) {
+        if (value.step_id === step_id) {
+          if (step_id === null) {
+            return value;
+          } else {
+            branchArr.push(value);
+          }
+        }
+      }
+      return branchArr;
+    };
+
+    // Recursive function to process steps
+    const processSteps = (branch, branches, steps) => {
+      const processedSteps = [];
+
+      for (const value of steps) {
+        if (value.branch_id === branch.id) {
+          const searchedBranch = findBranchByStepId(branches, value.id);
+          if (Array.isArray(searchedBranch) && searchedBranch.length > 0) {
+            const processedBranch = [];
+            for (const sb of searchedBranch) {
+              const subProcessedBranch = processSteps(sb, branches, steps);
+              processedBranch.push(subProcessedBranch);
+            }
+            if (processedBranch.length > 0) {
+              value.branches = processedBranch;
+            }
+          }
+          processedSteps.push(value);
+        }
+      }
+
+      branch.steps = processedSteps;
+      return branch;
+    };
+
+    // Process branches with steps and skills for each path
+    const pathsWithDetails = await Promise.all(
+      pathsResult.map(async (path) => {
+        const branchesForPath = branchesResult.filter(
+          (branch) => branch.path_id === path.id
+        );
+        const stepsForPath = stepsResult.filter(
+          (step) => step.path_id === path.id
+        );
+        const startingBranch = findBranchByStepId(branchesForPath);
+        if (!Array.isArray(startingBranch)) {
+          const branch = processSteps(
+            startingBranch,
+            branchesForPath,
+            stepsForPath
+          );
+          return {
+            id: path.id,
+            Status: path.status,
+            Title: path.title,
+            Prompt: path.prompt,
+            Username: path.username,
+            branch,
+          };
+        } else {
+          return {
+            id: path.id,
+            Status: path.status,
+            Title: path.title,
+            Prompt: path.prompt,
+            Username: path.username,
+            branch: {},
+          };
+        }
+      })
+    );
+
+    return res.json(
+      successResponse(
+        pathsWithDetails,
+        "Paths with branches, steps, and skills retrieved successfully"
+      )
+    );
+  } catch (error) {
+    console.error("Error fetching path details:", error);
+    return res
+      .status(500)
+      .json({ status: false, message: "Internal server error" });
+  }
+}
+
 
 
