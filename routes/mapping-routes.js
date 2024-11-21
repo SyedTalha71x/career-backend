@@ -17,7 +17,7 @@ import multer from "multer";
 import authenticate from "../middleware/authentication.js";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-
+import { FullAccess } from "../middleware/FullAccess.js";
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -63,7 +63,7 @@ router.get("/get-message/:id", authenticate, getMessage)
 router.post("/add-skill", authenticate, addSkill)
 router.post("/update-skill/:id", authenticate, updateSkill)
 router.delete("/delete-skill/:id",authenticate, deleteSkill)
-router.get('/get-single-path-detail/:pathId', getSinglePathDetailWithMap)
+router.get('/get-single-path-detail/:pathId', FullAccess, getSinglePathDetailWithMap)
 
 // Error handling middleware
 router.use((err, req, res, next) => {
