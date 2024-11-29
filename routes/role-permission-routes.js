@@ -19,7 +19,8 @@ import {
   adminUpdateSkill,
   getAllSkills,
   getAllPaths,
-  updatePathPrompt
+  updatePathPrompt,
+  getAnalytics
 } from "../controllers/role-permission-controller.js";
 import { SuperAdmin } from "../middleware/SuperAdmin.js";
 import { AdminAccess } from "../middleware/AdminAccess.js";
@@ -47,7 +48,6 @@ router.get('/get-all-users', getUsers)
 
 router.get('/get-activity-logs', FullAccess(), getActivitylogs)
 
-//Permissions wali api's
 router.post('/update-skill-for-admin-panel/:skillId', FullAccess(), adminUpdateSkill)
 router.delete('/delete-skill-for-admin-panel/:skillId', FullAccess(), adminDeleteSkill)
 router.get('/get-all-skills-for-admin-panel', FullAccess(), getAllSkills )
@@ -55,11 +55,7 @@ router.get('/get-all-paths-for-admin-panel', FullAccess(), getAllPaths)
 router.post('/update-path-prompt-for-admin-panel/:pathId', FullAccess(), updatePathPrompt)
 
 router.get('/get-most-created-paths', FullAccess(), getMostPaths)
+router.get('/get-analytics', FullAccess(), getAnalytics)
 
-
-//for testing
-router.get('/manage', checkPermission('manage'), (req,res)=>{
-  res.status(200).json({message: 'Yes you can view the reports'})
-})
 
 export default router;

@@ -362,7 +362,7 @@ export const createPathNotification = (req, res) => {
       }
       const pathTitle = pathResults[0].title;
 
-      const modifiedDescription = "This path has been analyse";
+      const modifiedDescription = "Path Analysed";
       const modifiedLink = null;
 
       const notifications = createNotifications(

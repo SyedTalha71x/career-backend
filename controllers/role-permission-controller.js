@@ -1136,9 +1136,9 @@ export const getMostPaths = async (req, res) => {
 };
 export const getActivitylogs = async (req, res) => {
   try {
-    const {page = 1} = req.query;
+    const { page = 1 } = req.query;
     const itemsPerPage = 10;
-    const offset = (page - 1) * itemsPerPage
+    const offset = (page - 1) * itemsPerPage;
 
     const fetch_all_logs = `SELECT 
       activity_logs .id,
@@ -1156,46 +1156,41 @@ export const getActivitylogs = async (req, res) => {
       LIMIT ? OFFSET ?
 `;
 
-    const countQuery = 'SELECT COUNT(*) AS total FROM activity_logs'
+    const countQuery = "SELECT COUNT(*) AS total FROM activity_logs";
 
     const [activity_logs, totalCount] = await Promise.all([
-      new Promise((resolve, reject)=>{
-        pool.query(fetch_all_logs, [itemsPerPage, offset], (err, results)=>{
-          if(err){
-            console.log(err); 
-            return reject(err)
+      new Promise((resolve, reject) => {
+        pool.query(fetch_all_logs, [itemsPerPage, offset], (err, results) => {
+          if (err) {
+            console.log(err);
+            return reject(err);
           }
           resolve(results);
-        })
-
+        });
       }),
-      new Promise((resolve, reject)=>{
-        pool.query(countQuery, (err, results)=>{
-          if(err){
-            console.log(err); 
-            return reject(err)
+      new Promise((resolve, reject) => {
+        pool.query(countQuery, (err, results) => {
+          if (err) {
+            console.log(err);
+            return reject(err);
           }
           resolve(results[0].total);
-        })
-
-      })
-    ])
+        });
+      }),
+    ]);
 
     if (activity_logs.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Sorry no activity logs found" });
+      return res.status(400).json({ message: "Sorry no activity logs found" });
     }
 
-    const totalPages = Math.ceil((totalCount / itemsPerPage))
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
 
     return res.status(200).json({
       currentPage: page,
       totalPages: totalPages,
       totalActivityLogs: totalCount,
-      activity_logs
-    })
-
+      activity_logs,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -1356,9 +1351,15 @@ export const getAllSkills = async (req, res) => {
     });
 
     // Step 5: Map everything together
-    const userMap = Object.fromEntries(users.map((user) => [user.id, user.username]));
-    const pathMap = Object.fromEntries(paths.map((path) => [path.id, path.user_id]));
-    const stepMap = Object.fromEntries(steps.map((step) => [step.id, step.path_id]));
+    const userMap = Object.fromEntries(
+      users.map((user) => [user.id, user.username])
+    );
+    const pathMap = Object.fromEntries(
+      paths.map((path) => [path.id, path.user_id])
+    );
+    const stepMap = Object.fromEntries(
+      steps.map((step) => [step.id, step.path_id])
+    );
 
     const enrichedSkills = skills.map((skill) => {
       const stepId = skill.step_id;
@@ -1368,7 +1369,7 @@ export const getAllSkills = async (req, res) => {
 
       return {
         ...skill,
-        username: username || 'Unknown', // Include username if found
+        username: username || "Unknown", // Include username if found
       };
     });
 
@@ -1430,7 +1431,7 @@ export const getAllPaths = async (req, res) => {
     }
 
     // Fetch users based on user_ids in paths
-    const userIds = paths.map(path => path.user_id).filter(Boolean); // Filter out null or undefined
+    const userIds = paths.map((path) => path.user_id).filter(Boolean); // Filter out null or undefined
     const users = userIds.length
       ? await new Promise((resolve, reject) =>
           pool.query(
@@ -1445,12 +1446,14 @@ export const getAllPaths = async (req, res) => {
       : [];
 
     // Create a user map for easy lookup
-    const userMap = Object.fromEntries(users.map(user => [user.id, user.username]));
+    const userMap = Object.fromEntries(
+      users.map((user) => [user.id, user.username])
+    );
 
     // Enrich paths with username
-    const enrichedPaths = paths.map(path => ({
+    const enrichedPaths = paths.map((path) => ({
       ...path,
-      username: userMap[path.user_id] || 'Unknown', // Add username or null if not found
+      username: userMap[path.user_id] || "Unknown", // Add username or null if not found
     }));
 
     const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -1498,6 +1501,52 @@ export const updatePathPrompt = async (req, res) => {
       }
 
       return res.status(200).json({ message: "Prompt updateds successfully." });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const getAnalytics = async (req, res) => {
+  try {
+    const fetch_user_count = "SELECT COUNT(*) AS total_users FROM users";
+    const fetch_total_paths = "SELECT COUNT(*) AS total_paths FROM path";
+    const fetch_pending_paths =
+      `SELECT COUNT(*) AS total_pending_paths FROM path WHERE status = 'pending'`;
+
+    pool.query(fetch_user_count, (err, totalusersresults) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      const totalUsers = totalusersresults[0].total_users;
+
+      pool.query(fetch_total_paths, (err, totalPathResults) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        const totalPaths = totalPathResults[0].total_paths;
+
+        pool.query(fetch_pending_paths, (err, pendingPathResults) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+
+          const pendingPaths = pendingPathResults[0].total_pending_paths;
+
+          const data = {
+            totalUsers: totalUsers,
+            totalPaths: totalPaths,
+            pendingPaths: pendingPaths
+          }
+
+          return res.status(200).json({result: data})
+        });
+      });
     });
   } catch (error) {
     console.log(error);
