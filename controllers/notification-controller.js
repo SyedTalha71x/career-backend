@@ -63,11 +63,20 @@ export const getNotifications = (req, res) => {
     if (!userId) {
       return res.status(400).json({ error: "User is not authorized" });
     }
-
     const sqlQuery = `
-SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC LIMIT 10;`;
-    const unseenCountQuery =
-      "SELECT COUNT(*) AS unseenCount FROM notifications WHERE seen = 0";
+      SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC LIMIT 10;`;
+    
+    // Count notifications with seen = 0 (unseen)
+    const unseenCountQuery = `
+      SELECT COUNT(*) AS unseenCount 
+      FROM notifications 
+      WHERE seen = 0 AND user_id = ?`;
+    
+    // Count notifications with seen = 1 (already seen)
+    const seenCountQuery = `
+      SELECT COUNT(*) AS seenCount 
+      FROM notifications 
+      WHERE seen = 1 AND user_id = ?`;
 
     pool.query(sqlQuery, [userId], (err, notifications) => {
       if (err) {
@@ -82,22 +91,41 @@ SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC LIMIT 10;`;
           .status(400)
           .json({ message: "No notifications found for this user" });
       }
-      pool.query(unseenCountQuery, (err, unseenResult) => {
+
+      pool.query(unseenCountQuery, [userId], (err, unseenResult) => {
         if (err) {
           console.error(err);
           return res
             .status(500)
             .json(failureResponse({}, "Internal server error"));
         }
+
         const unseen_count = unseenResult[0].unseenCount;
-        return res
-          .status(200)
-          .json(
-            successResponse(
-              { unseen_count, notifications },
-              "Notification fetch successfully"
-            )
-          );
+
+        pool.query(seenCountQuery, [userId], (err, seenResult) => {
+          if (err) {
+            console.error(err);
+            return res
+              .status(500)
+              .json(failureResponse({}, "Internal server error"));
+          }
+
+          const seen_count = seenResult[0].seenCount;
+          const data = {
+            totalUnseenNotifications: unseen_count,
+            totalSeenNotifications: seen_count,
+            notifications
+          }
+
+          return res
+            .status(200)
+            .json(
+              successResponse(
+                {data},
+                "Notifications fetched successfully"
+              )
+            );
+        });
       });
     });
   } catch (error) {
@@ -107,11 +135,12 @@ SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC LIMIT 10;`;
       .json(
         failureResponse(
           { error: "Internal Server Error" },
-          "Failed to get Notification"
+          "Failed to get Notifications"
         )
       );
   }
 };
+
 export const updateSeenAllNotificationsForSpecificUser = (req, res) => {
   try {
     const userId = req.user?.userId;
