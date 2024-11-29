@@ -1513,6 +1513,7 @@ export const getAnalytics = async (req, res) => {
     const fetch_total_paths = "SELECT COUNT(*) AS total_paths FROM path";
     const fetch_pending_paths =
       `SELECT COUNT(*) AS total_pending_paths FROM path WHERE status = 'pending'`;
+    const fetch_purchase_subscription = "SELECT COUNT(*) AS total_subscription_purchase FROM user_subscription"
 
     pool.query(fetch_user_count, (err, totalusersresults) => {
       if (err) {
@@ -1538,13 +1539,23 @@ export const getAnalytics = async (req, res) => {
 
           const pendingPaths = pendingPathResults[0].total_pending_paths;
 
-          const data = {
-            totalUsers: totalUsers,
-            totalPaths: totalPaths,
-            pendingPaths: pendingPaths
-          }
-
-          return res.status(200).json({result: data})
+          pool.query(fetch_purchase_subscription, (err, purchaseSubscriptionResult) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({ error: "Internal Server Error" });
+            }
+  
+            const purchaseSubscription = purchaseSubscriptionResult[0].total_subscription_purchase;
+  
+            const data = {
+              totalUsers: totalUsers,
+              totalPaths: totalPaths,
+              pendingPaths: pendingPaths,
+              purchaseSubscription: purchaseSubscription
+            }
+  
+            return res.status(200).json({result: data})
+          });
         });
       });
     });
