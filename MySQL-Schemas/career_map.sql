@@ -58,7 +58,7 @@ CREATE TABLE `activity_logs` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `activity_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `activity_logs` (
 
 LOCK TABLES `activity_logs` WRITE;
 /*!40000 ALTER TABLE `activity_logs` DISABLE KEYS */;
-INSERT INTO `activity_logs` VALUES (4,'Created Path: I wanted to become a Content Writer',12,'2024-11-19 05:33:29');
+INSERT INTO `activity_logs` VALUES (4,'Created Path: I wanted to become a Content Writer',12,'2024-11-19 05:33:29'),(5,'Created Path: video edit',4,'2024-11-19 11:14:57');
 /*!40000 ALTER TABLE `activity_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,10 +232,11 @@ CREATE TABLE `gpt_data` (
   `parent_gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `prompt` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
   CONSTRAINT `gpt_data_logs_ibfk_1` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -244,7 +245,7 @@ CREATE TABLE `gpt_data` (
 
 LOCK TABLES `gpt_data` WRITE;
 /*!40000 ALTER TABLE `gpt_data` DISABLE KEYS */;
-INSERT INTO `gpt_data` VALUES (1,'Becoming an automation expert involves a combination of education, hands-on experience, and continuous learning in the field of automation technologies. Here are the steps you can take to develop your skills and advance your career as an automation expert:\n\n### 1. **Educational Background**\n   - **Earn a Relevant Degree**: Consider obtaining a degree in computer science, software engineering, information technology, electrical engineering, or a related field. This foundational knowledge is critical for understanding automation principles and technologies.\n   - **Cert',23,NULL,'2024-11-04 08:23:45','how to become an automation expert '),(2,'Gaining experience in automation after you\'ve acquired the necessary skills can be accomplished through a variety of approaches. Here are some effective strategies:\n\n### 1. **Hands-On Projects**\n   - **Personal Projects**: Create your own automation projects using tools like Selenium (for web applications), Ansible, Puppet, or automation scripts. Open-source projects can provide a great way to practice and showcase your skills.\n   - **Automation Challenges**: Participate in coding challenges or hackathons that focus on automation solutions.',23,'1','2024-11-04 08:23:55','after learning automation how to get experience '),(3,'Becoming a lead data engineer typically requires a combination of educational qualifications, technical skills, experience, and soft skills. Here’s a step-by-step guide to help you achieve this goal:\n\n### 1. Educational Background\n- **Degree**: Obtain a bachelor’s degree in a relevant field such as Computer Science, Information Technology, Software Engineering, Mathematics, or a related discipline. A master’s degree can be a plus but is not always necessary.\n  \n### 2. Gain Relevant Experience\n-',24,NULL,'2024-11-04 13:27:06','how can i become a lead data engineer  '),(4,'Transitioning from an automation role to a DevOps position involves building on your automation skills and learning about the broader practices and tools associated with DevOps. Here are the steps you can take:\n\n### 1. **Understand DevOps Principles**\n   - **Cultural Shift**: Familiarize yourself with the DevOps culture, which emphasizes collaboration between development and operations teams, continuous integration, continuous delivery (CI/CD), and Agile methodologies.\n   - **Learn the DevOps Lifecycle**: Understand the stages',23,'2','2024-11-04 13:27:53','after automation what were the further steps for devops  ');
+INSERT INTO `gpt_data` VALUES (1,'Becoming an automation expert involves a combination of education, hands-on experience, and continuous learning in the field of automation technologies. Here are the steps you can take to develop your skills and advance your career as an automation expert:\n\n### 1. **Educational Background**\n   - **Earn a Relevant Degree**: Consider obtaining a degree in computer science, software engineering, information technology, electrical engineering, or a related field. This foundational knowledge is critical for understanding automation principles and technologies.\n   - **Cert',23,NULL,'2024-11-04 08:23:45','how to become an automation expert ',NULL),(2,'Gaining experience in automation after you\'ve acquired the necessary skills can be accomplished through a variety of approaches. Here are some effective strategies:\n\n### 1. **Hands-On Projects**\n   - **Personal Projects**: Create your own automation projects using tools like Selenium (for web applications), Ansible, Puppet, or automation scripts. Open-source projects can provide a great way to practice and showcase your skills.\n   - **Automation Challenges**: Participate in coding challenges or hackathons that focus on automation solutions.',23,'1','2024-11-04 08:23:55','after learning automation how to get experience ',NULL),(3,'Becoming a lead data engineer typically requires a combination of educational qualifications, technical skills, experience, and soft skills. Here’s a step-by-step guide to help you achieve this goal:\n\n### 1. Educational Background\n- **Degree**: Obtain a bachelor’s degree in a relevant field such as Computer Science, Information Technology, Software Engineering, Mathematics, or a related discipline. A master’s degree can be a plus but is not always necessary.\n  \n### 2. Gain Relevant Experience\n-',24,NULL,'2024-11-04 13:27:06','how can i become a lead data engineer  ',NULL),(4,'Transitioning from an automation role to a DevOps position involves building on your automation skills and learning about the broader practices and tools associated with DevOps. Here are the steps you can take:\n\n### 1. **Understand DevOps Principles**\n   - **Cultural Shift**: Familiarize yourself with the DevOps culture, which emphasizes collaboration between development and operations teams, continuous integration, continuous delivery (CI/CD), and Agile methodologies.\n   - **Learn the DevOps Lifecycle**: Understand the stages',23,'2','2024-11-04 13:27:53','after automation what were the further steps for devops  ',NULL),(6,'I\'m sorry, but I can\'t directly read or extract text from uploaded files. However, you can copy and paste the text or describe the contents of the PDF, and I\'d be happy to help you with any questions or provide insights based on the information provided.',57,NULL,'2024-12-03 13:12:16','please read the file from text ','f791d302-1eaf-4329-a92e-d124c0d5f023.pdf');
 /*!40000 ALTER TABLE `gpt_data` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -462,7 +463,7 @@ CREATE TABLE `path` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -471,7 +472,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'i am a graphic designer and wanted to learn more',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert',NULL),(4,'Welcome to the era of frontend',NULL,'pending',30,'I am an frontend expert',NULL),(5,'Welcome to the era of backend',NULL,'pending',30,'I am an backend expert',NULL),(6,'Welcome to the era of devops',NULL,'pending',30,'I am an devops expert',NULL),(7,'Welcome to the era of infrastructure',NULL,'pending',30,'I am an infrastructure expert',NULL),(8,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(9,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(10,'how can I shift my field from video editor to civil engineer?',NULL,'analysed',40,'video editor',NULL),(11,'I am a graphic designer & wanna be a machine learning engineer',NULL,'pending',7,'graphic designer',NULL),(12,'Generate me the roadmap for Mern Stack',NULL,'pending',11,'I wanted to become a Mern Stack',NULL),(13,'Generate me the roadmap for becoming a content writer',NULL,'pending',12,'I wanted to become a Content Writer',NULL);
+INSERT INTO `path` VALUES (1,'i am a graphic designer and wanted to learn more',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert',NULL),(4,'Welcome to the era of frontend',NULL,'pending',30,'I am an frontend expert',NULL),(5,'Welcome to the era of backend',NULL,'pending',30,'I am an backend expert',NULL),(6,'Welcome to the era of devops',NULL,'pending',30,'I am an devops expert',NULL),(7,'Welcome to the era of infrastructure',NULL,'pending',30,'I am an infrastructure expert',NULL),(8,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(9,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(10,'how can I shift my field from video editor to civil engineer?',NULL,'analysed',40,'video editor',NULL),(11,'I am a graphic designer & wanna be a machine learning engineer',NULL,'pending',7,'graphic designer',NULL),(12,'Generate me the roadmap for Mern Stack',NULL,'pending',11,'I wanted to become a Mern Stack',NULL),(13,'Generate me the roadmap for becoming a content writer',NULL,'pending',12,'I wanted to become a Content Writer',NULL),(14,'I am a web dev how can I be video editor?',NULL,'pending',4,'video edit',NULL);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -576,7 +577,7 @@ CREATE TABLE `role_to_users` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
   CONSTRAINT `role_to_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -585,7 +586,7 @@ CREATE TABLE `role_to_users` (
 
 LOCK TABLES `role_to_users` WRITE;
 /*!40000 ALTER TABLE `role_to_users` DISABLE KEYS */;
-INSERT INTO `role_to_users` VALUES (1,1,1),(2,2,2),(3,4,4),(3,10,10),(3,11,11),(3,12,12);
+INSERT INTO `role_to_users` VALUES (1,1,1),(2,2,2),(3,4,4),(3,10,10),(3,11,11),(3,12,12),(3,13,13),(3,14,14);
 /*!40000 ALTER TABLE `role_to_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -876,7 +877,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -885,7 +886,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'talha','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-14 12:22:05'),(2,'hassan','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-14 12:26:14'),(4,'checking','checking@gmail.com','8439c887e770b87564eeb7575ab935947b3d771ea812d8894068de3ba1855b6d',NULL,NULL,NULL,'2024-11-14 12:31:41'),(10,'random','random@gmail.com','9bcc4e44e74721fd3af328803efdd905b004a751b1db4cb3e153d9b9ddd14629',NULL,NULL,NULL,'2024-11-16 13:41:50'),(11,'mohsin','mohsin@gmail.com','d727647659ee463ad58c13fc7c0017cb064805e4a11dfe4b4e1e8dc2071efee0',NULL,NULL,NULL,'2024-11-18 13:24:12'),(12,'faris','faris@gmail.com','7b1b43aa9d425fac347de60b6905c99ab70023f2773081cac1f05a8c586272f4',NULL,NULL,NULL,'2024-11-19 05:32:38');
+INSERT INTO `users` VALUES (1,'talha','syedtalha71x@gmail.com','ea045594007793a45a9d9a22d3dea1416603ad40bcb9fa0fae570e4cfdf5acd4',NULL,NULL,NULL,'2024-11-14 12:22:05'),(2,'hassan','hassanalirajput2004@gmail.com','f24189059d64afc71e47e8f5aa90714023773477ee6bdacb15337148a6932acd',NULL,NULL,NULL,'2024-11-14 12:26:14'),(4,'checking','checking@gmail.com','8439c887e770b87564eeb7575ab935947b3d771ea812d8894068de3ba1855b6d','1732881065276-model-image.jpeg',NULL,NULL,'2024-11-14 12:31:41'),(10,'random','random@gmail.com','9bcc4e44e74721fd3af328803efdd905b004a751b1db4cb3e153d9b9ddd14629',NULL,NULL,NULL,'2024-11-16 13:41:50'),(11,'mohsin','mohsin@gmail.com','d727647659ee463ad58c13fc7c0017cb064805e4a11dfe4b4e1e8dc2071efee0',NULL,NULL,NULL,'2024-11-18 13:24:12'),(12,'faris','faris@gmail.com','7b1b43aa9d425fac347de60b6905c99ab70023f2773081cac1f05a8c586272f4',NULL,NULL,NULL,'2024-11-19 05:32:38'),(13,'testingaccount','testingaccount@gmail.com','eff9e954cc0eff1ca09e2966b3d79c63b8925d1a12a8eccb757901aa7b5f7349',NULL,NULL,NULL,'2024-11-29 11:57:45'),(14,'talha_0912xx','talhahussain123@gmail.com','9ab5bc1964655d3f0e50fc2b30d3dd98662e987d4680673978197516de51968a',NULL,NULL,NULL,'2024-12-03 12:33:26');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -898,4 +899,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-19 10:56:18
+-- Dump completed on 2024-12-03 18:13:26

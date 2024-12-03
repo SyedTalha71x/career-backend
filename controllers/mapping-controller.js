@@ -69,22 +69,26 @@ export const createPath = async (req, res) => {
         }
 
         try {
+          const insert_activity_logs =
+            "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
 
-          const insert_activity_logs = "INSERT INTO activity_logs (name, user_id) VALUES (?,?)"
-
-          pool.query(insert_activity_logs, [`Created Path: ${title}`, userId], (err)=>{
-            if(err){
-              console.log(err);
-              return res
-              .status(500)
-              .json(
-                failureResponse(
-                  { error: "Internal Server Error" },
-                  "Failed to create the path"
-                )
-              );
+          pool.query(
+            insert_activity_logs,
+            [`Created Path: ${title}`, userId],
+            (err) => {
+              if (err) {
+                console.log(err);
+                return res
+                  .status(500)
+                  .json(
+                    failureResponse(
+                      { error: "Internal Server Error" },
+                      "Failed to create the path"
+                    )
+                  );
+              }
             }
-          })
+          );
           const updateSubscriptionQuery = `
               UPDATE user_subscription 
               SET current_path = COALESCE(current_path, 0) + 1 
@@ -876,7 +880,22 @@ export const getSpecificSkillsWithStepId = (req, res) => {
 };
 export const sendMessage = async (req, res) => {
   try {
+    console.log("Request Received:");
+    
     const { message, step_id } = req.body;
+    console.log("Body:", req.body);
+    
+    if (!step_id) {
+      return res.status(400).json({ 
+        status: false, 
+        error: "Step ID is required" 
+      });
+    }
+
+    const uploadedFile = req.file ? req.file.filename : null;
+    console.log("File:", req.file);
+
+
     const systemMessage =
       "You are an experienced career advisor with a deep understanding of career development paths.";
 
@@ -887,21 +906,33 @@ export const sendMessage = async (req, res) => {
         WHERE step_id = ? 
         ORDER BY created ASC
       `;
-      const historyRecords = await query(historyQuery, [stepId]);
-      return historyRecords;
+      try {
+        const historyRecords = await query(historyQuery, [stepId]);
+        return historyRecords;
+      } catch (error) {
+        console.error('Error fetching conversation history:', error);
+        return [];
+      }
     };
 
     const conversationHistory = await getConversationHistory(step_id);
 
     const messages = [{ role: "system", content: systemMessage }];
 
-    // Append previous messages to the array
     conversationHistory.forEach((record) => {
       messages.push({ role: "user", content: record.prompt });
       messages.push({ role: "assistant", content: record.result });
     });
 
-    messages.push({ role: "user", content: message });
+    if (uploadedFile) {
+      messages.push({
+        role: "user",
+        content: `User uploaded a file ${uploadedFile}`,
+      });
+    }
+    if (message) {
+      messages.push({ role: "user", content: message });
+    }
 
     const userResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
@@ -913,15 +944,16 @@ export const sendMessage = async (req, res) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_KEY}`,
+          Authorization: `Bearer ${process.env.OPENAI_SECRET_KEY}`,
         },
       }
     );
 
     const assistantResponse = userResponse.data.choices[0].message.content;
+
     const insertQuery = `
-      INSERT INTO gpt_data (result, step_id, prompt, parent_gpt_id) 
-      VALUES (?, ?, ?, ?)
+      INSERT INTO gpt_data (result, step_id, parent_gpt_id, prompt, file) 
+      VALUES (?, ?, ?, ?, ?)
     `;
 
     const previousRecordQuery = `
@@ -933,7 +965,13 @@ export const sendMessage = async (req, res) => {
     const previousRecord = await query(previousRecordQuery, [step_id]);
     const parentId = previousRecord.length > 0 ? previousRecord[0].id : null;
 
-    const queryParams = [assistantResponse, step_id, message, parentId];
+    const queryParams = [
+      assistantResponse,
+      step_id,
+      parentId,
+      message || null,
+      uploadedFile || null
+    ];
     await query(insertQuery, queryParams);
 
     const fullConversation = [
@@ -942,18 +980,22 @@ export const sendMessage = async (req, res) => {
       { role: "assistant", content: assistantResponse },
     ];
 
-    console.log(fullConversation);
+    console.log('Full Conversation:', fullConversation);
 
     return res.status(200).json({
       status: true,
+      message: assistantResponse,
     });
+
   } catch (error) {
     console.error("Error in sendMessage API:", error);
-    return res
-      .status(500)
-      .json({ status: false, error: "Internal Server Error" });
+    return res.status(500).json({ 
+      status: false, 
+      error: error.message || "Internal Server Error" 
+    });
   }
 };
+
 export const getMessage = async (req, res) => {
   try {
     const step_id = req.params.id;
@@ -983,10 +1025,10 @@ export const addSkill = async (req, res) => {
     const { title, step_id, status } = req.body;
     const userId = req.user?.userId;
 
-    if(!userId){
-      return res.status(400).json({error: 'User is not authorized'})
+    if (!userId) {
+      return res.status(400).json({ error: "User is not authorized" });
     }
-    
+
     if (!step_id) {
       return res.status(400).json({ error: "StepId should be provided" });
     }
@@ -1008,14 +1050,19 @@ export const addSkill = async (req, res) => {
       nextSort,
     ]);
 
-    const insert_activity_logs = 'INSERT INTO activity_logs (name, user_id) VALUES (?,?)'
+    const insert_activity_logs =
+      "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
 
-    pool.query(insert_activity_logs, [`Skill Created: ${title}`, userId], (err)=>{
-      if(err){
-        console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'})
+    pool.query(
+      insert_activity_logs,
+      [`Skill Created: ${title}`, userId],
+      (err) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
       }
-    })
+    );
 
     console.log(results);
     return res.status(200).json({ message: "Skill created successfully" });
@@ -1029,8 +1076,8 @@ export const updateSkill = async (req, res) => {
     const skillId = req.params.id;
     const userId = req.user?.userId;
 
-    if(!userId){
-      return res.status(400).json({error: 'User is not authorized'})
+    if (!userId) {
+      return res.status(400).json({ error: "User is not authorized" });
     }
 
     if (!skillId) {
@@ -1075,14 +1122,19 @@ export const updateSkill = async (req, res) => {
       return res.status(400).json({ error: "skill not found" });
     }
 
-    const insert_activity_logs = 'INSERT INTO activity_logs (name, user_id) VALUES (?,?)'
+    const insert_activity_logs =
+      "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
 
-    pool.query(insert_activity_logs, [`Skill Updated: ${title}`, userId], (err)=>{
-      if(err){
-        console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'})
+    pool.query(
+      insert_activity_logs,
+      [`Skill Updated: ${title}`, userId],
+      (err) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
       }
-    })
+    );
 
     return res.status(200).json({ message: "skill has been updated" });
   } catch (error) {
@@ -1095,8 +1147,8 @@ export const deleteSkill = async (req, res) => {
     const skillId = req.params.id;
     const userId = req.user?.userId;
 
-    if(!userId){
-      return res.status(400).json({error: 'User is not authorized'})
+    if (!userId) {
+      return res.status(400).json({ error: "User is not authorized" });
     }
 
     if (!skillId) {
@@ -1114,14 +1166,19 @@ export const deleteSkill = async (req, res) => {
       return res.status(400).json({ error: "Skill not found" });
     }
 
-    const insert_activity_logs = 'INSERT INTO activity_logs (name, user_id) VALUES (?,?)'
+    const insert_activity_logs =
+      "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
 
-    pool.query(insert_activity_logs, [`Skill Deleted: ${title}`, userId], (err)=>{
-      if(err){
-        console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'})
+    pool.query(
+      insert_activity_logs,
+      [`Skill Deleted: ${title}`, userId],
+      (err) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
       }
-    })
+    );
 
     return res.status(200).json({ message: "Skill has been deleted" });
   } catch (error) {
@@ -1129,13 +1186,13 @@ export const deleteSkill = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-export const getSinglePathDetailWithMap = async (req,res) =>{
+export const getSinglePathDetailWithMap = async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const {pathId} = req.params
+    const { pathId } = req.params;
 
-    if(!pathId){
-      return res.status(400).json({error: 'PathID is required'})
+    if (!pathId) {
+      return res.status(400).json({ error: "PathID is required" });
     }
 
     const pathsQuery = `
@@ -1272,7 +1329,84 @@ export const getSinglePathDetailWithMap = async (req,res) =>{
       .status(500)
       .json({ status: false, message: "Internal server error" });
   }
-}
+};
+export const checkRemainingPlans = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    if (!userId) {
+      return res.status(400).json({ error: "User is not authorized" });
+    }
 
+    // first check if which subscription has user buys
+    const checkUserSubscription =
+      "SELECT * FROM user_subscription WHERE user_id = ?";
 
+    pool.query(checkUserSubscription, [userId], (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "No subscription found for this user" });
+      }
 
+      const userSubscription = results[0];
+
+      const getAllSubscriptions = "SELECT * FROM subscriptions WHERE id = ?";
+
+      pool.query(
+        getAllSubscriptions,
+        [userSubscription.subscription_id],
+        (err, subscriptionResult) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+
+          if (subscriptionResult.length === 0) {
+            return res.status(400).json({ message: "No Subscriptions found" });
+          }
+
+          const subscription = subscriptionResult[0];
+
+          const remainingPaths =
+            subscription.total_path - userSubscription.current_path;
+          const remainingTrainingPlans =
+            subscription.total_training_plan -
+            userSubscription.current_training_plan;
+
+          const data = {
+            subscriptionPlan: subscription.name,
+            RemainingPrompts: remainingPaths,
+            RemainingTrainingPlan: remainingTrainingPlans,
+          };
+
+          return res.status(200).json(data);
+        }
+      );
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const uploadFilesForCHATGPT = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    if (!userId) {
+      return res.status(400).json({ error: "user is not authenticated" });
+    }
+    if (!req.file) {
+      return res
+        .status(400)
+        .json(
+          failureResponse({ error: "No file uploaded" }, "File Upload Failed")
+        );
+    }
+
+    const filename = req.file?.filename
+
+  } catch (error) {}
+};

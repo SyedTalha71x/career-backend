@@ -11,13 +11,14 @@ import {
   getSpecificSkillsWithStepId,
   sendMessage,
   getMessage,
-  addSkill, updateSkill, deleteSkill,getSinglePathDetailWithMap
+  addSkill, updateSkill, deleteSkill,getSinglePathDetailWithMap, checkRemainingPlans
 } from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { FullAccess } from "../middleware/FullAccess.js";
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -32,7 +33,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 10 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
     const fileTypes = /pdf|doc|docx|png|jpg|jpeg/;
@@ -58,19 +59,25 @@ router.post("/get-each-skills-with-steps", authenticate, geteachskillsforpath);
 router.get("/check-status-of-skills/:id", authenticate, changeSkillStatus);
 router.get("/get-single-branch/:id", authenticate, getSingleBranch);
 router.get("/get-skills-for-single-step/:id", authenticate, getSpecificSkillsWithStepId);
-router.post("/send-message", authenticate,  sendMessage);
+router.post("/send-message", upload.single("file"), authenticate,  sendMessage);
 router.get("/get-message/:id", authenticate, getMessage)
 router.post("/add-skill", authenticate, addSkill)
 router.post("/update-skill/:id", authenticate, updateSkill)
 router.delete("/delete-skill/:id",authenticate, deleteSkill)
 router.get('/get-single-path-detail/:pathId', FullAccess, getSinglePathDetailWithMap)
+router.get('/check-remaining-plans', authenticate, checkRemainingPlans)
+
+
 
 // Error handling middleware
 router.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
-    return res.status(400).json({ error: err.message });
+    console.log(err.message);
+    return res.status(400).json({ error: err.message, message: 'Error 1' });
   } else if (err) {
-    return res.status(500).json({ error: err.message });
+    console.log(err.message);
+
+    return res.status(500).json({ error: err.message, message: 'Error 2' });
   }
   next();
 });
