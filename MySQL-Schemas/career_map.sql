@@ -58,7 +58,7 @@ CREATE TABLE `activity_logs` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `activity_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `activity_logs` (
 
 LOCK TABLES `activity_logs` WRITE;
 /*!40000 ALTER TABLE `activity_logs` DISABLE KEYS */;
-INSERT INTO `activity_logs` VALUES (4,'Created Path: I wanted to become a Content Writer',12,'2024-11-19 05:33:29'),(5,'Created Path: video edit',4,'2024-11-19 11:14:57');
+INSERT INTO `activity_logs` VALUES (4,'Created Path: I wanted to become a Content Writer',12,'2024-11-19 05:33:29'),(5,'Created Path: video edit',4,'2024-11-19 11:14:57'),(6,'Subscription purchased: Pioneer Plan',4,'2024-12-04 08:15:49'),(7,'Subscription purchased: Pioneer Plan',4,'2024-12-04 08:36:40'),(8,'Subscription purchased: Pioneer Plan',4,'2024-12-04 08:41:40'),(9,'Created Path: graphic designing',4,'2024-12-04 08:44:28'),(10,'Created Path: im testing automation',4,'2024-12-04 08:46:59'),(11,'Subscription purchased: Pioneer Plan',4,'2024-12-04 08:49:42'),(12,'Subscription purchased: Pioneer Plan',4,'2024-12-04 10:26:45'),(13,'Subscription purchased: Pioneer Plan',4,'2024-12-04 10:43:03');
 /*!40000 ALTER TABLE `activity_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -231,7 +231,7 @@ CREATE TABLE `gpt_data` (
   `step_id` bigint NOT NULL,
   `parent_gpt_id` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `prompt` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `prompt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `file` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `step_id` (`step_id`),
@@ -463,7 +463,7 @@ CREATE TABLE `path` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -472,7 +472,7 @@ CREATE TABLE `path` (
 
 LOCK TABLES `path` WRITE;
 /*!40000 ALTER TABLE `path` DISABLE KEYS */;
-INSERT INTO `path` VALUES (1,'i am a graphic designer and wanted to learn more',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert',NULL),(4,'Welcome to the era of frontend',NULL,'pending',30,'I am an frontend expert',NULL),(5,'Welcome to the era of backend',NULL,'pending',30,'I am an backend expert',NULL),(6,'Welcome to the era of devops',NULL,'pending',30,'I am an devops expert',NULL),(7,'Welcome to the era of infrastructure',NULL,'pending',30,'I am an infrastructure expert',NULL),(8,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(9,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(10,'how can I shift my field from video editor to civil engineer?',NULL,'analysed',40,'video editor',NULL),(11,'I am a graphic designer & wanna be a machine learning engineer',NULL,'pending',7,'graphic designer',NULL),(12,'Generate me the roadmap for Mern Stack',NULL,'pending',11,'I wanted to become a Mern Stack',NULL),(13,'Generate me the roadmap for becoming a content writer',NULL,'pending',12,'I wanted to become a Content Writer',NULL),(14,'I am a web dev how can I be video editor?',NULL,'pending',4,'video edit',NULL);
+INSERT INTO `path` VALUES (1,'i am a graphic designer and wanted to learn more',NULL,'analysed',28,'graphic designer',NULL),(2,'I am a wordpress developer & wanna be a data scientist what would be the roadmap for it?',NULL,'analysed',28,'wordpress developer',NULL),(3,'Welcome to the era of automation',NULL,'pending',30,'I am an automation expert',NULL),(4,'Welcome to the era of frontend',NULL,'pending',30,'I am an frontend expert',NULL),(5,'Welcome to the era of backend',NULL,'pending',30,'I am an backend expert',NULL),(6,'Welcome to the era of devops',NULL,'pending',30,'I am an devops expert',NULL),(7,'Welcome to the era of infrastructure',NULL,'pending',30,'I am an infrastructure expert',NULL),(8,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(9,'Welcome to the era of ml',NULL,'pending',30,'I am an ml expert',NULL),(10,'how can I shift my field from video editor to civil engineer?',NULL,'analysed',40,'video editor',NULL),(11,'I am a graphic designer & wanna be a machine learning engineer',NULL,'pending',7,'graphic designer',NULL),(12,'Generate me the roadmap for Mern Stack',NULL,'pending',11,'I wanted to become a Mern Stack',NULL),(13,'Generate me the roadmap for becoming a content writer',NULL,'pending',12,'I wanted to become a Content Writer',NULL),(14,'I am a web dev how can I be video editor?',NULL,'pending',4,'video edit',NULL),(15,'I am a mechanic & want to learn graphic desgining.',NULL,'pending',4,'graphic designing',NULL),(16,'hello testing autmation world',NULL,'pending',4,'im testing automation',NULL);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -845,7 +845,7 @@ CREATE TABLE `user_subscription` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_subscription_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`id`),
   CONSTRAINT `user_subscription_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -854,7 +854,7 @@ CREATE TABLE `user_subscription` (
 
 LOCK TABLES `user_subscription` WRITE;
 /*!40000 ALTER TABLE `user_subscription` DISABLE KEYS */;
-INSERT INTO `user_subscription` VALUES (1,3,30,'2025-11-06 00:00:00','pi_3QI9axIILuhliL1z10hl3OKa','2024-11-06 13:48:30','2024-11-06 14:35:47',2,1),(3,3,40,'2025-11-07 00:00:00','pi_3QIRTzIILuhliL1z1ydYrSJ3','2024-11-07 09:04:08','2024-11-07 09:05:21',1,NULL),(4,3,40,'2025-11-07 00:00:00','pi_3QIRTzIILuhliL1z1ydYrSJ3','2024-11-07 09:04:23','2024-11-07 09:05:21',1,NULL);
+INSERT INTO `user_subscription` VALUES (1,3,30,'2025-11-06 00:00:00','pi_3QI9axIILuhliL1z10hl3OKa','2024-11-06 13:48:30','2024-11-06 14:35:47',2,1),(3,3,40,'2025-11-07 00:00:00','pi_3QIRTzIILuhliL1z1ydYrSJ3','2024-11-07 09:04:08','2024-11-07 09:05:21',1,NULL),(4,3,40,'2025-11-07 00:00:00','pi_3QIRTzIILuhliL1z1ydYrSJ3','2024-11-07 09:04:23','2024-11-07 09:05:21',1,NULL),(5,1,4,'2025-12-04 00:00:00','pi_3QSE9bIILuhliL1z0qRDKMkE','2024-12-04 08:41:55','2024-12-04 08:46:59',2,NULL),(6,1,4,'2025-12-04 00:00:00','pi_3QSEHSIILuhliL1z0qbM91kN','2024-12-04 08:50:03','2024-12-04 08:50:03',NULL,NULL),(7,1,4,'2025-12-04 00:00:00','pi_3QSFolIILuhliL1z1g0kj911','2024-12-04 10:28:32','2024-12-04 10:28:32',NULL,NULL),(8,1,4,'2025-12-04 00:00:00','pi_3QSG34IILuhliL1z0ehEtedV','2024-12-04 10:43:18','2024-12-04 10:43:18',NULL,NULL);
 /*!40000 ALTER TABLE `user_subscription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -899,4 +899,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-03 18:13:26
+-- Dump completed on 2024-12-04 17:49:43
