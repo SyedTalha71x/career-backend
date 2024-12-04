@@ -1,6 +1,8 @@
 import { connectToDB } from "../utils/db/db.js";
 import { successResponse, failureResponse } from "../Helper/helper.js";
 import axios from "axios";
+import { PdfReader } from "pdfreader";
+import path from "path";
 
 import {
   GET_ALL_PATH_DETAILS_WITH_SKILL_AND_STEPS,
@@ -22,6 +24,25 @@ const query = (sql, params) =>
       resolve(results);
     });
   });
+
+const extractTextFromPDF = async (filePath) => {
+  return new Promise((resolve, reject) => {
+    const pdfReader = new PdfReader();
+    const extractedTexts = [];
+
+    pdfReader.parseFileItems(filePath, (err, item) => {
+      if (err) {
+        reject(err);
+      } else if (!item) {
+        resolve(extractedTexts.join(" "));
+        console.log(extractedTexts, "---------");
+      } else if (item.text) {
+        extractedTexts.push(item.text);
+        console.log(extractedTexts, "ssssssssss");
+      }
+    });
+  });
+};
 
 export const createPath = async (req, res) => {
   try {
@@ -881,20 +902,19 @@ export const getSpecificSkillsWithStepId = (req, res) => {
 export const sendMessage = async (req, res) => {
   try {
     console.log("Request Received:");
-    
+
     const { message, step_id } = req.body;
     console.log("Body:", req.body);
-    
+
     if (!step_id) {
-      return res.status(400).json({ 
-        status: false, 
-        error: "Step ID is required" 
+      return res.status(400).json({
+        status: false,
+        error: "Step ID is required",
       });
     }
 
     const uploadedFile = req.file ? req.file.filename : null;
     console.log("File:", req.file);
-
 
     const systemMessage =
       "You are an experienced career advisor with a deep understanding of career development paths.";
@@ -910,7 +930,7 @@ export const sendMessage = async (req, res) => {
         const historyRecords = await query(historyQuery, [stepId]);
         return historyRecords;
       } catch (error) {
-        console.error('Error fetching conversation history:', error);
+        console.error("Error fetching conversation history:", error);
         return [];
       }
     };
@@ -924,12 +944,21 @@ export const sendMessage = async (req, res) => {
       messages.push({ role: "assistant", content: record.result });
     });
 
-    if (uploadedFile) {
-      messages.push({
-        role: "user",
-        content: `User uploaded a file ${uploadedFile}`,
+    const filePath = `./uploads/${uploadedFile}`;
+    const fileExtension = path.extname(uploadedFile).toLowerCase();
+    let extractedText = "";
+
+    if (fileExtension !== ".pdf") {
+      return res.status(400).json({
+        status: false,
+        error: "Only PDF files are allowed.",
       });
     }
+    extractedText = await extractTextFromPDF(filePath);
+    messages.push({
+      role: "user",
+      content: `User uploaded a PDF file with the following content: \n${extractedText}`,
+    });
     if (message) {
       messages.push({ role: "user", content: message });
     }
@@ -970,7 +999,7 @@ export const sendMessage = async (req, res) => {
       step_id,
       parentId,
       message || null,
-      uploadedFile || null
+      uploadedFile || null,
     ];
     await query(insertQuery, queryParams);
 
@@ -980,18 +1009,17 @@ export const sendMessage = async (req, res) => {
       { role: "assistant", content: assistantResponse },
     ];
 
-    console.log('Full Conversation:', fullConversation);
+    console.log("Full Conversation:", fullConversation);
 
     return res.status(200).json({
       status: true,
       message: assistantResponse,
     });
-
   } catch (error) {
     console.error("Error in sendMessage API:", error);
-    return res.status(500).json({ 
-      status: false, 
-      error: error.message || "Internal Server Error" 
+    return res.status(500).json({
+      status: false,
+      error: error.message || "Internal Server Error",
     });
   }
 };
@@ -1404,7 +1432,6 @@ export const uploadFilesForCHATGPT = async (req, res) => {
         );
     }
 
-    const filename = req.file?.filename
-
+    const filename = req.file?.filename;
   } catch (error) {}
 };
