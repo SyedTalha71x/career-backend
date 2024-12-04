@@ -100,11 +100,17 @@ export const purchaseSubscription = async (req, res) => {
     const unitAmount = Math.round(subscription.price * 100);
 
     const getFrontendUrl =  () =>{
-      const url = process.env.FRONTEND_URL || "http://64.23.166.88:3008" ;
-      return url;
+      if(process.env.NODE_ENV === 'development'){
+        return process.env.FRONTEND_URL
+      }
+      else if(process.env.NODE_ENV === 'production'){
+        return process.env.PRODUCTION_URL
+      }
+      else
+      {
+        return process.env.FRONTEND_URL
+      }
     }
-
-    // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
