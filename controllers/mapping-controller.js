@@ -995,7 +995,6 @@ export const sendMessage = async (req, res) => {
     });
   }
 };
-
 export const getMessage = async (req, res) => {
   try {
     const step_id = req.params.id;
@@ -1003,7 +1002,6 @@ export const getMessage = async (req, res) => {
       SELECT id, result, prompt
       FROM gpt_data 
       WHERE step_id = ? 
-      ORDER BY created DESC 
       LIMIT 10
     `;
 
