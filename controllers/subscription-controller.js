@@ -95,7 +95,14 @@ export const purchaseSubscription = async (req, res) => {
       });
     });
 
+    
+
     const unitAmount = Math.round(subscription.price * 100);
+
+    const getFrontendUrl =  () =>{
+      const url = process.env.FRONTEND_URL || "http://64.23.166.88:3008" ;
+      return url;
+    }
 
     // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -111,8 +118,8 @@ export const purchaseSubscription = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+      success_url: `${getFrontendUrl()}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${getFrontendUrl()}/cancel`,
       client_reference_id: subscriptionId,
     });
 

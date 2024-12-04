@@ -20,6 +20,11 @@ export const redirectStripe = async (req, res) => {
         return res.status(401).json(failureResponse({ error: 'User not authenticated' }, 'Failed to purchase Subscription'));
     }
 
+    const getFrontendUrl =  () =>{
+        const url = process.env.FRONTEND_URL || "http://64.23.166.88:3008";
+        return url;
+      }
+
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -36,8 +41,8 @@ export const redirectStripe = async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.FRONTEND_URL}/get-pdf/${branchId}?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+            success_url: `${getFrontendUrl()}/get-pdf/${branchId}?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${getFrontendUrl()}/cancel`,
             client_reference_id: branchId,
         });
 
