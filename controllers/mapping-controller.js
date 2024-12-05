@@ -968,7 +968,6 @@ export const sendMessage = async (req, res) => {
       messages.push({ role: "user", content: message });
     }
 
-    // Send request to OpenAI API
     const userResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
