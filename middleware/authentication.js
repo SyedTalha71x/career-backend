@@ -30,9 +30,6 @@ const authenticate = (req, res, next) => {
         if (err.name === 'TokenExpiredError') {
             return res.status(401).json({ message: 'Token expired.' });
         }
-
-        // Generic error message for any other issues
-        return res.status(400).json({ message: 'Authentication failed.' });
     }
 };
 

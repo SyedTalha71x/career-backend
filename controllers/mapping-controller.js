@@ -904,7 +904,8 @@ export const sendMessage = async (req, res) => {
     console.log("Request Received:");
 
     const { message, step_id } = req.body;
-    console.log("Body:", req.body);
+    console.log(message);
+    console.log(step_id);
 
     if (!step_id) {
       return res.status(400).json({
@@ -919,6 +920,7 @@ export const sendMessage = async (req, res) => {
     const systemMessage =
       "You are an experienced career advisor with a deep understanding of career development paths.";
 
+    // Fetch conversation history
     const getConversationHistory = async (stepId) => {
       const historyQuery = `
         SELECT prompt, result 
@@ -928,6 +930,7 @@ export const sendMessage = async (req, res) => {
       `;
       try {
         const historyRecords = await query(historyQuery, [stepId]);
+        console.log("History records for step_id:", historyRecords);
         return historyRecords;
       } catch (error) {
         console.error("Error fetching conversation history:", error);
@@ -936,17 +939,26 @@ export const sendMessage = async (req, res) => {
     };
 
     const conversationHistory = await getConversationHistory(step_id);
+    console.log("Conversation History for step_id:", conversationHistory);
 
     // Initial messages array
     const messages = [{ role: "system", content: systemMessage }];
 
+    // Process conversation history and check for empty prompt or result
+    let isLastRecordEmpty = false;
     conversationHistory.forEach((record) => {
-      messages.push({ role: "user", content: record.prompt });
-      messages.push({ role: "assistant", content: record.result });
+      if (!record.prompt || !record.result) {
+        isLastRecordEmpty = true;
+      } else {
+        messages.push({ role: "user", content: record.prompt });
+        messages.push({ role: "assistant", content: record.result });
+      }
     });
 
-    // If there is a file uploaded
-    if (uploadedFile) {
+    // If the last record had empty prompt or result and a file is uploaded
+    if (isLastRecordEmpty && uploadedFile) {
+      console.log("Last record is empty, adding hardcoded file explanation...");
+
       const filePath = `./uploads/${uploadedFile}`;
       const fileExtension = path.extname(uploadedFile).toLowerCase();
 
@@ -960,13 +972,18 @@ export const sendMessage = async (req, res) => {
       const extractedText = await extractTextFromPDF(filePath);
       messages.push({
         role: "user",
-        content: `User uploaded a PDF file with the following content: \n${extractedText}`,
+        content:
+          "The user uploaded a file with important details. Here is the extracted content from the file: \n" +
+          extractedText,
       });
     }
 
+    // If there is a message, add it to the messages array
     if (message) {
       messages.push({ role: "user", content: message });
     }
+
+    console.log("Final messages array:", JSON.stringify(messages, null, 2));
 
     const userResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
@@ -983,6 +1000,8 @@ export const sendMessage = async (req, res) => {
       }
     );
 
+    console.log(userResponse.data);
+
     const assistantResponse = userResponse.data.choices[0].message.content;
 
     const insertQuery = `
@@ -997,6 +1016,8 @@ export const sendMessage = async (req, res) => {
       LIMIT 1
     `;
     const previousRecord = await query(previousRecordQuery, [step_id]);
+    console.log("Previous record:", previousRecord);
+
     const parentId = previousRecord.length > 0 ? previousRecord[0].id : null;
 
     const queryParams = [
@@ -1028,6 +1049,7 @@ export const sendMessage = async (req, res) => {
     });
   }
 };
+
 
 export const getMessage = async (req, res) => {
   try {

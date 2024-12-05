@@ -33,3 +33,6 @@ dist/
 # IDE files (e.g., Visual Studio Code)
 .vscode/
 .idea/
+
+# upload folder in git ignore 
+uploads/
