@@ -914,7 +914,7 @@ export const sendMessage = async (req, res) => {
     }
 
     const uploadedFile = req.file ? req.file.filename : null;
-    console.log("File:", req.file);
+    console.log("File:", uploadedFile);
 
     const systemMessage =
       "You are an experienced career advisor with a deep understanding of career development paths.";
@@ -937,6 +937,7 @@ export const sendMessage = async (req, res) => {
 
     const conversationHistory = await getConversationHistory(step_id);
 
+    // Initial messages array
     const messages = [{ role: "system", content: systemMessage }];
 
     conversationHistory.forEach((record) => {
@@ -944,25 +945,30 @@ export const sendMessage = async (req, res) => {
       messages.push({ role: "assistant", content: record.result });
     });
 
-    const filePath = `./uploads/${uploadedFile}`;
-    const fileExtension = path.extname(uploadedFile).toLowerCase();
-    let extractedText = "";
+    // If there is a file uploaded
+    if (uploadedFile) {
+      const filePath = `./uploads/${uploadedFile}`;
+      const fileExtension = path.extname(uploadedFile).toLowerCase();
 
-    if (fileExtension !== ".pdf") {
-      return res.status(400).json({
-        status: false,
-        error: "Only PDF files are allowed.",
+      if (fileExtension !== ".pdf") {
+        return res.status(400).json({
+          status: false,
+          error: "Only PDF files are allowed.",
+        });
+      }
+
+      const extractedText = await extractTextFromPDF(filePath);
+      messages.push({
+        role: "user",
+        content: `User uploaded a PDF file with the following content: \n${extractedText}`,
       });
     }
-    extractedText = await extractTextFromPDF(filePath);
-    messages.push({
-      role: "user",
-      content: `User uploaded a PDF file with the following content: \n${extractedText}`,
-    });
+
     if (message) {
       messages.push({ role: "user", content: message });
     }
 
+    // Send request to OpenAI API
     const userResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -1023,6 +1029,7 @@ export const sendMessage = async (req, res) => {
     });
   }
 };
+
 export const getMessage = async (req, res) => {
   try {
     const step_id = req.params.id;
