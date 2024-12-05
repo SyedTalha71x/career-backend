@@ -973,7 +973,7 @@ export const sendMessage = async (req, res) => {
       {
         model: "gpt-4o-mini",
         messages: messages,
-        max_tokens: 100,
+        max_tokens: 2000,
       },
       {
         headers: {
