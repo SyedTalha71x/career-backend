@@ -49,7 +49,6 @@ export const createPath = async (req, res) => {
     const { title, prompt } = req.body;
     const userId = req.user?.userId;
     const file = req.file;
-    console.log("-------------------", userId);
 
     if (!userId) {
       return res
@@ -69,7 +68,6 @@ export const createPath = async (req, res) => {
     }
 
     const fileName = file ? file.filename : null;
-    console.log(fileName);
 
     const sqlQuery =
       "INSERT INTO path (title, prompt, status, user_id, file) VALUES (?, ?, ?, ?, ?)";
@@ -77,97 +75,98 @@ export const createPath = async (req, res) => {
     pool.query(
       sqlQuery,
       [title || null, prompt || null, "pending", userId, fileName],
-      async (err, result) => {
-        if (err) {
+      (pathInsertErr, pathResult) => {
+        if (pathInsertErr) {
+          console.error("Path insertion error:", pathInsertErr);
           return res
             .status(500)
-            .json(
-              failureResponse(
-                { error: "Internal Server Error" },
-                "Failed to create the path"
-              )
-            );
+            .json(failureResponse({ error: "Path insertion failed" }));
         }
 
-        try {
-          const insert_activity_logs =
-            "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
-
-          pool.query(
-            insert_activity_logs,
-            [`Created Path: ${title}`, userId],
-            (err) => {
-              if (err) {
-                console.log(err);
-                return res
-                  .status(500)
-                  .json(
-                    failureResponse(
-                      { error: "Internal Server Error" },
-                      "Failed to create the path"
-                    )
-                  );
-              }
-            }
-          );
-          const updateSubscriptionQuery = `
-              UPDATE user_subscription 
-              SET current_path = COALESCE(current_path, 0) + 1 
-              WHERE user_id = ? AND expiry_date > NOW()
-            `;
-
-          pool.query(updateSubscriptionQuery, [userId], (updateErr) => {
-            if (updateErr) {
-              console.error(
-                "Error updating current_path in user_subscription:",
-                updateErr
-              );
+        const activityLogQuery =
+          "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
+        pool.query(
+          activityLogQuery,
+          [`Created Path: ${title}`, userId],
+          (activityLogErr) => {
+            if (activityLogErr) {
+              console.error("Activity log error:", activityLogErr);
               return res
                 .status(500)
-                .json(
-                  failureResponse(
-                    { error: "Failed to update current path count" },
-                    "Failed to create the path"
+                .json(failureResponse({ error: "Activity log failed" }));
+            }
+
+            const updateSubscriptionQuery = `
+              UPDATE user_subscription 
+SET current_path = COALESCE(current_path, 0) + 1 
+WHERE id = (
+  SELECT id 
+  FROM (
+    SELECT id 
+    FROM user_subscription 
+    WHERE user_id = ? 
+      AND expiry_date > NOW() 
+    ORDER BY expiry_date DESC, created_at DESC 
+    LIMIT 1
+  ) AS latest_subscription
+);
+
+            `;
+            pool.query(
+              updateSubscriptionQuery,
+              [userId, userId],
+              (subscriptionUpdateErr) => {
+                if (subscriptionUpdateErr) {
+                  console.error(
+                    "Subscription update error:",
+                    subscriptionUpdateErr
+                  );
+                  return res
+                    .status(500)
+                    .json(
+                      failureResponse({ error: "Subscription update failed" })
+                    );
+                }
+
+                axios
+                  .post(
+                    `http://64.23.166.88:3500/generate_roadmap?id=${pathResult.insertId}`,
+                    {},
+                    {
+                      headers: {
+                        Authorization: req.header("Authorization"),
+                      },
+                    }
                   )
-                );
-            }
-          });
-
-          const authHeader = req.header("Authorization");
-          const roadmapResponse = await axios.post(
-            `http://64.23.166.88:3500/generate_roadmap?id=${result.insertId}`,
-            {},
-            {
-              headers: {
-                Authorization: authHeader,
-              },
-            }
-          );
-          console.log("Roadmap response:", roadmapResponse.data);
-        } catch (roadmapError) {
-          console.error("Error calling generate_roadmap API:", roadmapError);
-          return res
-            .status(500)
-            .json(
-              failureResponse(
-                { error: "Failed to call roadmap generation API" },
-                "Failed to create the path"
-              )
+                  .then((roadmapResponse) => {
+                    console.log("Roadmap response:", roadmapResponse.data);
+                    return res
+                      .status(200)
+                      .json(
+                        successResponse({}, "Path is created successfully")
+                      );
+                  })
+                  .catch((roadmapError) => {
+                    console.error("Roadmap generation error:", roadmapError);
+                    return res.status(500).json(
+                      failureResponse({
+                        error: "Roadmap generation failed",
+                      })
+                    );
+                  });
+              }
             );
-        }
-
-        res
-          .status(200)
-          .json(successResponse({}, "Path is created successfully"));
+          }
+        );
       }
     );
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Unexpected top-level error:", error);
     return res
       .status(500)
       .json(
         failureResponse(
-          { error: "Internal Server Error" },
+          { error: "Unexpected error occurred" },
           "Failed to create the path"
         )
       );
@@ -1049,7 +1048,6 @@ export const sendMessage = async (req, res) => {
     });
   }
 };
-
 
 export const getMessage = async (req, res) => {
   try {
