@@ -384,76 +384,93 @@ export const checkPathSubscription = (req, res) => {
       WHERE user_id = ?
     `;
 
-    const query = `
-    SELECT 
-        us.current_path, 
-        s.total_path,
-        s.id AS subscription_id,
-        us.expiry_date
-    FROM user_subscription AS us
-    JOIN subscriptions AS s ON us.subscription_id = s.id
-    WHERE us.user_id = ? AND us.expiry_date > NOW()
-    ORDER BY us.expiry_date DESC
-    LIMIT 1;
-  `;
+    const subscriptionQuery = `
+      SELECT 
+          us.current_path, 
+          s.total_path,
+          s.id AS subscription_id,
+          us.expiry_date
+      FROM user_subscription AS us
+      JOIN subscriptions AS s ON us.subscription_id = s.id
+      WHERE us.user_id = ? AND us.expiry_date > NOW()
+      ORDER BY us.expiry_date DESC
+      LIMIT 1;
+    `;
 
-    pool.query(query, [userId], (err, subResults) => {
+    // Step 1: Check how many paths the user has already created
+    pool.query(checkPathQuery, [userId], (err, pathResults) => {
       if (err) {
-        console.error("Database error:", err);
+        console.error("Database error (path count):", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      if (!subResults.length) {
+      const pathCount = pathResults[0]?.pathCount || 0;
+
+      // Allow the first path for free
+      if (pathCount === 0) {
         return res.status(200).json({
-          error:
-            "No active subscription found. Please purchase a subscription to create more paths.",
-          Subscription_Status: false,
+          message: "First path is free to create.",
+          Subscription_Status: true,
         });
       }
 
-      const { current_path, subscription_id, expiry_date } = subResults[0];
+      // Step 2: Check the user's subscription status
+      pool.query(subscriptionQuery, [userId], (err, subResults) => {
+        if (err) {
+          console.error("Database error (subscription):", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
 
-      // Set timezone to Asia/Karachi
-      const timezone = "Asia/Karachi";
+        if (!subResults.length) {
+          return res.status(200).json({
+            error:
+              "No active subscription found. Please purchase a subscription to create more paths.",
+            Subscription_Status: false,
+          });
+        }
 
-      // Use moment-timezone to handle timezone comparison
-      const isSubscriptionValid = moment()
-        .tz(timezone)
-        .isBefore(moment(expiry_date).tz(timezone));
+        const { current_path, subscription_id, expiry_date } = subResults[0];
 
-      if (!isSubscriptionValid) {
-        return res.status(200).json({
-          error:
-            "Your subscription has expired. Please purchase to create more paths.",
-          Subscription_Status: false,
+        // Set timezone to Asia/Karachi
+        const timezone = "Asia/Karachi";
+        const isSubscriptionValid = moment()
+          .tz(timezone)
+          .isBefore(moment(expiry_date).tz(timezone));
+
+        if (!isSubscriptionValid) {
+          return res.status(200).json({
+            error:
+              "Your subscription has expired. Please purchase to create more paths.",
+            Subscription_Status: false,
+          });
+        }
+
+        let pathLimit;
+        switch (subscription_id) {
+          case 1: // Pioneer
+            pathLimit = 15;
+            break;
+          case 2: // Navigator
+            pathLimit = 6;
+            break;
+          case 3: // Explorer
+            pathLimit = 2;
+            break;
+          default:
+            return res.status(400).json({ error: "Unknown subscription type" });
+        }
+
+        if (current_path >= pathLimit) {
+          return res.status(200).json({
+            error: "Subscription limit reached. Upgrade your plan.",
+            Subscription_Status: false,
+          });
+        }
+
+        res.status(200).json({
+          message: "Path creation is allowed.",
+          Subscription_Status: true,
         });
-      }
-
-      let pathLimit;
-      switch (subscription_id) {
-        case 1: // Pioneer
-          pathLimit = 15;
-          break;
-        case 2: // Navigator
-          pathLimit = 6;
-          break;
-        case 3: // Explorer
-          pathLimit = 2;
-          break;
-        default:
-          return res.status(400).json({ error: "Unknown subscription type" });
-      }
-
-      if (current_path >= pathLimit) {
-        return res.status(200).json({
-          error: "Subscription limit reached. Upgrade your plan.",
-          Subscription_Status: false,
-        });
-      }
-
-      res.status(200).json({
-        message: "Path creation is allowed.",
-        Subscription_Status: true,
       });
     });
   } catch (error) {
@@ -500,11 +517,8 @@ export const checkTrainingPlanSubscription = (req, res) => {
         });
       }
 
-      const {
-        current_training_plan,
-        subscription_id,
-        expiry_date,
-      } = subResults[0];
+      const { current_training_plan, subscription_id, expiry_date } =
+        subResults[0];
 
       // Set timezone to Asia/Karachi
       const timezone = "Asia/Karachi";
@@ -515,7 +529,6 @@ export const checkTrainingPlanSubscription = (req, res) => {
         .isBefore(moment(expiry_date).tz(timezone));
 
       if (!isSubscriptionValid) {
-        
         return res.status(200).json({
           error:
             "Your subscription has expired. Please purchase a subscription to create a training plan.",
@@ -545,9 +558,9 @@ export const checkTrainingPlanSubscription = (req, res) => {
         });
       }
 
-      res.status(200).json({ 
+      res.status(200).json({
         message: "Training plan creation is allowed.",
-        Subscription_Status: true 
+        Subscription_Status: true,
       });
     });
   } catch (error) {
