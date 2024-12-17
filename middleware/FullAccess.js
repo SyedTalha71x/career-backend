@@ -6,6 +6,7 @@ const pool = connectToDB();
 export const FullAccess = () => {
   return async (req, res, next) => {
     try {
+      
       const { authorization } = req.headers;
 
       if (!authorization || !authorization.startsWith('Bearer ')) {

@@ -1048,7 +1048,6 @@ export const sendMessage = async (req, res) => {
     });
   }
 };
-
 export const getMessage = async (req, res) => {
   try {
     const step_id = req.params.id;

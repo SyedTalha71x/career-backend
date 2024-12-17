@@ -11,7 +11,7 @@ import {
   getSpecificSkillsWithStepId,
   sendMessage,
   getMessage,
-  addSkill, updateSkill, deleteSkill,getSinglePathDetailWithMap, checkRemainingPlans
+  addSkill, updateSkill, deleteSkill, getSinglePathDetailWithMap, checkRemainingPlans
 } from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";
@@ -64,7 +64,7 @@ router.get("/get-message/:id", authenticate, getMessage)
 router.post("/add-skill", authenticate, addSkill)
 router.post("/update-skill/:id", authenticate, updateSkill)
 router.delete("/delete-skill/:id",authenticate, deleteSkill)
-router.get('/get-single-path-detail/:pathId', FullAccess, getSinglePathDetailWithMap)
+router.get('/get-single-path-detail/:pathId', FullAccess(), getSinglePathDetailWithMap)
 router.get('/check-remaining-plans', authenticate, checkRemainingPlans)
 
 
