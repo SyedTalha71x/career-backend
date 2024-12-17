@@ -1,6 +1,6 @@
 import { successResponse, failureResponse } from "../Helper/helper.js";
 import { connectToDB } from "../utils/db/db.js";
-import moment from "moment";
+import moment from "moment-timezone";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -95,22 +95,17 @@ export const purchaseSubscription = async (req, res) => {
       });
     });
 
-    
-
     const unitAmount = Math.round(subscription.price * 100);
 
-    const getFrontendUrl =  () =>{
-      if(process.env.NODE_ENV === 'development'){
-        return process.env.FRONTEND_URL
+    const getFrontendUrl = () => {
+      if (process.env.NODE_ENV === "development") {
+        return process.env.FRONTEND_URL;
+      } else if (process.env.NODE_ENV === "production") {
+        return process.env.PRODUCTION_URL;
+      } else {
+        return process.env.FRONTEND_URL;
       }
-      else if(process.env.NODE_ENV === 'production'){
-        return process.env.PRODUCTION_URL
-      }
-      else
-      {
-        return process.env.FRONTEND_URL
-      }
-    }
+    };
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -129,14 +124,19 @@ export const purchaseSubscription = async (req, res) => {
       client_reference_id: subscriptionId,
     });
 
-    const insert_activity_logs = "INSERT INTO activity_logs (name, user_id) VALUES (?,?)"
+    const insert_activity_logs =
+      "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
 
-    pool.query(insert_activity_logs, [`Subscription purchased: ${subscription.name}`, userId], (err)=>{
-      if(err){
-        console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'})
+    pool.query(
+      insert_activity_logs,
+      [`Subscription purchased: ${subscription.name}`, userId],
+      (err) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
       }
-    })
+    );
 
     if (session) {
       return res
@@ -171,7 +171,8 @@ export const purchaseSubscription = async (req, res) => {
 };
 export const getSubscription = async (req, res) => {
   try {
-    const query = "SELECT id, name, price, valid_till, description, points FROM subscriptions";
+    const query =
+      "SELECT id, name, price, valid_till, description, points FROM subscriptions";
     pool.query(query, (err, results) => {
       if (err) {
         console.log(err);
@@ -198,6 +199,7 @@ export const getSubscription = async (req, res) => {
       );
   }
 };
+
 export const confirmSubscription = async (req, res) => {
   try {
     const { sessionId } = req.body;
@@ -239,10 +241,8 @@ export const confirmSubscription = async (req, res) => {
         );
     }
 
-    // Extract the payment intent ID from the session
     const paymentIntentId = session.payment_intent;
 
-    // Retrieve the subscriptionId from the session
     const subscriptionId = session.client_reference_id;
 
     if (!subscriptionId) {
@@ -256,7 +256,6 @@ export const confirmSubscription = async (req, res) => {
         );
     }
 
-    // Get subscription details from the database
     const getSubscription = () => {
       return new Promise((resolve, reject) => {
         const getSubscriptionQuery =
@@ -271,11 +270,12 @@ export const confirmSubscription = async (req, res) => {
     };
 
     const subscription = await getSubscription();
+
     const expiryDate = moment()
       .add(subscription.valid_till, "days")
-      .format("YYYY-MM-DD");
+      .tz("Asia/Karachi") // Set timezone to Asia/Karachi
+      .format("YYYY-MM-DD HH:mm:ss"); // Format for MySQL
 
-    // Save user subscription to the database
     const saveUserSubscription = () => {
       return new Promise((resolve, reject) => {
         const insertUserSubscriptionQuery = `
@@ -309,6 +309,7 @@ export const confirmSubscription = async (req, res) => {
       );
   }
 };
+
 export const checkUserSubscription = async (req, res) => {
   const userId = req.user?.userId;
 
@@ -348,20 +349,16 @@ export const checkUserSubscription = async (req, res) => {
             });
           }
 
-          return res
-            .status(200)
-            .json({
-              Subscription_Status: false,
-              message: "Yes you can create a new path",
-            });
+          return res.status(200).json({
+            Subscription_Status: false,
+            message: "Yes you can create a new path",
+          });
         });
       } else {
-        return res
-          .status(200)
-          .json({
-            Subscription_Status: true,
-            message: "Yes you can create your first path for free",
-          });
+        return res.status(200).json({
+          Subscription_Status: true,
+          message: "Yes you can create your first path for free",
+        });
       }
     });
   } catch (error) {
@@ -369,6 +366,7 @@ export const checkUserSubscription = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 export const checkPathSubscription = (req, res) => {
   try {
     const userId = req.user?.userId;
@@ -386,73 +384,76 @@ export const checkPathSubscription = (req, res) => {
       WHERE user_id = ?
     `;
 
-    // Query to check the user's active subscription
     const query = `
-      SELECT 
+    SELECT 
         us.current_path, 
         s.total_path,
-        s.id AS subscription_id
-      FROM user_subscription AS us
-      JOIN subscriptions AS s ON us.subscription_id = s.id
-      WHERE us.user_id = ? AND us.expiry_date > NOW()
-    `;
+        s.id AS subscription_id,
+        us.expiry_date
+    FROM user_subscription AS us
+    JOIN subscriptions AS s ON us.subscription_id = s.id
+    WHERE us.user_id = ? AND us.expiry_date > NOW()
+    ORDER BY us.expiry_date DESC
+    LIMIT 1;
+  `;
 
-    pool.query(checkPathQuery, [userId], (err, pathResults) => {
+    pool.query(query, [userId], (err, subResults) => {
       if (err) {
         console.error("Database error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      const pathCount = pathResults[0]?.pathCount || 0;
-
-      // If the user has not created any paths and has no active subscription, allow the first path for free
-      if (pathCount === 0) {
+      if (!subResults.length) {
         return res.status(200).json({
-          message: "You can create your first path for free.",
-          Subscription_Status: true,
+          error:
+            "No active subscription found. Please purchase a subscription to create more paths.",
+          Subscription_Status: false,
         });
       }
-      pool.query(query, [userId], (err, subResults) => {
-        if (err) {
-          console.error("Database error:", err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
 
-        if (!subResults.length) {
-          return res.status(200).json({
-            error: "No active subscription found. Please purchase a subscription to create more paths.",
-            Subscription_Status: false,
-          });
-        }
+      const { current_path, subscription_id, expiry_date } = subResults[0];
 
-        const { current_path, subscription_id } = subResults[0];
-        
-        let pathLimit;
-        switch (subscription_id) {
-          case 1: // Pioneer
-            pathLimit = 15;
-            break;
-          case 2: // Navigator
-            pathLimit = 6;
-            break;
-          case 3: // Explorer
-            pathLimit = 2;
-            break;
-          default:
-            return res.status(400).json({ error: "Unknown subscription type" });
-        }
+      // Set timezone to Asia/Karachi
+      const timezone = "Asia/Karachi";
 
-        if (current_path >= pathLimit) {
-          return res.status(200).json({
-            error: "Subscription limit reached. Upgrade your plan.",
-            Subscription_Status: false,
-          });
-        }
+      // Use moment-timezone to handle timezone comparison
+      const isSubscriptionValid = moment()
+        .tz(timezone)
+        .isBefore(moment(expiry_date).tz(timezone));
 
-        res.status(200).json({
-          message: "Path creation is allowed.",
-          Subscription_Status: true,
+      if (!isSubscriptionValid) {
+        return res.status(200).json({
+          error:
+            "Your subscription has expired. Please purchase to create more paths.",
+          Subscription_Status: false,
         });
+      }
+
+      let pathLimit;
+      switch (subscription_id) {
+        case 1: // Pioneer
+          pathLimit = 15;
+          break;
+        case 2: // Navigator
+          pathLimit = 6;
+          break;
+        case 3: // Explorer
+          pathLimit = 2;
+          break;
+        default:
+          return res.status(400).json({ error: "Unknown subscription type" });
+      }
+
+      if (current_path >= pathLimit) {
+        return res.status(200).json({
+          error: "Subscription limit reached. Upgrade your plan.",
+          Subscription_Status: false,
+        });
+      }
+
+      res.status(200).json({
+        message: "Path creation is allowed.",
+        Subscription_Status: true,
       });
     });
   } catch (error) {
@@ -460,52 +461,77 @@ export const checkPathSubscription = (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 export const checkTrainingPlanSubscription = (req, res) => {
   try {
     const userId = req.user?.userId;
+
     if (!userId) {
-      return res.status(401).json(
-        failureResponse(
-          { error: "User not authenticated" },
-          "Failed to check Training Plan Subscription"
-        )
-      );
+      return res.status(401).json({
+        error: "User not authenticated",
+        TrainingPlan_Status: false,
+      });
     }
 
-    const query = `
+    const subscriptionQuery = `
       SELECT 
         us.current_training_plan, 
         s.total_training_plan,
-        s.id AS subscription_id
+        s.id AS subscription_id,
+        us.expiry_date
       FROM user_subscription AS us
       JOIN subscriptions AS s ON us.subscription_id = s.id
       WHERE us.user_id = ? AND us.expiry_date > NOW()
+      ORDER BY us.expiry_date DESC
+      LIMIT 1;
     `;
 
-    pool.query(query, [userId], (err, results) => {
+    pool.query(subscriptionQuery, [userId], (err, subResults) => {
       if (err) {
         console.error("Database error:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      if (!results.length) {
+      if (!subResults.length) {
         return res.status(200).json({
-          error: "No active subscription found. Please purchase a subscription to access training plans.",
-          Subscription_Status: false
+          error:
+            "No active subscription found. Please purchase a subscription to create a training plan.",
+          TrainingPlan_Status: false,
         });
       }
 
-      const { current_training_plan, subscription_id } = results[0];
-      
+      const {
+        current_training_plan,
+        subscription_id,
+        expiry_date,
+      } = subResults[0];
+
+      // Set timezone to Asia/Karachi
+      const timezone = "Asia/Karachi";
+
+      // Use moment-timezone to handle timezone comparison
+      const isSubscriptionValid = moment()
+        .tz(timezone)
+        .isBefore(moment(expiry_date).tz(timezone));
+
+      if (!isSubscriptionValid) {
+        
+        return res.status(200).json({
+          error:
+            "Your subscription has expired. Please purchase a subscription to create a training plan.",
+          TrainingPlan_Status: false,
+        });
+      }
+
       let trainingPlanLimit;
       switch (subscription_id) {
-        case 1: // Pioneer 
+        case 1: // Pioneer
           trainingPlanLimit = 3;
           break;
-        case 2: // Navigator 
+        case 2: // Navigator
           trainingPlanLimit = 1;
           break;
-        case 3: // Explorer 
+        case 3: // Explorer
           trainingPlanLimit = 0;
           break;
         default:
@@ -515,7 +541,7 @@ export const checkTrainingPlanSubscription = (req, res) => {
       if (current_training_plan >= trainingPlanLimit) {
         return res.status(200).json({
           error: "Training plan limit reached. Upgrade your plan.",
-          Subscription_Status: false
+          TrainingPlan_Status: false,
         });
       }
 
@@ -525,10 +551,7 @@ export const checkTrainingPlanSubscription = (req, res) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    console.error("Unexpected error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
-
