@@ -11,13 +11,14 @@ import {
   getSpecificSkillsWithStepId,
   sendMessage,
   getMessage,
-  addSkill, updateSkill, deleteSkill, getSinglePathDetailWithMap, checkRemainingPlans
+  addSkill, updateSkill, deleteSkill, getSinglePathDetailWithMap, checkRemainingPlans, editStepTitle
 } from "../controllers/mapping-controller.js";
 import multer from "multer";
 import authenticate from "../middleware/authentication.js";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { FullAccess } from "../middleware/FullAccess.js";
+import { CheckUserAdminBoth } from "../middleware/checkUserAdminBoth.js";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -66,7 +67,7 @@ router.post("/update-skill/:id", authenticate, updateSkill)
 router.delete("/delete-skill/:id",authenticate, deleteSkill)
 router.get('/get-single-path-detail/:pathId', FullAccess(), getSinglePathDetailWithMap)
 router.get('/check-remaining-plans', authenticate, checkRemainingPlans)
-
+router.post('/edit-step-title/:stepId', CheckUserAdminBoth(), editStepTitle)
 
 
 // Error handling middleware

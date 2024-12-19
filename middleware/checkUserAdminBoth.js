@@ -3,10 +3,9 @@ import { connectToDB } from '../utils/db/db.js';
 
 const pool = connectToDB();
 
-export const FullAccess = () => {
+export const CheckUserAdminBoth = () => {
   return async (req, res, next) => {
     try {
-      
       const { authorization } = req.headers;
 
       if (!authorization || !authorization.startsWith('Bearer ')) {
@@ -23,7 +22,7 @@ export const FullAccess = () => {
 
       if (!verifiedToken) {
         return res.status(401).json({ status: false, message: 'Unauthorized Access' });
-      } 
+      }
 
       pool.query('SELECT * FROM users WHERE id = ?', [verifiedToken.userId], (userErr, userResults) => {
         if (userErr) {
@@ -32,8 +31,9 @@ export const FullAccess = () => {
         }
 
         if (!userResults.length) {
-          return res.status(403).json({ status: false, message: 'Forbidden No Roles Found ' });
+          return res.status(403).json({ status: false, message: 'Forbidden No Roles Found' });
         }
+
         const user = userResults[0];
 
         pool.query('SELECT role_id FROM role_to_users WHERE user_id = ?', [user.id], (roleErr, roleResults) => {
@@ -43,16 +43,20 @@ export const FullAccess = () => {
           }
 
           if (!roleResults.length) {
-            return res.status(403).json({ status: false, message: 'Forbidden No Roles Found ' });
+            return res.status(403).json({ status: false, message: 'Forbidden No Roles Found' });
           }
+
           const roleId = roleResults[0].role_id;
           user.role_id = roleId;
-          // Admin and Super Admin both have access
-          if (roleId === 2 || roleId === 1) {
+
+
+          // If user is admin then he has access
+          if (roleId === 2 || roleId === 3) {
             req.user = user;
             return next(); 
           }
-          return res.status(403).json({ status: false, message: 'Access Denied - Admin and Super Admin only have access ' });
+
+          return res.status(403).json({ status: false, message: 'Access Denied - Admin and User only have access' });
         });
       });
     } catch (error) {

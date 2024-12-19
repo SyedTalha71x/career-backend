@@ -431,7 +431,6 @@ export const checkPathSubscription = (req, res) => {
 
         const { current_path, subscription_id, expiry_date } = subResults[0];
 
-        // Set timezone to Asia/Karachi
         const timezone = "Asia/Karachi";
         const isSubscriptionValid = moment()
           .tz(timezone)
