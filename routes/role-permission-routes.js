@@ -20,7 +20,8 @@ import {
   getAllSkills,
   getAllPaths,
   updatePathPrompt,
-  getAnalytics
+  getAnalytics,
+  getAllSkillsWithUserId
 } from "../controllers/role-permission-controller.js";
 import { SuperAdmin } from "../middleware/SuperAdmin.js";
 import { AdminAccess } from "../middleware/AdminAccess.js";
@@ -56,6 +57,7 @@ router.post('/update-path-prompt-for-admin-panel/:pathId', FullAccess(), updateP
 
 router.get('/get-most-created-paths', FullAccess(), getMostPaths)
 router.get('/get-analytics', FullAccess(), getAnalytics)
+router.get('/get-all-skills-with-userid/:userId', FullAccess(), getAllSkillsWithUserId)
 
 
 export default router;

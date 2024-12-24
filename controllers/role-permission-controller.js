@@ -1564,3 +1564,104 @@ export const getAnalytics = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getAllSkillsWithUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { page = 1 } = req.query;
+    const itemsPerPage = 10;
+    const offset = (page - 1) * itemsPerPage;
+
+    if (!userId) {
+      return res.status(400).json({ message: 'UserId not found' });
+    }
+    const fetchSkillsQuery = `
+      SELECT 
+        skills.id AS skill_id, 
+        skills.title, 
+        skills.step_id, 
+        skills.status 
+      FROM skills
+      INNER JOIN steps ON skills.step_id = steps.id
+      INNER JOIN path ON steps.path_id = path.id
+      WHERE path.user_id = ?
+      ORDER BY skills.id DESC
+      LIMIT ? OFFSET ?;
+    `;
+
+    const skills = await new Promise((resolve, reject) => {
+      pool.query(fetchSkillsQuery, [userId, itemsPerPage, offset], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+
+    if (skills.length === 0) {
+      return res.status(404).json({ message: 'No skills found for this user' });
+    }
+
+    const stepIds = skills.map((skill) => skill.step_id).filter(Boolean);
+    const steps = await new Promise((resolve, reject) => {
+      if (stepIds.length === 0) return resolve([]);
+      pool.query(
+        `SELECT id, path_id FROM steps WHERE id IN (?);`,
+        [stepIds],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
+
+    const pathIds = steps.map((step) => step.path_id).filter(Boolean);
+    const paths = await new Promise((resolve, reject) => {
+      if (pathIds.length === 0) return resolve([]);
+      pool.query(
+        `SELECT id, user_id FROM path WHERE id IN (?);`,
+        [pathIds],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
+
+    const userMap = {
+      [userId]: "This User", 
+    };
+
+    const enrichedSkills = skills.map((skill) => {
+      return {
+        ...skill,
+        username: userMap[userId] || 'Unknown',
+      };
+    });
+
+    const totalCount = await new Promise((resolve, reject) => {
+      pool.query(
+        `SELECT COUNT(*) AS total 
+         FROM skills
+         INNER JOIN steps ON skills.step_id = steps.id
+         INNER JOIN path ON steps.path_id = path.id
+         WHERE path.user_id = ?;`,
+        [userId],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results[0].total);
+        }
+      );
+    });
+
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+    return res.status(200).json({
+      currentPage: Number(page),
+      totalPages,
+      totalSkills: totalCount,
+      skills: skills,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
