@@ -1664,4 +1664,132 @@ export const getAllSkillsWithUserId = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+export const deletePathData = async (req, res) =>{
+  const pathId = req.params.pathId;
 
+  try {
+    const checkPathQuery = `SELECT id FROM path WHERE id = ?`;
+    const pathExists = await new Promise((resolve, reject) => {
+      pool.query(checkPathQuery, [pathId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+
+    if (pathExists.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Path not found' 
+      });
+    }
+
+    const getTrainingPlansQuery = `
+      SELECT tp.id 
+      FROM trainning_plan tp
+      INNER JOIN branch b ON tp.branch_id = b.id
+      WHERE b.path_id = ?
+    `;
+
+    const trainingPlans = await new Promise((resolve, reject) => {
+      pool.query(getTrainingPlansQuery, [pathId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+    for (const plan of trainingPlans) {
+      await new Promise((resolve, reject) => {
+        pool.query('DELETE FROM action_plan_summary WHERE plan_id = ?', [plan.id], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+      await new Promise((resolve, reject) => {
+        pool.query('DELETE FROM career_goals_overview WHERE plan_id = ?', [plan.id], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+      await new Promise((resolve, reject) => {
+        pool.query('DELETE FROM career_path_progression_map WHERE plan_id = ?', [plan.id], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+      await new Promise((resolve, reject) => {
+        pool.query('DELETE FROM next_steps_recommendations WHERE plan_id = ?', [plan.id], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+      await new Promise((resolve, reject) => {
+        pool.query('DELETE FROM skill_gap_analysis WHERE plan_id = ?', [plan.id], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+      await new Promise((resolve, reject) => {
+        pool.query('DELETE FROM training_activities WHERE plan_id = ?', [plan.id], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+      await new Promise((resolve, reject) => {
+        pool.query('DELETE FROM trainning_plan WHERE id = ?', [plan.id], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+    }
+
+    await new Promise((resolve, reject) => {
+      pool.query(`
+        DELETE s FROM skills s
+        INNER JOIN steps st ON s.step_id = st.id
+        WHERE st.path_id = ?
+      `, [pathId], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    await new Promise((resolve, reject) => {
+      pool.query(`
+        DELETE FROM steps WHERE path_id = ?
+      `, [pathId], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    await new Promise((resolve, reject) => {
+      pool.query(`
+        DELETE FROM branch WHERE path_id = ?
+      `, [pathId], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    await new Promise((resolve, reject) => {
+      pool.query(`
+        DELETE FROM path WHERE id = ?
+      `, [pathId], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Path and all related data deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Error deleting path:', error);
+    return res.status(500).json({ 
+      success: false,
+      message: 'Internal server error',
+      error: error.message 
+    });
+  }
+}
