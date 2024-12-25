@@ -309,12 +309,16 @@ export const updateModuleAndPermissions = async (req, res) => {
               .toLowerCase()
               .replace(/ /g, "-");
 
-            // Check if permission already exists in the database before adding
-            const checkExistingPermissionQuery =
-              "SELECT id FROM permissions WHERE name = ?";
+            // Check if permission already exists in the database with the same name and moduleId
+            const checkExistingPermissionQuery = `
+              SELECT p.id 
+              FROM permissions p
+              JOIN permission_modules pm ON p.id = pm.permission_id
+              WHERE p.name = ? AND pm.module_id = ?`;
+            
             pool.query(
               checkExistingPermissionQuery,
-              [permission.name],
+              [permission.name, moduleId],
               (err, existingPermission) => {
                 if (err) {
                   console.error("Error checking if permission exists:", err);
@@ -325,7 +329,7 @@ export const updateModuleAndPermissions = async (req, res) => {
                   return;
                 }
 
-                // If permission does not exist, insert it
+                // If permission does not exist in the module, insert it
                 if (existingPermission.length === 0) {
                   const addPermissionQuery =
                     "INSERT INTO permissions (name, slug) VALUES (?, ?)";
@@ -379,14 +383,14 @@ export const updateModuleAndPermissions = async (req, res) => {
                   );
                 } else {
                   console.log(
-                    `Permission '${permission.name}' already exists in the database, skipping add.`
+                    `Permission '${permission.name}' already exists in module, skipping add.`
                   );
                 }
               }
             );
           });
 
-          // Wait for a moment to ensure queries finish before sending response
+          // Wait a bit to allow async operations to finish
           setTimeout(() => {
             return res.status(200).json({
               results: results,
@@ -1015,6 +1019,7 @@ export const getRolePermissions = async (req, res) => {
   try {
     const roleId = req.params.roleId;
 
+    // Modified query to avoid duplicate rows by using DISTINCT
     const query = `
       SELECT
         m.module_name AS moduleName,
@@ -1032,6 +1037,8 @@ export const getRolePermissions = async (req, res) => {
         modules m ON m.id = pm.module_id
       LEFT JOIN
         permission_to_role pr ON p.id = pr.permission_id AND pr.role_id = ?
+      GROUP BY
+        m.module_name, p.id
       ORDER BY
         m.module_name, p.name;
     `;
@@ -1668,6 +1675,7 @@ export const deletePathData = async (req, res) =>{
   const pathId = req.params.pathId;
 
   try {
+    // 1. Check if path exists 
     const checkPathQuery = `SELECT id FROM path WHERE id = ?`;
     const pathExists = await new Promise((resolve, reject) => {
       pool.query(checkPathQuery, [pathId], (err, results) => {
@@ -1793,3 +1801,66 @@ export const deletePathData = async (req, res) =>{
     });
   }
 }
+export const assignUserToSubAdmin = async (req, res) => {
+  try {
+    const { userIds, subAdminId } = req.body;
+
+    if (!userIds || !Array.isArray(userIds) || userIds.length === 0 || !subAdminId) {
+      return res.status(400).json(failureResponse({ error: "User IDs and Sub-admin ID are required" }, "Bad Request"));
+    }
+
+    const results = [];
+    for (let userId of userIds) {
+      const query = "INSERT INTO user_to_subadmin (user_id, subadmin_id) VALUES (?, ?)";
+      pool.query(query, [userId, subAdminId], (err, result) => {
+        if (err) {
+          console.error("Error assigning sub-admin:", err);
+          results.push({ userId, success: false, error: err.message });
+        } else {
+          results.push({ userId, success: true, message: "Assigned sub-admin successfully" });
+        }
+      });
+    }
+
+    setTimeout(() => {
+      return res.status(200).json({
+        message: "Sub-admin assignment process completed",
+        results: results,
+      });
+    }, 500);
+
+  } catch (error) {
+    console.error("Error occurred:", error);
+    return res.status(500).json(failureResponse({ error: "Internal Server Error" }, "Failure"));
+  }
+};
+export const FilteringUsers = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    let query = "SELECT id, CONCAT(username, ' (', email, ')') AS user FROM users";
+
+    if (name) {
+      query += ` WHERE CONCAT(username, ' (', email, ')') LIKE ?`;
+    }
+
+    pool.query(query, [ `%${name}%` ], (err, result) => {
+      if (err) {
+        console.error("Error fetching filtered users:", err);
+        return res.status(502).json({ error: "Error fetching data" });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "No matching users found" });
+      }
+
+      return res.status(200).json({ users: result });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+

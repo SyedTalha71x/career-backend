@@ -195,6 +195,13 @@ export const Login = async (req, res) => {
                   .json(failureResponse({ error: message }, "Login Failed"));
               }
 
+              if (roleResults.length === 0) {
+                message = "No role assigned to this user";
+                return res
+                  .status(404)
+                  .json(failureResponse({ error: message }, "Login Failed"));
+              }
+
               let roleID = roleResults[0].role_id;
 
               const fetch_role_name = "SELECT name FROM roles WHERE id = ?";
@@ -214,13 +221,17 @@ export const Login = async (req, res) => {
                   permissionsQUERY,
                   [roleID],
                   (err, permissionResults) => {
-                    if (err || results.length === 0) {
-                      message = "permissions not found for this role";
+                    if (err) {
+                      message = "Error fetching permissions";
                       return res
                         .status(502)
                         .json(failureResponse({ error: message }, "Failure"));
                     }
-                    const permissionSlugs = permissionResults.map(row => row.slug)
+
+                    // If no permissions are found, return an empty array
+                    const permissionSlugs = permissionResults.length > 0
+                      ? [...new Set(permissionResults.map((row) => row.slug))]
+                      : [];
 
                     const AuthToken = generateToken(user.id, email, authType);
 
@@ -258,6 +269,7 @@ export const Login = async (req, res) => {
       .json(failureResponse({ api_message }, "Internal Server Error"));
   }
 };
+
 export const checkEmail = async (req, res) => {
   try {
     const { email } = req.body;

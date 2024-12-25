@@ -22,7 +22,9 @@ import {
   updatePathPrompt,
   getAnalytics,
   getAllSkillsWithUserId,
-  deletePathData
+  deletePathData,
+  assignUserToSubAdmin,
+  FilteringUsers
 } from "../controllers/role-permission-controller.js";
 import { SuperAdmin } from "../middleware/SuperAdmin.js";
 import { AdminAccess } from "../middleware/AdminAccess.js";
@@ -60,6 +62,9 @@ router.get('/get-most-created-paths', FullAccess(), getMostPaths)
 router.get('/get-analytics', FullAccess(), getAnalytics)
 router.get('/get-all-skills-with-userid/:userId', FullAccess(), getAllSkillsWithUserId)
 router.delete('/delete-path-related-data/:pathId', FullAccess(), deletePathData)
+
+router.post('/assign-users-to-subadmin', AdminAccess(), assignUserToSubAdmin)
+router.get('/searching-users', SuperAdmin(), FilteringUsers)
 
 
 export default router;
