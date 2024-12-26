@@ -63,7 +63,7 @@ router.get('/get-analytics', FullAccess(), getAnalytics)
 router.get('/get-all-skills-with-userid/:userId', FullAccess(), getAllSkillsWithUserId)
 router.delete('/delete-path-related-data/:pathId', FullAccess(), deletePathData)
 
-router.post('/assign-users-to-subadmin', AdminAccess(), assignUserToSubAdmin)
+router.post('/assign-users-to-subadmin', SuperAdmin(), assignUserToSubAdmin)
 router.get('/searching-users', SuperAdmin(), FilteringUsers)
 
 
