@@ -883,77 +883,82 @@ export const deleteUser = async (req, res) => {
 };
 export const getUsers = async (req, res) => {
   try {
-    const fetchAllUsersQuery =
-      "SELECT id, username, email, created_at FROM users ORDER BY created_at DESC";
+    const userId = req.user.id;
 
-    pool.query(fetchAllUsersQuery, (userErr, userResults) => {
-      if (userErr) {
-        console.error("Database query error (users):", userErr);
+    const checkSubAdminQuery =
+      "SELECT rtu.role_id FROM role_to_users rtu JOIN roles r ON rtu.role_id = r.id WHERE rtu.user_id = ? AND r.name = 'Sub Admin'";
+
+    pool.query(checkSubAdminQuery, [userId], (err, results) => {
+      if (err) {
+        console.error("Database query error (subadmin role check):", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      if (!userResults.length) {
-        return res.status(404).json({ error: "No users found" });
+      let userQuery;
+      let userParams = [];
+
+      if (results.length > 0) {
+        // User is a Sub Admin - Fetch users assigned to them in `user_to_subadmin` table
+        userQuery = `
+          SELECT u.id, u.username, u.email, u.created_at 
+          FROM users u 
+          JOIN user_to_subadmin uts ON u.id = uts.user_id 
+          WHERE uts.subadmin_id = ?
+          ORDER BY u.created_at DESC
+        `;
+        userParams = [userId];
+      } else {
+        // User is not a Sub Admin - Fetch all users
+        userQuery = `
+          SELECT id, username, email, created_at 
+          FROM users 
+          ORDER BY created_at DESC
+        `;
       }
 
-      const users = userResults;
-      const usersWithRolesPromises = users.map((user) => {
-        return new Promise((resolve, reject) => {
-          const fetchRoleQuery =
-            "SELECT role_id FROM role_to_users WHERE user_id = ?";
-          pool.query(fetchRoleQuery, [user.id], (roleErr, roleResults) => {
-            if (roleErr) {
-              console.error("Database query error (role_to_users):", roleErr);
-              return reject("Internal Server Error");
-            }
+      pool.query(userQuery, userParams, (userErr, userResults) => {
+        if (userErr) {
+          console.error("Database query error (fetch users):", userErr);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
 
-            let roleId;
-            if (!roleResults.length) {
-              // Assign the default role ID (e.g., 3 for "user") if no role is found
-              roleId = 3;
-            } else {
-              roleId = roleResults[0].role_id;
-            }
+        if (!userResults.length) {
+          return res.status(404).json({ error: "No users found" });
+        }
 
-            const fetchRoleNameQuery = "SELECT name FROM roles WHERE id = ?";
-            pool.query(
-              fetchRoleNameQuery,
-              [roleId],
-              (roleNameErr, roleNameResults) => {
-                if (roleNameErr) {
-                  console.error("Database query error (roles):", roleNameErr);
-                  return reject("Internal Server Error");
-                }
-
-                let roleName;
-
-                roleName = roleNameResults[0].name;
-
-                resolve({
-                  id: user.id,
-                  username: user.username,
-                  email: user.email,
-                  created_at: user.created_at,
-                  role: roleName,
-                });
+        const usersWithRolesPromises = userResults.map((user) => {
+          return new Promise((resolve, reject) => {
+            const fetchRoleQuery =
+              "SELECT r.name FROM role_to_users rtu JOIN roles r ON rtu.role_id = r.id WHERE rtu.user_id = ?";
+            pool.query(fetchRoleQuery, [user.id], (roleErr, roleResults) => {
+              if (roleErr) {
+                console.error("Database query error (fetch roles):", roleErr);
+                return reject("Internal Server Error");
               }
-            );
+
+              const roleName = roleResults.length > 0 ? roleResults[0].name : "User";
+              resolve({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                created_at: user.created_at,
+                role: roleName,
+              });
+            });
           });
         });
-      });
 
-      Promise.all(usersWithRolesPromises)
-        .then((usersWithRoles) => {
-          return res.status(200).json({ users: usersWithRoles });
-        })
-        .catch((error) => {
-          console.error("Error processing user roles:", error);
-          return res.status(500).json({ error: "Internal Server Error" });
-        });
+        Promise.all(usersWithRolesPromises)
+          .then((usersWithRoles) => res.status(200).json({ users: usersWithRoles }))
+          .catch((error) => {
+            console.error("Error processing user roles:", error);
+            res.status(500).json({ error: "Internal Server Error" });
+          });
+      });
     });
   } catch (error) {
     console.error("Error in getUsers API:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const listPermissions = async (req, res) => {
@@ -1141,33 +1146,72 @@ export const getMostPaths = async (req, res) => {
       );
   }
 };
-export const getActivitylogs = async (req, res) => {
+export const getActivityLogs = async (req, res) => {
   try {
     const { page = 1 } = req.query;
     const itemsPerPage = 10;
     const offset = (page - 1) * itemsPerPage;
+    const userId = req.user.id; // Assuming user ID is available after authentication
 
-    const fetch_all_logs = `SELECT 
-      activity_logs .id,
-      activity_logs .name,
-      activity_logs.user_id,
-      users.username
+    // Fetch user role from the role_to_users table
+    const getUserRoleQuery = `
+      SELECT roles.name as role_name
+      FROM role_to_users
+      JOIN roles ON role_to_users.role_id = roles.id
+      WHERE role_to_users.user_id = ?
+    `;
+
+    const userRoleResult = await new Promise((resolve, reject) => {
+      pool.query(getUserRoleQuery, [userId], (err, results) => {
+        if (err) {
+          console.log(err);
+          return reject(err);
+        }
+        resolve(results);
+      });
+    });
+
+    // If the user does not have a role, return an error
+    if (userRoleResult.length === 0) {
+      return res.status(403).json({ error: "User role not found" });
+    }
+
+    const roleName = userRoleResult[0].role_name;
+
+    let fetch_all_logs = `
+      SELECT 
+        activity_logs.id,
+        activity_logs.name,
+        activity_logs.user_id,
+        users.username
       FROM 
-      activity_logs 
+        activity_logs
       JOIN
-      users
-      ON  
-      activity_logs .user_id = users.id
-      ORDER BY 
-      activity_logs.created_at DESC 
-      LIMIT ? OFFSET ?
-`;
+        users ON activity_logs.user_id = users.id
+    `;
 
-    const countQuery = "SELECT COUNT(*) AS total FROM activity_logs";
+    let countQuery = "SELECT COUNT(*) AS total FROM activity_logs";
+
+    // For Sub Admins, only show logs for assigned users and adjust count query
+    if (roleName === "Sub Admin") {
+      fetch_all_logs += `
+        JOIN user_to_subadmin utsa ON activity_logs.user_id = utsa.user_id
+        WHERE utsa.subadmin_id = ?
+      `;
+      countQuery = `
+        SELECT COUNT(*) AS total
+        FROM activity_logs
+        JOIN user_to_subadmin utsa ON activity_logs.user_id = utsa.user_id
+        WHERE utsa.subadmin_id = ?
+      `;
+    } else {
+      // For Super Admin and Admin, fetch all logs (no filtering by user)
+      fetch_all_logs += " ORDER BY activity_logs.created_at DESC LIMIT ? OFFSET ?";
+    }
 
     const [activity_logs, totalCount] = await Promise.all([
       new Promise((resolve, reject) => {
-        pool.query(fetch_all_logs, [itemsPerPage, offset], (err, results) => {
+        pool.query(fetch_all_logs, roleName === "Sub Admin" ? [userId, itemsPerPage, offset] : [itemsPerPage, offset], (err, results) => {
           if (err) {
             console.log(err);
             return reject(err);
@@ -1176,7 +1220,7 @@ export const getActivitylogs = async (req, res) => {
         });
       }),
       new Promise((resolve, reject) => {
-        pool.query(countQuery, (err, results) => {
+        pool.query(countQuery, roleName === "Sub Admin" ? [userId] : [], (err, results) => {
           if (err) {
             console.log(err);
             return reject(err);
@@ -1203,6 +1247,8 @@ export const getActivitylogs = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
 export const adminUpdateSkill = async (req, res) => {
   console.log("adminUpdateSkill API called");
   try {
@@ -1405,28 +1451,69 @@ export const getAllPaths = async (req, res) => {
   try {
     const { page = 1 } = req.query;
     const itemsPerPage = 10;
-    const offset = (page - 1) * itemsPerPage; // calculating the starting point
+    const offset = (page - 1) * itemsPerPage; // Calculate starting point
 
-    // Fetch paths with pagination
-    const fetchPathsQuery = `
-      SELECT id, prompt, status, user_id, title 
-      FROM path 
-      ORDER BY id DESC 
-      LIMIT ? OFFSET ?
+    const userId = req.user.id; // Assuming `req.user.id` is populated by middleware
+
+    // Step 1: Check if the user is a Sub Admin
+    const checkSubAdminQuery = `
+      SELECT rtu.role_id 
+      FROM role_to_users rtu 
+      JOIN roles r ON rtu.role_id = r.id 
+      WHERE rtu.user_id = ? AND r.name = 'Sub Admin'
     `;
 
-    const countQuery = "SELECT COUNT(*) AS total FROM path";
+    const isSubAdmin = await new Promise((resolve, reject) =>
+      pool.query(checkSubAdminQuery, [userId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results.length > 0); // Returns true if the user is a Sub Admin
+      })
+    );
 
-    // Fetch paths and total count in parallel
+    // Step 2: Construct paths query based on role
+    let fetchPathsQuery;
+    let countQuery;
+    let queryParams;
+
+    if (isSubAdmin) {
+      // If Sub Admin, only fetch paths for assigned users
+      fetchPathsQuery = `
+        SELECT p.id, p.prompt, p.status, p.user_id, p.title 
+        FROM path p
+        JOIN user_to_subadmin uts ON p.user_id = uts.user_id
+        WHERE uts.subadmin_id = ?
+        ORDER BY p.id DESC
+        LIMIT ? OFFSET ?
+      `;
+      countQuery = `
+        SELECT COUNT(*) AS total
+        FROM path p
+        JOIN user_to_subadmin uts ON p.user_id = uts.user_id
+        WHERE uts.subadmin_id = ?
+      `;
+      queryParams = [userId, itemsPerPage, offset];
+    } else {
+      // If not Sub Admin, fetch all paths
+      fetchPathsQuery = `
+        SELECT id, prompt, status, user_id, title 
+        FROM path 
+        ORDER BY id DESC 
+        LIMIT ? OFFSET ?
+      `;
+      countQuery = "SELECT COUNT(*) AS total FROM path";
+      queryParams = [itemsPerPage, offset];
+    }
+
+    // Step 3: Fetch paths and total count in parallel
     const [paths, totalCount] = await Promise.all([
       new Promise((resolve, reject) =>
-        pool.query(fetchPathsQuery, [itemsPerPage, offset], (err, results) => {
+        pool.query(fetchPathsQuery, queryParams, (err, results) => {
           if (err) return reject(err);
           resolve(results);
         })
       ),
       new Promise((resolve, reject) =>
-        pool.query(countQuery, (err, results) => {
+        pool.query(countQuery, isSubAdmin ? [userId] : [], (err, results) => {
           if (err) return reject(err);
           resolve(results[0].total);
         })
@@ -1437,7 +1524,7 @@ export const getAllPaths = async (req, res) => {
       return res.status(404).json({ message: "No paths found" });
     }
 
-    // Fetch users based on user_ids in paths
+    // Step 4: Fetch users based on user_ids in paths
     const userIds = paths.map((path) => path.user_id).filter(Boolean); // Filter out null or undefined
     const users = userIds.length
       ? await new Promise((resolve, reject) =>

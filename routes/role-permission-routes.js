@@ -14,7 +14,7 @@ import {
   getRole,
   getRolePermissions,
   getMostPaths,
-  getActivitylogs,
+  getActivityLogs,
   adminDeleteSkill,
   adminUpdateSkill,
   getAllSkills,
@@ -30,7 +30,8 @@ import { SuperAdmin } from "../middleware/SuperAdmin.js";
 import { AdminAccess } from "../middleware/AdminAccess.js";
 import { FullAccess } from "../middleware/FullAccess.js";
 import { checkPermission } from "../middleware/checkPermission.js";
-
+import authenticate from "../middleware/authentication.js";
+import { FullCustomAccess } from "../middleware/fullcustomAccess.js";
 const router = express.Router();
 
 router.post("/create-role",FullAccess(),createRole);
@@ -48,17 +49,17 @@ router.post("/assign-roles-to-user",SuperAdmin(),assignRolesToUser);
 router.post('/create-user', SuperAdmin(), createUser)
 router.put('/update-user/:id', SuperAdmin(), updateUser)
 router.delete('/delete-user/:id', SuperAdmin(), deleteUser)
-router.get('/get-all-users', getUsers)
+router.get('/get-all-users', FullCustomAccess(), getUsers)
 
-router.get('/get-activity-logs', FullAccess(), getActivitylogs)
+router.get('/get-activity-logs', FullCustomAccess(), getActivityLogs)
 
 router.post('/update-skill-for-admin-panel/:skillId', FullAccess(), adminUpdateSkill)
 router.delete('/delete-skill-for-admin-panel/:skillId', FullAccess(), adminDeleteSkill)
 router.get('/get-all-skills-for-admin-panel', FullAccess(), getAllSkills )
-router.get('/get-all-paths-for-admin-panel', FullAccess(), getAllPaths)
+router.get('/get-all-paths-for-admin-panel', FullCustomAccess(), getAllPaths)
 router.post('/update-path-prompt-for-admin-panel/:pathId', FullAccess(), updatePathPrompt)
 
-router.get('/get-most-created-paths', FullAccess(), getMostPaths)
+router.get('/get-most-created-paths', FullCustomAccess(), getMostPaths)
 router.get('/get-analytics', FullAccess(), getAnalytics)
 router.get('/get-all-skills-with-userid/:userId', FullAccess(), getAllSkillsWithUserId)
 router.delete('/delete-path-related-data/:pathId', FullAccess(), deletePathData)
