@@ -19,6 +19,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { FullAccess } from "../middleware/FullAccess.js";
 import { CheckUserAdminBoth } from "../middleware/checkUserAdminBoth.js";
+import { FullCustomAccess } from "../middleware/fullcustomAccess.js";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -65,7 +66,7 @@ router.get("/get-message/:id", authenticate, getMessage)
 router.post("/add-skill", authenticate, addSkill)
 router.post("/update-skill/:id", authenticate, updateSkill)
 router.delete("/delete-skill/:id",authenticate, deleteSkill)
-router.get('/get-single-path-detail/:pathId', FullAccess(), getSinglePathDetailWithMap)
+router.get('/get-single-path-detail/:pathId', FullCustomAccess(), getSinglePathDetailWithMap)
 router.get('/check-remaining-plans', authenticate, checkRemainingPlans)
 router.post('/edit-step-title/:stepId', CheckUserAdminBoth(), editStepTitle)
 

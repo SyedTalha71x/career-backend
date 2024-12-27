@@ -453,34 +453,88 @@ export const assignPermissionsToRole = async (req, res) => {
           );
       }
 
-      // Prepare data for inserting into role_to_permission table
-      const values = permissionIds.map((permissionId) => [
-        roleId,
-        permissionId,
-      ]);
-
-      // Insert multiple records into role_to_permission table
-      const assignQuery =
-        "INSERT INTO permission_to_role (role_id, permission_id) VALUES ?";
-
-      pool.query(assignQuery, [values], (err, results) => {
+      // Check which permissions are already assigned to this role
+      const permissionCheckQuery = `
+        SELECT permission_id FROM permission_to_role WHERE role_id = ? 
+      `;
+      pool.query(permissionCheckQuery, [roleId], (err, assignedPermissions) => {
         if (err) {
-          console.log("Error assigning permissions to role", err);
+          console.log("Error checking assigned permissions", err);
           return res
             .status(500)
             .json(
               failureResponse(
-                { error: "Failed to assign permissions to role" },
+                { error: "Error checking assigned permissions" },
                 "Internal Server Error"
               )
             );
         }
 
+        // Get list of assigned permission ids
+        const assignedPermissionIds = assignedPermissions.map(
+          (permission) => permission.permission_id
+        );
+
+        // Permissions to add (those that are not yet assigned)
+        const permissionsToAdd = permissionIds.filter(
+          (id) => !assignedPermissionIds.includes(id)
+        );
+
+        // Permissions to remove (those that are currently assigned but not in the request)
+        const permissionsToRemove = assignedPermissionIds.filter(
+          (id) => !permissionIds.includes(id)
+        );
+
+        // Handle adding new permissions
+        if (permissionsToAdd.length > 0) {
+          const valuesToAdd = permissionsToAdd.map((permissionId) => [
+            roleId,
+            permissionId,
+          ]);
+
+          const addQuery =
+            "INSERT INTO permission_to_role (role_id, permission_id) VALUES ?";
+          pool.query(addQuery, [valuesToAdd], (err, results) => {
+            if (err) {
+              console.log("Error adding permissions to role", err);
+              return res
+                .status(500)
+                .json(
+                  failureResponse(
+                    { error: "Failed to assign permissions to role" },
+                    "Internal Server Error"
+                  )
+                );
+            }
+          });
+        }
+
+        // Handle removing permissions
+        if (permissionsToRemove.length > 0) {
+          const removeQuery =
+            "DELETE FROM permission_to_role WHERE role_id = ? AND permission_id IN (?)";
+          pool.query(
+            removeQuery,
+            [roleId, permissionsToRemove],
+            (err, results) => {
+              if (err) {
+                console.log("Error removing permissions from role", err);
+                return res
+                  .status(500)
+                  .json(
+                    failureResponse(
+                      { error: "Failed to unassign permissions from role" },
+                      "Internal Server Error"
+                    )
+                  );
+              }
+            }
+          );
+        }
+
         return res
           .status(200)
-          .json(
-            successResponse(null, "Permissions assigned to role successfully")
-          );
+          .json(successResponse(null, "Permissions updated for role successfully"));
       });
     });
   } catch (error) {
@@ -1247,8 +1301,6 @@ export const getActivityLogs = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
 export const adminUpdateSkill = async (req, res) => {
   console.log("adminUpdateSkill API called");
   try {
