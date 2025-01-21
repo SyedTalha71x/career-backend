@@ -49,6 +49,10 @@ app.use('/api', NotificationRoutes)
 app.use('/api', modelSubscriptionRoutes);
 app.use('/api', PdfGenerator);
 
+app.get('/api/test', (req, res) => {
+    res.status(200).json({ message: 'Server is running!' });
+});
+
 // SERVER ACTION
 const PORT = process.env.PORT || 3008;
 app.listen(PORT, () => {
