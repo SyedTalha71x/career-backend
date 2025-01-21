@@ -55,7 +55,7 @@ app.get('/api/test', (req, res) => {
 
 // SERVER ACTION
 const PORT = process.env.PORT || 3008;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     function getServerIp() {
         const networkInterf = networkInterfaces();
         for (const interfaceName in networkInterf) {
