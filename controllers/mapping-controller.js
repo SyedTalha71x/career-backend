@@ -130,7 +130,7 @@ WHERE id = (
 
                 axios
                   .post(
-                    `http://87.106.188.142:5000/generate_roadmap?id=${pathResult.insertId}`,
+                    `http://87.106.188.142:80/generate_roadmap?id=${pathResult.insertId}`,
                     {},
                     {
                       headers: {
