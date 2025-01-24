@@ -876,7 +876,7 @@ CREATE TABLE `user_to_subadmin` (
   KEY `subadmin_id` (`subadmin_id`),
   CONSTRAINT `user_to_subadmin_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `user_to_subadmin_ibfk_2` FOREIGN KEY (`subadmin_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

@@ -130,7 +130,7 @@ WHERE id = (
 
                 axios
                   .post(
-                    `https://mycareermap.ai/ai/generate_roadmap?id=${pathResult.insertId}`,
+                    `https://app.mycareermap.ai/ai/generate_roadmap?id=${pathResult.insertId}`,
                     {},
                     {
                       headers: {
@@ -1466,31 +1466,32 @@ export const editStepTitle = async (req, res) => {
     const { title } = req.body;
 
     if (!title) {
-      return res.status(400).json({ message: 'Title is required' });
+      return res.status(400).json({ message: "Title is required" });
     }
 
     if (!stepId) {
-      return res.status(400).json({ message: 'StepId is required' });
+      return res.status(400).json({ message: "StepId is required" });
     }
 
-    const updateStepTitle = 'UPDATE steps SET title = ? WHERE id = ?';
+    const updateStepTitle = "UPDATE steps SET title = ? WHERE id = ?";
     pool.query(updateStepTitle, [title, stepId], (err, results) => {
       if (err) {
-        console.error('Database query error:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        console.error("Database query error:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
       }
 
       if (results.affectedRows === 0) {
-        return res.status(404).json({ message: 'No step found with the provided StepId' });
+        return res
+          .status(404)
+          .json({ message: "No step found with the provided StepId" });
       }
 
-      return res.status(200).json({ message: 'Title has been updated successfully' });
+      return res
+        .status(200)
+        .json({ message: "Title has been updated successfully" });
     });
   } catch (error) {
-    console.error('Server error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Server error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
-
