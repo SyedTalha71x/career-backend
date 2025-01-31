@@ -1388,61 +1388,56 @@ export const checkRemainingPlans = async (req, res) => {
       return res.status(400).json({ error: "User is not authorized" });
     }
 
-    // first check if which subscription has user buys
-    const checkUserSubscription =
-      "SELECT * FROM user_subscription WHERE user_id = ?";
+    const checkUserSubscription = `
+      SELECT * FROM user_subscription 
+      WHERE user_id = ? AND expiry_date > NOW()
+      ORDER BY created_at DESC 
+      LIMIT 1
+    `;
 
     pool.query(checkUserSubscription, [userId], (err, results) => {
       if (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
       if (results.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "No subscription found for this user" });
+        return res.status(400).json({ message: "No active subscription found for this user" });
       }
 
       const userSubscription = results[0];
 
       const getAllSubscriptions = "SELECT * FROM subscriptions WHERE id = ?";
 
-      pool.query(
-        getAllSubscriptions,
-        [userSubscription.subscription_id],
-        (err, subscriptionResult) => {
-          if (err) {
-            console.log(err);
-            return res.status(500).json({ error: "Internal Server Error" });
-          }
-
-          if (subscriptionResult.length === 0) {
-            return res.status(400).json({ message: "No Subscriptions found" });
-          }
-
-          const subscription = subscriptionResult[0];
-
-          const remainingPaths =
-            subscription.total_path - userSubscription.current_path;
-          const remainingTrainingPlans =
-            subscription.total_training_plan -
-            userSubscription.current_training_plan;
-
-          const data = {
-            subscriptionPlan: subscription.name,
-            RemainingPrompts: remainingPaths,
-            RemainingTrainingPlan: remainingTrainingPlans,
-          };
-
-          return res.status(200).json(data);
+      pool.query(getAllSubscriptions, [userSubscription.subscription_id], (err, subscriptionResult) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Internal Server Error" });
         }
-      );
+
+        if (subscriptionResult.length === 0) {
+          return res.status(400).json({ message: "No Subscription details found" });
+        }
+
+        const subscription = subscriptionResult[0];
+
+        const remainingPaths = subscription.total_path - (userSubscription.current_path || 0);
+        const remainingTrainingPlans = subscription.total_training_plan - (userSubscription.current_training_plan || 0);
+
+        const data = {
+          subscriptionPlan: subscription.name,
+          RemainingPrompts: remainingPaths,
+          RemainingTrainingPlan: remainingTrainingPlans,
+        };
+
+        return res.status(200).json(data);
+      });
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 export const uploadFilesForCHATGPT = async (req, res) => {
   try {
     const userId = req.user.userId;
