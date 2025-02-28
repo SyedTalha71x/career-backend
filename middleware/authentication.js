@@ -19,11 +19,12 @@ const authenticate = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, SECRET_KEY);
+        console.log(decoded, 'ffffffffffffffff')
         req.user = decoded;
         next();
     } catch (err) {
      
-        console.log(err);
+        console.log(err,'kajndsijniwlkawndoasn');
         if (err.name === 'JsonWebTokenError') {
             return res.status(401).json({ message: 'Invalid token.' });
         }

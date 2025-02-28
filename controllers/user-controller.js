@@ -14,9 +14,11 @@ import { OAuth2Client } from "google-auth-library";
 import { configDotenv } from "dotenv";
 import jwt from "jsonwebtoken";
 import axios from "axios";
+import { oauth2Client } from "../utils/googleConfig.js";
 
 configDotenv();
 const pool = connectToDB();
+const SECRET_KEY = process.env.KEY;
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -229,9 +231,10 @@ export const Login = async (req, res) => {
                     }
 
                     // If no permissions are found, return an empty array
-                    const permissionSlugs = permissionResults.length > 0
-                      ? [...new Set(permissionResults.map((row) => row.slug))]
-                      : [];
+                    const permissionSlugs =
+                      permissionResults.length > 0
+                        ? [...new Set(permissionResults.map((row) => row.slug))]
+                        : [];
 
                     const AuthToken = generateToken(user.id, email, authType);
 
@@ -408,95 +411,306 @@ export const changePassword = async (req, res) => {
       );
   }
 };
+// export const googleLogin = async (req, res) => {
+//   try {
+//     const { authorizationCode } = req.body;
+
+//     // Check if authorization code is provided
+//     if (!authorizationCode) {
+//       return res
+//         .status(400)
+//         .json(failureResponse(null, "Authorization code is required."));
+//     }
+
+//     // Exchange authorization code for tokens
+//     const googleResponse = await oauth2Client.getToken(authorizationCode);
+//     oauth2Client.setCredentials(googleResponse.tokens);
+
+//     // Fetch user info from Google
+//     const userResponse = await axios.get(
+//       `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleResponse.tokens.access_token}`
+//     );
+
+//     const { id: google_id, email, name, picture } = userResponse.data;
+
+//     pool.query(
+//       'SELECT * FROM users WHERE email = ? OR google_id = ?',
+//       [email, google_id],
+//       (err, results) => {
+//         if (err) {
+//           console.error('Database query error:', err);
+//           return res.status(500).json(failureResponse(err.message, "Database error."));
+//         }
+
+//         let userData = {
+//           google_id,
+//           email,
+//           username: name,
+//           profile_picture: picture,
+//         };
+
+//         if (results.length > 0) {
+//           const token = jwt.sign(
+//             { id: results[0].id, email: results[0].email },
+//             SECRET_KEY,
+//             { expiresIn: '1h' }
+//           );
+
+//           return res.json(
+//             successResponse(
+//               { user: userData, token, roleName:'User' },
+//               "User logged in successfully."
+//             )
+//           );
+//         } else {
+//           pool.query(
+//             'INSERT INTO users (google_id, email, username, profile_picture, created_at) VALUES (?, ?, ?, ?, NOW())',
+//             [google_id, email, name, picture],
+//             (insertErr, insertResults) => {
+//               if (insertErr) {
+//                 console.error('Database insert error:', insertErr);
+//                 return res.status(500).json(failureResponse(insertErr.message, "Database error."));
+//               }
+
+//               const token = jwt.sign(
+//                 { id: insertResults.insertId, email },
+//                 SECRET_KEY,
+//                 { expiresIn: '1h' }
+//               );
+
+//               userData.id = insertResults.insertId;
+
+//               return res.json(
+//                 successResponse(
+//                   { user: userData, token },
+//                   "User created and logged in successfully."
+//                 )
+//               );
+//             }
+//           );
+//         }
+//       }
+//     );
+//   } catch (error) {
+//     console.error('Error during Google authentication:', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Internal Server Error',
+//     });
+//   }
+// };
+
 export const googleLogin = async (req, res) => {
-  const { authorizationCode } = req.body;
-
-  if (!authorizationCode) {
-    return res
-      .status(400)
-      .json(failureResponse(null, "Authorization code is required."));
-  }
-
   try {
-    // Exchange authorization code for access token
-    const tokenResponse = await axios.post(
-      "https://oauth2.googleapis.com/token",
-      null,
-      {
-        params: {
-          code: authorizationCode,
-          client_id: process.env.GOOGLE_CLIENT_ID,
-          client_secret: process.env.GOOGLE_CLIENT_SECRET,
-          redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-          grant_type: "authorization_code",
-        },
-      }
+    const { authorizationCode } = req.body;
+
+    // Check if authorization code is provided
+    if (!authorizationCode) {
+      return res
+        .status(400)
+        .json(failureResponse(null, "Authorization code is required."));
+    }
+
+    // Exchange authorization code for tokens
+    const googleResponse = await oauth2Client.getToken(authorizationCode);
+    oauth2Client.setCredentials(googleResponse.tokens);
+
+    // Fetch user info from Google
+    const userResponse = await axios.get(
+      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleResponse.tokens.access_token}`
     );
 
-    const { access_token } = tokenResponse.data;
+    const { id: google_id, email, name, picture } = userResponse.data;
 
-    // Get user info from Google
-    const userInfoResponse = await axios.get(
-      "https://www.googleapis.com/oauth2/v2/userinfo",
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
-    );
-
-    const { id, email, name, picture } = userInfoResponse.data;
-
-    // Check if user already exists
+    // Check if user already exists in the database
     pool.query(
-      "SELECT * FROM google_login WHERE google_id = ?",
-      [id],
+      "SELECT * FROM users WHERE email = ? OR google_id = ?",
+      [email, google_id],
       (err, results) => {
-        if (err)
-          return res.status(500).json(failureResponse(null, "Database error."));
+        if (err) {
+          console.error("Database query error:", err);
+          return res
+            .status(500)
+            .json(failureResponse(err.message, "Database error."));
+        }
 
-        const userData = {
-          google_id: id,
+        let userData = {
+          google_id,
           email,
-          name,
+          username: name,
           profile_picture: picture,
         };
 
         if (results.length > 0) {
-          // User exists, update user info if necessary
+          // User exists, fetch their role and permissions
+          const userId = results[0].id;
+
+          // Fetch user role
           pool.query(
-            "UPDATE google_login SET email = ?, name = ?, profile_picture = ?, updated_at = NOW() WHERE google_id = ?",
-            [email, name, picture, id],
-            (updateErr) => {
-              if (updateErr)
+            "SELECT role_id FROM role_to_users WHERE user_id = ?",
+            [userId],
+            (roleErr, roleResults) => {
+              if (roleErr) {
+                console.error("Error fetching role ID:", roleErr);
                 return res
                   .status(500)
-                  .json(failureResponse(null, "Database error."));
-              const token = generateToken(id, email, "google");
-              res.json(
-                successResponse(
-                  { user: userData, token },
-                  "User updated successfully."
-                )
-              );
+                  .json(failureResponse(roleErr.message, "Database error."));
+              }
+
+              let roleID =
+                roleResults.length > 0 ? roleResults[0].role_id : null;
+              let roleName = "User"; // Default role
+
+              if (roleID) {
+                // Fetch role name
+                pool.query(
+                  "SELECT name FROM roles WHERE id = ?",
+                  [roleID],
+                  (err, roleNameResults) => {
+                    if (err || roleNameResults.length === 0) {
+                      console.error("Error fetching role name:", err);
+                      roleName = "User"; // Fallback to default role
+                    } else {
+                      roleName = roleNameResults[0].name;
+                    }
+
+                    // Fetch permissions
+                    pool.query(
+                      "SELECT p.slug FROM permissions p LEFT JOIN permission_to_role pr ON pr.permission_id = p.id WHERE pr.role_id = ?",
+                      [roleID],
+                      (err, permissionResults) => {
+                        if (err) {
+                          console.error("Error fetching permissions:", err);
+                          return res
+                            .status(500)
+                            .json(
+                              failureResponse(err.message, "Database error.")
+                            );
+                        }
+
+                        // If no permissions are found, return an empty array
+                        const permissionSlugs =
+                          permissionResults.length > 0
+                            ? [
+                                ...new Set(
+                                  permissionResults.map((row) => row.slug)
+                                ),
+                              ]
+                            : [];
+
+                        // Generate JWT token
+                        const token = jwt.sign(
+                          { id: userId, email },
+                          SECRET_KEY,
+                          { expiresIn: "1h" }
+                        );
+
+                        // Return response with token, role, and permissions
+                        return res.json(
+                          successResponse(
+                            {
+                              user: userData,
+                              token,
+                              roleName,
+                              permissionSlugs,
+                            },
+                            "User logged in successfully."
+                          )
+                        );
+                      }
+                    );
+                  }
+                );
+              } else {
+                // No role assigned, use default role and empty permissions
+                const token = jwt.sign({ id: userId, email }, SECRET_KEY, {
+                  expiresIn: "1h",
+                });
+
+                return res.json(
+                  successResponse(
+                    { user: userData, token, roleName, permissionSlugs: [] },
+                    "User logged in successfully."
+                  )
+                );
+              }
             }
           );
         } else {
-          // Insert new user
+          // User does not exist, create new user
           pool.query(
-            "INSERT INTO google_login (google_id, email, name, profile_picture, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())",
-            [id, email, name, picture],
-            (insertErr) => {
-              if (insertErr)
+            "INSERT INTO users (google_id, email, username, profile_picture, created_at) VALUES (?, ?, ?, ?, NOW())",
+            [google_id, email, name, picture],
+            (insertErr, insertResults) => {
+              if (insertErr) {
+                console.error("Database insert error:", insertErr);
                 return res
                   .status(500)
-                  .json(failureResponse(null, "Database error."));
-              const token = generateToken(id, email, "google");
-              res.json(
-                successResponse(
-                  { user: userData, token },
-                  "User created successfully."
-                )
+                  .json(failureResponse(insertErr.message, "Database error."));
+              }
+
+              const userId = insertResults.insertId;
+              userData.id = userId;
+
+              // Assign default role to the new user
+              const defaultRoleName = "User";
+              pool.query(
+                "SELECT id FROM roles WHERE name = ?",
+                [defaultRoleName],
+                (roleErr, roleResults) => {
+                  if (roleErr || roleResults.length === 0) {
+                    console.error("Error fetching default role:", roleErr);
+                    return res
+                      .status(500)
+                      .json(
+                        failureResponse(roleErr.message, "Database error.")
+                      );
+                  }
+
+                  const defaultRoleId = roleResults[0].id;
+
+                  // Assign default role to the user
+                  pool.query(
+                    "INSERT INTO role_to_users (user_id, role_id) VALUES (?, ?)",
+                    [userId, defaultRoleId],
+                    (assignErr) => {
+                      if (assignErr) {
+                        console.error(
+                          "Error assigning default role:",
+                          assignErr
+                        );
+                        return res
+                          .status(500)
+                          .json(
+                            failureResponse(
+                              assignErr.message,
+                              "Database error."
+                            )
+                          );
+                      }
+
+                      // Generate JWT token
+                      const token = jwt.sign(
+                        { id: userId, email },
+                        SECRET_KEY,
+                        { expiresIn: "1h" }
+                      );
+
+                      // Return response with token, default role, and empty permissions
+                      return res.json(
+                        successResponse(
+                          {
+                            user: userData,
+                            token,
+                            roleName: defaultRoleName,
+                            permissionSlugs: [],
+                          },
+                          "User created and logged in successfully."
+                        )
+                      );
+                    }
+                  );
+                }
               );
             }
           );
@@ -505,9 +719,10 @@ export const googleLogin = async (req, res) => {
     );
   } catch (error) {
     console.error("Error during Google authentication:", error);
-    res
-      .status(500)
-      .json(failureResponse(null, "Google authentication failed."));
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };
 export const facebookLogin = async (req, res) => {
@@ -711,21 +926,84 @@ export const instagramLogin = async (req, res) => {
     res.status(500).json(failureResponse(error, "Internal server error"));
   }
 };
-export const linkedinLogin = async (req, res) => {
-  const { accessToken } = req.body;
 
+// getting accessToken of linkedin login
+const getAccessToken = async (code) => {
+  const body = new URLSearchParams({
+    grant_type: "authorization_code",
+    code: code,
+    client_id: process.env.LINKEDIN_CLIENT_ID,
+    client_secret: process.env.LINKEDIN_SECRECT_ID,
+    redirect_uri: process.env.LINKEDIN_REDIRECTING_URL,
+  });
+
+  const response = await fetch(
+    "https://www.linkedin.com/oauth/v2/accessToken",
+    {
+      method: "POST",
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const accessToken = await response.json();
+  return accessToken;
+};
+export const verifyAuth = (req, res) => {
   try {
-    // Verify the LinkedIn access token
-    const response = await fetch(
-      `https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    // Check if the cookie exists
+    const token = req.cookies["user-visited-dashboard"];
+
+    if (!token) {
+      return res.json({ authenticated: false });
+    }
+
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded) {
+      return res.json({ authenticated: false });
+    }
+
+    // Return authentication status and token (for localStorage)
+    return res.json({
+      authenticated: true,
+      token: token, // This allows frontend to store it in localStorage
+    });
+  } catch (error) {
+    console.error("Error verifying authentication:", error);
+    return res.json({ authenticated: false });
+  }
+};
+
+export const linkedinLogin = async (req, res) => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.status(400).send("Authorization code is missing.");
+    }
+
+    const accessToken = await getAccessToken(code);
+    const finalToken = accessToken.access_token;
+    console.log(finalToken, "finalToken");
+
+    // Fetch LinkedIn profile
+    const response = await fetch(`https://api.linkedin.com/v2/userinfo`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${finalToken}`,
+      },
+    });
+
     const profile = await response.json();
+    console.log("LinkedIn Profile Response:", profile);
 
     if (profile.error) {
       console.error("Error verifying LinkedIn token:", profile.error);
@@ -734,17 +1012,16 @@ export const linkedinLogin = async (req, res) => {
         .json(failureResponse(profile.error, "Invalid token"));
     }
 
-    const { id: linkedinId, firstName, lastName, profilePicture } = profile;
+    const {
+      sub: linkedinId,
+      name,
+      email,
+      picture: profilePictureUrl,
+    } = profile;
 
-    // Construct name and profile picture URL
-    const name = `${firstName.localized.en_US} ${lastName.localized.en_US}`;
-    const profilePictureUrl =
-      profilePicture["displayImage~"].elements[0].identifiers[0].identifier;
-
-    // Check if user exists in database
     pool.query(
-      "SELECT * FROM linkedin_login WHERE linkedin_id = ?",
-      [linkedinId],
+      "SELECT * FROM users WHERE email = ? OR linkedin_id = ?",
+      [email, linkedinId],
       (error, results) => {
         if (error) {
           console.error("Database query error:", error);
@@ -753,65 +1030,57 @@ export const linkedinLogin = async (req, res) => {
             .json(failureResponse(error, "Internal server error"));
         }
 
-        if (results.length === 0) {
-          // User doesn't exist, create new user
-          const newUser = {
-            linkedin_id: linkedinId,
-            name,
-            profile_picture: profilePictureUrl,
-          };
-          pool.query(
-            "INSERT INTO linkedin_login SET ?",
-            newUser,
-            (error, result) => {
-              if (error) {
-                console.error("Error creating new user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(result.insertId, name, "linkedin");
-              res.json(
-                successResponse(
-                  {
-                    user: { id: result.insertId, ...newUser },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
-            }
-          );
+        let userId, userName, userEmail;
+        let isNewUser = false;
+
+        if (results.length > 0) {
+          userId = results[0].id;
+          userName = results[0].username;
+          userEmail = results[0].email;
         } else {
-          // User exists, update information
-          const userId = results[0].id;
-          pool.query(
-            "UPDATE linkedin_login SET name = ?, profile_picture = ? WHERE id = ?",
-            [name, profilePictureUrl, userId],
-            (error) => {
-              if (error) {
-                console.error("Error updating user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(userId, name, "linkedin");
-              res.json(
-                successResponse(
-                  {
-                    user: {
-                      id: userId,
-                      name,
-                      profile_picture: profilePictureUrl,
-                    },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
+          isNewUser = true;
+          const newUser = {
+            username: name,
+            email,
+            profile_picture: profilePictureUrl,
+            linkedin_id: linkedinId,
+            created_at: new Date(),
+          };
+
+          pool.query("INSERT INTO users SET ?", newUser, (error, result) => {
+            if (error) {
+              console.error("Error creating new user:", error);
+              return res
+                .status(500)
+                .json(failureResponse(error, "Internal server error"));
             }
-          );
+
+            userId = result.insertId;
+            userName = name;
+            userEmail = email;
+
+            const jwtToken = jwt.sign(
+              { id: userId, name: userName, email: userEmail },
+              SECRET_KEY,
+              { expiresIn: "1d" }
+            );
+
+            return res.redirect(
+              `http://localhost:5173?token=${encodeURIComponent(jwtToken)}`
+            );
+          });
+          return;
         }
+
+        const jwtToken = jwt.sign(
+          { id: userId, name: userName, email: userEmail },
+          SECRET_KEY,
+          { expiresIn: "1d" }
+        );
+
+        return res.redirect(
+          `http://localhost:5173?token=${encodeURIComponent(jwtToken)}`
+        );
       }
     );
   } catch (error) {
@@ -819,6 +1088,7 @@ export const linkedinLogin = async (req, res) => {
     res.status(500).json(failureResponse(error, "Internal server error"));
   }
 };
+
 export const outlookLogin = async (req, res) => {
   const { accessToken } = req.body;
 
@@ -926,7 +1196,6 @@ export const outlookLogin = async (req, res) => {
   }
 };
 
-
 export const repo = async (id, permission) => {
   permission = Array.isArray(permission)
     ? `id IN ( ${permission.map((i) => i)} ) `
@@ -943,7 +1212,7 @@ ON permission_to_role.role_id = role_to_users.role_id
 INNER JOIN permissions
 ON permissions.id = permission_to_role.permission_id
 WHERE users.id = ${id} AND permissions.` +
-   permission +
+    permission +
     `GROUP BY permission_to_role.role_id`;
   const [rows, _fields] = await sqlConnection().execute(query);
 };
