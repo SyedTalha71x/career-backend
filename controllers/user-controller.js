@@ -771,7 +771,7 @@ export const linkedinLogin = async (req, res) => {
         const jwtToken = generateToken(userId, userEmail, authType);
 
         return res.redirect(
-          `http://localhost:5173?token=${encodeURIComponent(jwtToken)}`
+          `https://app.mycareermap.ai?token=${encodeURIComponent(jwtToken)}`
         );
       }
     );
