@@ -411,106 +411,17 @@ export const changePassword = async (req, res) => {
       );
   }
 };
-// export const googleLogin = async (req, res) => {
-//   try {
-//     const { authorizationCode } = req.body;
-
-//     // Check if authorization code is provided
-//     if (!authorizationCode) {
-//       return res
-//         .status(400)
-//         .json(failureResponse(null, "Authorization code is required."));
-//     }
-
-//     // Exchange authorization code for tokens
-//     const googleResponse = await oauth2Client.getToken(authorizationCode);
-//     oauth2Client.setCredentials(googleResponse.tokens);
-
-//     // Fetch user info from Google
-//     const userResponse = await axios.get(
-//       `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleResponse.tokens.access_token}`
-//     );
-
-//     const { id: google_id, email, name, picture } = userResponse.data;
-
-//     pool.query(
-//       'SELECT * FROM users WHERE email = ? OR google_id = ?',
-//       [email, google_id],
-//       (err, results) => {
-//         if (err) {
-//           console.error('Database query error:', err);
-//           return res.status(500).json(failureResponse(err.message, "Database error."));
-//         }
-
-//         let userData = {
-//           google_id,
-//           email,
-//           username: name,
-//           profile_picture: picture,
-//         };
-
-//         if (results.length > 0) {
-//           const token = jwt.sign(
-//             { id: results[0].id, email: results[0].email },
-//             SECRET_KEY,
-//             { expiresIn: '1h' }
-//           );
-
-//           return res.json(
-//             successResponse(
-//               { user: userData, token, roleName:'User' },
-//               "User logged in successfully."
-//             )
-//           );
-//         } else {
-//           pool.query(
-//             'INSERT INTO users (google_id, email, username, profile_picture, created_at) VALUES (?, ?, ?, ?, NOW())',
-//             [google_id, email, name, picture],
-//             (insertErr, insertResults) => {
-//               if (insertErr) {
-//                 console.error('Database insert error:', insertErr);
-//                 return res.status(500).json(failureResponse(insertErr.message, "Database error."));
-//               }
-
-//               const token = jwt.sign(
-//                 { id: insertResults.insertId, email },
-//                 SECRET_KEY,
-//                 { expiresIn: '1h' }
-//               );
-
-//               userData.id = insertResults.insertId;
-
-//               return res.json(
-//                 successResponse(
-//                   { user: userData, token },
-//                   "User created and logged in successfully."
-//                 )
-//               );
-//             }
-//           );
-//         }
-//       }
-//     );
-//   } catch (error) {
-//     console.error('Error during Google authentication:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Internal Server Error',
-//     });
-//   }
-// };
-
 export const googleLogin = async (req, res) => {
   try {
     const { authorizationCode } = req.body;
+    const authType = 'google'
 
-    // Check if authorization code is provided
     if (!authorizationCode) {
       return res
         .status(400)
         .json(failureResponse(null, "Authorization code is required."));
     }
-
+    
     // Exchange authorization code for tokens
     const googleResponse = await oauth2Client.getToken(authorizationCode);
     oauth2Client.setCredentials(googleResponse.tokens);
@@ -522,7 +433,6 @@ export const googleLogin = async (req, res) => {
 
     const { id: google_id, email, name, picture } = userResponse.data;
 
-    // Check if user already exists in the database
     pool.query(
       "SELECT * FROM users WHERE email = ? OR google_id = ?",
       [email, google_id],
@@ -542,8 +452,9 @@ export const googleLogin = async (req, res) => {
         };
 
         if (results.length > 0) {
-          // User exists, fetch their role and permissions
+          // User exists
           const userId = results[0].id;
+          userData.id = userId;
 
           // Fetch user role
           pool.query(
@@ -557,8 +468,7 @@ export const googleLogin = async (req, res) => {
                   .json(failureResponse(roleErr.message, "Database error."));
               }
 
-              let roleID =
-                roleResults.length > 0 ? roleResults[0].role_id : null;
+              let roleID = roleResults.length > 0 ? roleResults[0].role_id : null;
               let roleName = "User"; // Default role
 
               if (roleID) {
@@ -598,12 +508,8 @@ export const googleLogin = async (req, res) => {
                               ]
                             : [];
 
-                        // Generate JWT token
-                        const token = jwt.sign(
-                          { id: userId, email },
-                          SECRET_KEY,
-                          { expiresIn: "1h" }
-                        );
+                        // FIXED: Store googleId in the token if it's a Google auth
+                        const token = generateToken(userId, email, authType);
 
                         // Return response with token, role, and permissions
                         return res.json(
@@ -623,9 +529,7 @@ export const googleLogin = async (req, res) => {
                 );
               } else {
                 // No role assigned, use default role and empty permissions
-                const token = jwt.sign({ id: userId, email }, SECRET_KEY, {
-                  expiresIn: "1h",
-                });
+                const token = generateToken(userId, email, authType);
 
                 return res.json(
                   successResponse(
@@ -689,14 +593,8 @@ export const googleLogin = async (req, res) => {
                           );
                       }
 
-                      // Generate JWT token
-                      const token = jwt.sign(
-                        { id: userId, email },
-                        SECRET_KEY,
-                        { expiresIn: "1h" }
-                      );
+                      const token = generateToken(userId, email, authType);
 
-                      // Return response with token, default role, and empty permissions
                       return res.json(
                         successResponse(
                           {
@@ -725,209 +623,8 @@ export const googleLogin = async (req, res) => {
     });
   }
 };
-export const facebookLogin = async (req, res) => {
-  const { accessToken } = req.body;
-  try {
-    // Verify the Facebook access token
-    const response = await fetch(
-      `https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email,picture`
-    );
-    const profile = await response.json();
 
-    if (profile.error) {
-      console.error("Error verifying Facebook token:", profile.error);
-      return res
-        .status(401)
-        .json(failureResponse(profile.error, "Invalid token"));
-    }
 
-    const { id: facebookId, email, name, picture } = profile;
-
-    // Check if user exists in database
-    pool.query(
-      "SELECT * FROM facebook_login WHERE facebook_id = ?",
-      [facebookId],
-      (error, results) => {
-        if (error) {
-          console.error("Database query error:", error);
-          return res
-            .status(500)
-            .json(failureResponse(error, "Internal server error"));
-        }
-
-        if (results.length === 0) {
-          // User doesn't exist, create new user
-          const newUser = {
-            facebook_id: facebookId,
-            email,
-            name,
-            profile_picture: picture.data.url,
-          };
-          pool.query(
-            "INSERT INTO facebook_login SET ?",
-            newUser,
-            (error, result) => {
-              if (error) {
-                console.error("Error creating new user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(
-                result.insertId,
-                email,
-                "facebook"
-              );
-              res.json(
-                successResponse(
-                  {
-                    user: { id: result.insertId, ...newUser },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
-            }
-          );
-        } else {
-          // User exists, update information
-          const userId = results[0].id;
-          pool.query(
-            "UPDATE facebook_login SET email = ?, name = ?, profile_picture = ? WHERE id = ?",
-            [email, name, picture.data.url, userId],
-            (error) => {
-              if (error) {
-                console.error("Error updating user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(userId, email, "facebook");
-              res.json(
-                successResponse(
-                  {
-                    user: {
-                      id: userId,
-                      email,
-                      name,
-                      picture: picture.data.url,
-                    },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
-            }
-          );
-        }
-      }
-    );
-  } catch (error) {
-    console.error("Error verifying Facebook token:", error);
-    res.status(500).json(failureResponse(error, "Internal server error"));
-  }
-};
-export const instagramLogin = async (req, res) => {
-  const { accessToken } = req.body;
-
-  try {
-    // Verify the Instagram access token
-    const response = await axios.get(
-      `https://graph.instagram.com/me?fields=id,username,account_type,profile_picture_url&access_token=${accessToken}`
-    );
-    const profile = response.data;
-
-    if (!profile || !profile.id) {
-      console.error("Error verifying Instagram token:", profile);
-      return res.status(401).json(failureResponse(profile, "Invalid token"));
-    }
-
-    const {
-      id: instagramId,
-      username: name,
-      profile_picture_url: profilePicture,
-    } = profile;
-
-    // Check if user exists in the database
-    pool.query(
-      "SELECT * FROM instagram_login WHERE instagram_id = ?",
-      [instagramId],
-      (error, results) => {
-        if (error) {
-          console.error("Database query error:", error);
-          return res
-            .status(500)
-            .json(failureResponse(error, "Internal server error"));
-        }
-
-        if (results.length === 0) {
-          // User doesn't exist, create new user
-          const newUser = {
-            instagram_id: instagramId,
-            name,
-            profile_picture: profilePicture,
-          };
-          pool.query(
-            "INSERT INTO instagram_login SET ?",
-            newUser,
-            (error, result) => {
-              if (error) {
-                console.error("Error creating new user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(
-                result.insertId,
-                name,
-                "instagram"
-              );
-              res.json(
-                successResponse(
-                  {
-                    user: { id: result.insertId, ...newUser },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
-            }
-          );
-        } else {
-          // User exists, update information
-          const userId = results[0].id;
-          pool.query(
-            "UPDATE instagram_login SET name = ?, profile_picture = ? WHERE id = ?",
-            [name, profilePicture, userId],
-            (error) => {
-              if (error) {
-                console.error("Error updating user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(userId, name, "instagram");
-              res.json(
-                successResponse(
-                  {
-                    user: { id: userId, name, profile_picture: profilePicture },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
-            }
-          );
-        }
-      }
-    );
-  } catch (error) {
-    console.error("Error verifying Instagram token:", error);
-    res.status(500).json(failureResponse(error, "Internal server error"));
-  }
-};
-
-// getting accessToken of linkedin login
 const getAccessToken = async (code) => {
   const body = new URLSearchParams({
     grant_type: "authorization_code",
@@ -953,6 +650,8 @@ const getAccessToken = async (code) => {
   }
 
   const accessToken = await response.json();
+  console.log(accessToken);
+  
   return accessToken;
 };
 export const verifyAuth = (req, res) => {
@@ -964,14 +663,12 @@ export const verifyAuth = (req, res) => {
       return res.json({ authenticated: false });
     }
 
-    // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
       return res.json({ authenticated: false });
     }
 
-    // Return authentication status and token (for localStorage)
     return res.json({
       authenticated: true,
       token: token, // This allows frontend to store it in localStorage
@@ -985,6 +682,7 @@ export const verifyAuth = (req, res) => {
 export const linkedinLogin = async (req, res) => {
   try {
     const { code } = req.query;
+    const authType = 'linkedin';
 
     if (!code) {
       return res.status(400).send("Authorization code is missing.");
@@ -1059,11 +757,8 @@ export const linkedinLogin = async (req, res) => {
             userName = name;
             userEmail = email;
 
-            const jwtToken = jwt.sign(
-              { id: userId, name: userName, email: userEmail },
-              SECRET_KEY,
-              { expiresIn: "1d" }
-            );
+            // Use the custom token generation function with authType
+            const jwtToken = generateToken(userId, userEmail, authType);
 
             return res.redirect(
               `http://localhost:5173?token=${encodeURIComponent(jwtToken)}`
@@ -1072,11 +767,8 @@ export const linkedinLogin = async (req, res) => {
           return;
         }
 
-        const jwtToken = jwt.sign(
-          { id: userId, name: userName, email: userEmail },
-          SECRET_KEY,
-          { expiresIn: "1d" }
-        );
+        // Use the custom token generation function with authType
+        const jwtToken = generateToken(userId, userEmail, authType);
 
         return res.redirect(
           `http://localhost:5173?token=${encodeURIComponent(jwtToken)}`
@@ -1085,113 +777,6 @@ export const linkedinLogin = async (req, res) => {
     );
   } catch (error) {
     console.error("Error verifying LinkedIn token:", error);
-    res.status(500).json(failureResponse(error, "Internal server error"));
-  }
-};
-
-export const outlookLogin = async (req, res) => {
-  const { accessToken } = req.body;
-
-  try {
-    // Verify the Outlook access token and fetch user profile
-    const response = await fetch("https://graph.microsoft.com/v1.0/me", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const result = await response.json();
-
-    if (result.error) {
-      console.error("Error verifying Outlook token:", result.error);
-      return res
-        .status(401)
-        .json(failureResponse(result.error, "Invalid token"));
-    }
-
-    const { id: outlookId, displayName, mail, photo } = result;
-
-    // Construct profile picture URL (if available)
-    const profilePictureUrl = photo ? photo["@odata.mediaReadLink"] : null;
-
-    // Check if user exists in database
-    pool.query(
-      "SELECT * FROM outlook_login WHERE outlook_id = ?",
-      [outlookId],
-      (error, results) => {
-        if (error) {
-          console.error("Database query error:", error);
-          return res
-            .status(500)
-            .json(failureResponse(error, "Internal server error"));
-        }
-
-        if (results.length === 0) {
-          // User doesn't exist, create new user
-          const newUser = {
-            outlook_id: outlookId,
-            name: displayName,
-            email: mail,
-            profile_picture: profilePictureUrl,
-          };
-          pool.query(
-            "INSERT INTO outlook_login SET ?",
-            newUser,
-            (error, result) => {
-              if (error) {
-                console.error("Error creating new user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(result.insertId, mail, "outlook");
-              res.json(
-                successResponse(
-                  {
-                    user: { id: result.insertId, ...newUser },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
-            }
-          );
-        } else {
-          // User exists, update information
-          const userId = results[0].id;
-          pool.query(
-            "UPDATE outlook_login SET name = ?, email = ?, profile_picture = ? WHERE id = ?",
-            [displayName, mail, profilePictureUrl, userId],
-            (error) => {
-              if (error) {
-                console.error("Error updating user:", error);
-                return res
-                  .status(500)
-                  .json(failureResponse(error, "Internal server error"));
-              }
-              const jwtToken = generateToken(userId, mail, "outlook");
-              res.json(
-                successResponse(
-                  {
-                    user: {
-                      id: userId,
-                      name: displayName,
-                      email: mail,
-                      profile_picture: profilePictureUrl,
-                    },
-                    token: jwtToken,
-                  },
-                  "Login successful"
-                )
-              );
-            }
-          );
-        }
-      }
-    );
-  } catch (error) {
-    console.error("Error verifying Outlook token:", error);
     res.status(500).json(failureResponse(error, "Internal server error"));
   }
 };

@@ -55,20 +55,24 @@ app.get('/api/test', (req, res) => {
 
 // SERVER ACTION
 const PORT = process.env.PORT || 3008;
-app.listen(PORT, '0.0.0.0', () => {
-    function getServerIp() {
-        const networkInterf = networkInterfaces();
-        for (const interfaceName in networkInterf) {
-            const interf = networkInterf[interfaceName];
-            for (const alias of interf) {
-                if (alias.family === 'IPv4' && !alias.internal) {
-                    return alias.address;
-                }
-            }
-        }
-        return 'Unknown IP';
-    }
-    console.log(`Server is running on http://${getServerIp()}:${PORT}`);
+// app.listen(PORT, '0.0.0.0', () => {
+//     function getServerIp() {
+//         const networkInterf = networkInterfaces();
+//         for (const interfaceName in networkInterf) {
+//             const interf = networkInterf[interfaceName];
+//             for (const alias of interf) {
+//                 if (alias.family === 'IPv4' && !alias.internal) {
+//                     return alias.address;
+//                 }
+//             }
+//         }
+//         return 'Unknown IP';
+//     }
+//     console.log(`Server is running on http://${getServerIp()}:${PORT}`);
+// });
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 

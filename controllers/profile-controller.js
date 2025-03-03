@@ -16,109 +16,56 @@ const transporter = nodemailer.createTransport({
 })
 export const getProfileInfo = async (req, res) => {
     try {
-        const { userId, authType } = req.user; 
+        const { userId, authType } = req.user;
         console.log('User ID:', userId, 'Auth Type:', authType);
 
         if (!userId || !authType) {
             return res.status(400).json(failureResponse({}, 'User not authenticated'));
         }
 
-
-        const baseUrl = `${req.protocol}://${req.get('host')}/uploads`
+        const baseUrl = `${req.protocol}://${req.get('host')}/uploads`;
         console.log(baseUrl);
-        
 
-        if (authType === 'standard') {
-            pool.query(
-                'SELECT username, email, profile_picture FROM users WHERE id = ?',
-                [userId],
-                (err, results) => {
-                    if (err) {
-                        console.error('Database query error:', err);
-                        return res.status(500).json(failureResponse({}, 'Internal server error'));
-                    }
+        const query = 'SELECT username, email, profile_picture FROM users WHERE id = ?';
+        const queryParams = [userId];
 
-                    if (results.length > 0) {
-                        const user = results[0];
-                        const response = {
-                            username: user.username,
-                            email: user.email,
-                            profile_picture: user.profile_picture ? `${baseUrl}/${user.profile_picture}` : null,
-                        };
-                        return res.status(200).json(successResponse(response, 'User profile retrieved successfully'));
-                    } else {
-                        return res.status(404).json(failureResponse({}, 'User not found'));
-                    }
-                }
-            );
-        } else {
-
-            let table, idField;
-
-            switch (authType.toLowerCase()) {
-                case 'google':
-                    table = 'google_login';
-                    idField = 'google_id';
-                    break;
-                case 'linkedin':
-                    table = 'linkedin_login';
-                    idField = 'linkedin_id';
-                    break;
-                case 'outlook':
-                    table = 'outlook_login';
-                    idField = 'outlook_id';
-                    break;
-                case 'facebook':
-                    table = 'facebook_login';
-                    idField = 'facebook_id';
-                    break;
-                default:
-                    return res.status(400).json(failureResponse({}, 'Invalid authentication type'));
+        pool.query(query, queryParams, (err, results) => {
+            if (err) {
+                console.error('Database query error:', err);
+                return res.status(500).json(failureResponse({}, 'Internal server error'));
             }
 
-            pool.query(
-                `SELECT name as username, email, profile_picture FROM ${table} WHERE ${idField} = ?`,
-                [userId],
-                (err, results) => {
-                    if (err) {
-                        console.error(`Database query error for ${table}:`, err);
-                        return res.status(500).json(failureResponse({}, 'Internal server error'));
-                    }
+            if (results.length > 0) {
+                const user = results[0];
+                const response = {
+                    username: user.username,
+                    email: user.email,
+                    profile_picture: user.profile_picture ? `${baseUrl}/${user.profile_picture}` : null,
+                };
+                return res.status(200).json(successResponse(response, 'User profile retrieved successfully'));
+            } else {
+                return res.status(404).json(failureResponse({}, 'User not found'));
+            }
+        });
 
-                    if (results.length > 0) {
-                        const user = results[0];
-                        const response = {
-                            username: user.username,
-                            email: user.email,
-                            profile_picture: user.profile_picture ? `http:// 192.168.18.194:8001/uploads/${user.profile_picture}` : null,
-                        };
-                        return res.status(200).json(successResponse(response, 'Social login profile retrieved successfully'));
-                    } else {
-                        return res.status(404).json(failureResponse({}, 'User not found in social login table'));
-                    }
-                }
-            );
-        }
     } catch (error) {
         console.error('Internal server error:', error);
         return res.status(500).json(failureResponse({}, 'Internal Server Error'));
     }
 };
+
 export const updateUsername = async (req, res) => {
     try {
-        const userId = req.user?.userId; // Get the user ID from the request, assuming authentication middleware sets req.user
-        const { newUsername } = req.body; // Get the new username from the request body
+        const userId = req.user?.userId; 
+        const { newUsername } = req.body; 
 
         if (!userId) {
             return res.status(422).json(failureResponse({ error: 'User Id is required' }, 'Updation Failed'))
-            // return res.status(422).json({ message: "User ID are required." });
         }
         if (!newUsername) {
             return res.status(422).json(failureResponse({ error: 'User name is required' }, 'Updation Failed'))
-            // return res.status(422).json({ message: "newUsername are required." });
         }
 
-        // Determine which table to update based on the user authentication method
         const userTable = req.user.authType; // This should be set by your authentication middleware
         console.log(`Updating username for auth type: ${userTable}`);
 

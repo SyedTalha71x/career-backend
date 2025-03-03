@@ -64,7 +64,7 @@ CREATE TABLE `activity_logs` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `activity_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,7 +161,8 @@ INSERT INTO `activity_logs` VALUES
 (88,'Created Path: DevOps Engineer',33,'2025-01-31 07:29:38'),
 (89,'Created Path: Automation Engineer',33,'2025-01-31 07:31:18'),
 (90,'Subscription purchased: Explorer Plan',33,'2025-01-31 07:32:34'),
-(91,'Created Path: Fixing Bugs',4,'2025-02-03 10:12:43');
+(91,'Created Path: Fixing Bugs',4,'2025-02-03 10:12:43'),
+(92,'Created Path: Hello',36,'2025-03-01 19:18:22');
 /*!40000 ALTER TABLE `activity_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -753,7 +754,7 @@ CREATE TABLE `path` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `path_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -829,7 +830,8 @@ INSERT INTO `path` VALUES
 (68,'How to become a Software Engineer',NULL,'analysed',33,'Software Engineer',NULL),
 (69,'how to become a devops engineer ',NULL,'analysed',33,'DevOps Engineer',NULL),
 (70,'how to become a automation engineer',NULL,'analysed',33,'Automation Engineer',NULL),
-(71,'How to fix bugs ',NULL,'pending',4,'Fixing Bugs',NULL);
+(71,'How to fix bugs ',NULL,'pending',4,'Fixing Bugs',NULL),
+(72,'I want to become a software tester',NULL,'pending',36,'Hello',NULL);
 /*!40000 ALTER TABLE `path` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -956,7 +958,7 @@ CREATE TABLE `role_to_users` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `role_to_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
   CONSTRAINT `role_to_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -991,7 +993,8 @@ INSERT INTO `role_to_users` VALUES
 (3,30,30),
 (3,31,31),
 (3,32,32),
-(3,33,33);
+(3,33,33),
+(3,36,34);
 /*!40000 ALTER TABLE `role_to_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -8158,7 +8161,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8194,7 +8197,9 @@ INSERT INTO `users` VALUES
 (31,'Andrea','andrea.denora@studenti.donmilaniva.edu.it','7d21219942a421c5dda1860204014d200686a6fe75fccc98f47d64bb226ed1ea',NULL,NULL,NULL,'2025-01-28 14:52:05',NULL,NULL,NULL,NULL,NULL),
 (32,'lorem21x','lorem@gmail.com','283db29fb7475d6148f366462ba6b4db23896f8426becf73096178f068a47fa3',NULL,NULL,NULL,'2025-01-29 12:35:30',NULL,NULL,NULL,NULL,NULL),
 (33,'sidra_91x','sidra@gmail.com','fe9c9e4a315c1a5473761b7c8d73c3f4ee0a1527093968461add8d3456f3bcbe',NULL,NULL,NULL,'2025-01-31 07:02:10',NULL,NULL,NULL,NULL,NULL),
-(35,'Mycareer Map','mycareermap20@gmail.com',NULL,'https://lh3.googleusercontent.com/a/ACg8ocLzKWg7GYekAy_EhMmFL8uKpbh1sGSEDTI2V1qYUFV92DU1fA=s96-c',NULL,NULL,'2025-02-05 09:28:38','115324161549106638050',NULL,NULL,NULL,NULL);
+(35,'Mycareer Map','mycareermap20@gmail.com',NULL,'https://lh3.googleusercontent.com/a/ACg8ocLzKWg7GYekAy_EhMmFL8uKpbh1sGSEDTI2V1qYUFV92DU1fA=s96-c',NULL,NULL,'2025-02-05 09:28:38','115324161549106638050',NULL,NULL,NULL,NULL),
+(36,'Talha Hussain','pycess76x@gmail.com',NULL,'https://lh3.googleusercontent.com/a/ACg8ocIa9k1DVtuum9RBvO7yaYjcaUZX_ev4cXOl8ZxFOR8fZ9nnBA=s96-c',NULL,NULL,'2025-03-01 18:48:37','109075669814140893830',NULL,NULL,NULL,NULL),
+(37,'Syed Talha Hussain','pc16777.syedtalhahussain@gmail.com',NULL,'https://media.licdn.com/dms/image/v2/D4D03AQFTke_NO91lfQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1703297177345?e=1746057600&v=beta&t=gGMk0XZ3UqlrE-qOLIHRks4IENlZZg10nslXTmVRkxo',NULL,NULL,'2025-03-01 19:33:01',NULL,NULL,NULL,'k-ndxcEsnP',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -8207,4 +8212,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-02-27 13:04:57
+-- Dump completed on 2025-03-02  0:39:24
