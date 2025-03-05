@@ -490,17 +490,18 @@ export const checkTrainingPlanSubscription = (req, res) => {
     }
 
     const subscriptionQuery = `
-      SELECT 
-        us.current_training_plan, 
-        s.total_training_plan,
-        s.id AS subscription_id,
-        us.expiry_date
-      FROM user_subscription AS us
-      JOIN subscriptions AS s ON us.subscription_id = s.id
-      WHERE us.user_id = ? AND us.expiry_date > NOW()
-      ORDER BY us.expiry_date DESC
-      LIMIT 1;
-    `;
+    SELECT 
+      us.current_training_plan, 
+      s.total_training_plan,
+      s.id AS subscription_id,
+      us.expiry_date
+    FROM user_subscription AS us
+    JOIN subscriptions AS s ON us.subscription_id = s.id
+    WHERE us.user_id = ? 
+    ORDER BY us.created_at DESC  -- Sabse latest subscription fetch karega
+    LIMIT 1;
+  `;
+  
 
     pool.query(subscriptionQuery, [userId], (err, subResults) => {
       if (err) {
