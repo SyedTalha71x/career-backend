@@ -1389,11 +1389,13 @@ export const checkRemainingPlans = async (req, res) => {
     }
 
     const checkUserSubscription = `
-      SELECT * FROM user_subscription 
-      WHERE user_id = ? AND expiry_date > NOW()
-      ORDER BY created_at DESC 
-      LIMIT 1
-    `;
+    SELECT * FROM user_subscription 
+    WHERE user_id = ? 
+    AND expiry_date > NOW()
+    ORDER BY expiry_date DESC, created_at DESC 
+    LIMIT 1
+  `;
+
 
     pool.query(checkUserSubscription, [userId], (err, results) => {
       if (err) {
