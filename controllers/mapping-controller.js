@@ -1388,31 +1388,37 @@ export const checkRemainingPlans = async (req, res) => {
       return res.status(400).json({ error: "User is not authorized" });
     }
 
+    // Query to fetch the latest active subscription of the user
     const checkUserSubscription = `
-    SELECT * FROM user_subscription 
-    WHERE user_id = ? 
-    AND expiry_date > NOW()
-    ORDER BY expiry_date DESC, created_at DESC 
-    LIMIT 1
-  `;
-
+      SELECT * FROM user_subscription 
+      WHERE user_id = ? 
+      AND expiry_date > NOW()
+      ORDER BY expiry_date DESC, created_at DESC 
+      LIMIT 1
+    `;
 
     pool.query(checkUserSubscription, [userId], (err, results) => {
       if (err) {
-        console.error(err);
+        console.error("Database error in fetching subscription:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
+
       if (results.length === 0) {
         return res.status(400).json({ message: "No active subscription found for this user" });
       }
 
       const userSubscription = results[0];
 
-      const getAllSubscriptions = "SELECT * FROM subscriptions WHERE id = ?";
+      if (!userSubscription.subscription_id) {
+        return res.status(400).json({ message: "Invalid subscription data" });
+      }
 
-      pool.query(getAllSubscriptions, [userSubscription.subscription_id], (err, subscriptionResult) => {
+      // Query to get subscription details
+      const getSubscriptionDetails = `SELECT * FROM subscriptions WHERE id = ?`;
+
+      pool.query(getSubscriptionDetails, [userSubscription.subscription_id], (err, subscriptionResult) => {
         if (err) {
-          console.error(err);
+          console.error("Database error in fetching subscription details:", err);
           return res.status(500).json({ error: "Internal Server Error" });
         }
 
@@ -1422,20 +1428,18 @@ export const checkRemainingPlans = async (req, res) => {
 
         const subscription = subscriptionResult[0];
 
-        const remainingPaths = subscription.total_path - (userSubscription.current_path || 0);
-        const remainingTrainingPlans = subscription.total_training_plan - (userSubscription.current_training_plan || 0);
+        const remainingPaths = Math.max(0, subscription.total_path - (userSubscription.current_path || 0));
+        const remainingTrainingPlans = Math.max(0, subscription.total_training_plan - (userSubscription.current_training_plan || 0));
 
-        const data = {
+        return res.status(200).json({
           subscriptionPlan: subscription.name,
           RemainingPrompts: remainingPaths,
           RemainingTrainingPlan: remainingTrainingPlans,
-        };
-
-        return res.status(200).json(data);
+        });
       });
     });
   } catch (error) {
-    console.error(error);
+    console.error("Unexpected error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };

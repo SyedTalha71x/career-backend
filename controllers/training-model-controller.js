@@ -38,8 +38,8 @@ export const redirectStripe = async (req, res) => {
             line_items: [
                 {
                     price_data: {
-                        currency: 'usd',
-                        product_data: {
+                        currency: "gbp",
+                                                product_data: {
                             name: `Branch ID: ${branchId}`,
                         },
                         unit_amount: 1000, 
