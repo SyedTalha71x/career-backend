@@ -63,7 +63,7 @@ export const redirectStripe = async (req, res) => {
 // 2. Confirm Subscription after Payment Success
 export const confirmModelSubscription = async (req, res) => {
     try {
-        const { sessionId, branchId } = req.body;
+        const {  branchId } = req.body;
 
         if (!sessionId || !branchId) {
             return res.status(422).json(

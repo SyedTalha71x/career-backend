@@ -498,10 +498,10 @@ export const checkTrainingPlanSubscription = (req, res) => {
     FROM user_subscription AS us
     JOIN subscriptions AS s ON us.subscription_id = s.id
     WHERE us.user_id = ? 
-    ORDER BY us.created_at DESC  -- Sabse latest subscription fetch karega
+    AND us.expiry_date > NOW()  -- Sirf active subscriptions check hongi
+    ORDER BY us.created_at DESC  -- Sabse latest active subscription fetch karega
     LIMIT 1;
   `;
-  
 
     pool.query(subscriptionQuery, [userId], (err, subResults) => {
       if (err) {
@@ -517,24 +517,7 @@ export const checkTrainingPlanSubscription = (req, res) => {
         });
       }
 
-      const { current_training_plan, subscription_id, expiry_date } =
-        subResults[0];
-
-      // Set timezone to Asia/Karachi
-      const timezone = "Asia/Karachi";
-
-      // Use moment-timezone to handle timezone comparison
-      const isSubscriptionValid = moment()
-        .tz(timezone)
-        .isBefore(moment(expiry_date).tz(timezone));
-
-      if (!isSubscriptionValid) {
-        return res.status(200).json({
-          error:
-            "Your subscription has expired. Please purchase a subscription to create a training plan.",
-          TrainingPlan_Status: false,
-        });
-      }
+      const { current_training_plan, subscription_id } = subResults[0];
 
       let trainingPlanLimit;
       switch (subscription_id) {
