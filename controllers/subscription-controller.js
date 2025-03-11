@@ -111,7 +111,7 @@ export const purchaseSubscription = async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency: "gbp",
+            currency: "usd",
             product_data: { name: subscription.name },
             unit_amount: unitAmount,
           },
