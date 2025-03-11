@@ -111,7 +111,7 @@ export const purchaseSubscription = async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "gbp",
             product_data: { name: subscription.name },
             unit_amount: unitAmount,
           },
@@ -123,6 +123,8 @@ export const purchaseSubscription = async (req, res) => {
       cancel_url: `${getFrontendUrl()}/cancel`,
       client_reference_id: subscriptionId,
     });
+
+    console.log('Session has been created', session.id)
 
     const insert_activity_logs =
       "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";

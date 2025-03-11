@@ -65,7 +65,7 @@ export const confirmModelSubscription = async (req, res) => {
     try {
         const {  branchId } = req.body;
 
-        if (!sessionId || !branchId) {
+        if ( !branchId) {
             return res.status(422).json(
                 failureResponse({ error: 'Session ID and Branch ID are required' }, 'Failed to confirm Subscription')
             );
