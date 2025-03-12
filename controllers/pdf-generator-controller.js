@@ -372,27 +372,23 @@ export const generatePdfReport = async (req, res) => {
     const updateSubscriptionQuery = `
     UPDATE user_subscription
     SET current_training_plan = COALESCE(current_training_plan, 0) + 1
-    WHERE user_id = ?
-      AND expiry_date > NOW()
-      AND (created_at, id) = (
-        SELECT created_at, id
-        FROM (
-          SELECT created_at, id
-          FROM user_subscription
-          WHERE user_id = ?
+    WHERE id = (
+        SELECT id FROM (
+            SELECT MAX(id) as id
+            FROM user_subscription
+            WHERE user_id = ?
             AND expiry_date > NOW()
-          ORDER BY created_at DESC, id DESC
-          LIMIT 1
-        ) as latest
-      );
+        ) as latest_subscription
+    );
     `;
     
     await new Promise((resolve, reject) => {
-      pool.query(updateSubscriptionQuery, [userId, userId], (error, results) => {
+      pool.query(updateSubscriptionQuery, [userId], (error, results) => {
         if (error) return reject(error);
         resolve(results);
       });
     });
+    
     const pdfPath = await generatePDF(data, branchId);
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
