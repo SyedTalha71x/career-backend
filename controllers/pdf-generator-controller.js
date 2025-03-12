@@ -369,42 +369,42 @@ export const generatePdfReport = async (req, res) => {
       }
     );
 
-    const findLatestSubscriptionQuery = `
-    SELECT id 
-    FROM user_subscription 
-    WHERE user_id = ? 
-    ORDER BY id DESC 
-    LIMIT 1;
-    `;
+    // const findLatestSubscriptionQuery = `
+    // SELECT id 
+    // FROM user_subscription 
+    // WHERE user_id = ? 
+    // ORDER BY id DESC 
+    // LIMIT 1;
+    // `;
 
-    const latestSubscription = await new Promise((resolve, reject) => {
-      pool.query(findLatestSubscriptionQuery, [userId], (error, results) => {
-        if (error) return reject(error);
-        resolve(results[0]);
-      });
-    });
+    // const latestSubscription = await new Promise((resolve, reject) => {
+    //   pool.query(findLatestSubscriptionQuery, [userId], (error, results) => {
+    //     if (error) return reject(error);
+    //     resolve(results[0]);
+    //   });
+    // });
 
-    console.log("Latest Subscription ID:", latestSubscription?.id);
+    // console.log("Latest Subscription ID:", latestSubscription?.id);
 
-    // Step 2: Update only the subscription with this specific ID
-    if (latestSubscription && latestSubscription.id) {
-      const updateSubscriptionQuery = `
-      UPDATE user_subscription 
-      SET current_training_plan = COALESCE(current_training_plan, 0) + 1 
-      WHERE id = ?;
-      `;
+    // // Step 2: Update only the subscription with this specific ID
+    // if (latestSubscription && latestSubscription.id) {
+    //   const updateSubscriptionQuery = `
+    //   UPDATE user_subscription 
+    //   SET current_training_plan = COALESCE(current_training_plan, 0) + 1 
+    //   WHERE id = ?;
+    //   `;
       
-      await new Promise((resolve, reject) => {
-        pool.query(updateSubscriptionQuery, [latestSubscription.id], (error, results) => {
-          if (error) return reject(error);
-          resolve(results);
-        });
-      });
+    //   await new Promise((resolve, reject) => {
+    //     pool.query(updateSubscriptionQuery, [latestSubscription.id], (error, results) => {
+    //       if (error) return reject(error);
+    //       resolve(results);
+    //     });
+    //   });
 
-      console.log("Subscription updated successfully");
-    } else {
-      console.log("No subscription found to update");
-    }
+    //   console.log("Subscription updated successfully");
+    // } else {
+    //   console.log("No subscription found to update");
+    // }
 
     const pdfPath = await generatePDF(data, branchId);
 
