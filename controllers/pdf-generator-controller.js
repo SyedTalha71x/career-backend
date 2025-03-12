@@ -173,12 +173,10 @@ function generatePDF(data, branchId) {
 
   doc.moveDown(2);
   addSectionHeader("Signature");
-  doc
-    .fontSize(10)
-    .text("User Signature_________________________", {
-      align: "left",
-      continued: true,
-    });
+  doc.fontSize(10).text("User Signature_________________________", {
+    align: "left",
+    continued: true,
+  });
   doc.text("Supervisor Signature: _________________________", {
     align: "right",
   });
@@ -353,28 +351,35 @@ export const generatePdfReport = async (req, res) => {
       })),
     };
 
-    const insert_into_activity_logs = "INSERT INTO activity_logs (name, user_id) VALUES (?,?)"
+    const insert_into_activity_logs =
+      "INSERT INTO activity_logs (name, user_id) VALUES (?,?)";
 
-    const trainingPlanTitle = trainingPlanResults[0]?.plan_recommendation.slice(0,20);
-    pool.query(insert_into_activity_logs, [`Created Training Plan: ${trainingPlanTitle}`, userId], (err)=>{
-      if(err){
-        console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'})
-        
+    const trainingPlanTitle = trainingPlanResults[0]?.plan_recommendation.slice(
+      0,
+      20
+    );
+    pool.query(
+      insert_into_activity_logs,
+      [`Created Training Plan: ${trainingPlanTitle}`, userId],
+      (err) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
       }
-    })
+    );
 
     const updateSubscriptionQuery = `
-   UPDATE user_subscription us
-JOIN (
+UPDATE user_subscription 
+SET current_training_plan = COALESCE(current_training_plan, 0) + 1
+WHERE id = (
     SELECT id 
     FROM user_subscription 
     WHERE user_id = ? 
       AND expiry_date > NOW() 
     ORDER BY expiry_date DESC, created_at DESC 
     LIMIT 1
-) latest_subscription ON us.id = latest_subscription.id
-SET us.current_training_plan = COALESCE(us.current_training_plan, 0) + 1;
+);
   `;
     await new Promise((resolve, reject) => {
       pool.query(updateSubscriptionQuery, [userId], (error, results) => {
@@ -402,4 +407,3 @@ SET us.current_training_plan = COALESCE(us.current_training_plan, 0) + 1;
       .json({ message: "Error generating PDF report", error: err });
   }
 };
-

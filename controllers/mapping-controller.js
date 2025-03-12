@@ -1385,7 +1385,7 @@ export const checkRemainingPlans = async (req, res) => {
   try {
     const userId = req.user.userId;
     if (!userId) {
-      return res.status(400).json({ error: "User is not authorized" });
+      return res.status(401).json({ error: "User is not authorized" });
     }
 
     // Query to fetch the latest active subscription of the user
@@ -1404,7 +1404,7 @@ export const checkRemainingPlans = async (req, res) => {
       }
 
       if (results.length === 0) {
-        return res.status(400).json({ message: "No active subscription found for this user" });
+        return res.status(404).json({ message: "No active subscription found for this user" });
       }
 
       const userSubscription = results[0];
@@ -1414,7 +1414,11 @@ export const checkRemainingPlans = async (req, res) => {
       }
 
       // Query to get subscription details
-      const getSubscriptionDetails = `SELECT * FROM subscriptions WHERE id = ?`;
+      const getSubscriptionDetails = `
+        SELECT id, name, total_path, total_training_plan 
+        FROM subscriptions 
+        WHERE id = ?
+      `;
 
       pool.query(getSubscriptionDetails, [userSubscription.subscription_id], (err, subscriptionResult) => {
         if (err) {
@@ -1423,18 +1427,19 @@ export const checkRemainingPlans = async (req, res) => {
         }
 
         if (subscriptionResult.length === 0) {
-          return res.status(400).json({ message: "No Subscription details found" });
+          return res.status(404).json({ message: "No subscription details found" });
         }
 
         const subscription = subscriptionResult[0];
 
+        // Calculate remaining paths and training plans
         const remainingPaths = Math.max(0, subscription.total_path - (userSubscription.current_path || 0));
         const remainingTrainingPlans = Math.max(0, subscription.total_training_plan - (userSubscription.current_training_plan || 0));
 
         return res.status(200).json({
           subscriptionPlan: subscription.name,
-          RemainingPrompts: remainingPaths,
-          RemainingTrainingPlan: remainingTrainingPlans,
+          remainingPaths,
+          remainingTrainingPlans,
         });
       });
     });
@@ -1443,6 +1448,7 @@ export const checkRemainingPlans = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const uploadFilesForCHATGPT = async (req, res) => {
   try {
