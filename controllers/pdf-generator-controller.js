@@ -370,16 +370,18 @@ export const generatePdfReport = async (req, res) => {
     );
 
     const updateSubscriptionQuery = `
-UPDATE user_subscription 
-SET current_training_plan = COALESCE(current_training_plan, 0) + 1
-WHERE id = (
-    SELECT id 
-    FROM user_subscription 
-    WHERE user_id = ? 
-      AND expiry_date > NOW() 
-    ORDER BY created_at DESC, id DESC 
+SET @latest_id = (
+    SELECT id
+    FROM user_subscription
+    WHERE user_id = 45
+      AND expiry_date > NOW()
+    ORDER BY created_at DESC, id DESC
     LIMIT 1
 );
+
+UPDATE user_subscription
+SET current_training_plan = COALESCE(current_training_plan, 0) + 1
+WHERE id = @latest_id;
   `;
     await new Promise((resolve, reject) => {
       pool.query(updateSubscriptionQuery, [userId], (error, results) => {
