@@ -383,7 +383,7 @@ export const generatePdfReport = async (req, res) => {
         resolve(results[0]);
       });
     });
-    console.log(latestSubscription.id, "--------------");
+    console.log(latestSubscription.id, "subscripton id ");
     
 
     // Step 2: Update only the subscription with this specific ID

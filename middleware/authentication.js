@@ -11,7 +11,6 @@ const authenticate = (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    console.log("parsed token -------------", token);
     
     if (!token) {
         return res.status(401).json({ message: 'Access denied. Malformed token.' });
@@ -19,7 +18,6 @@ const authenticate = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, SECRET_KEY);
-        console.log(decoded, 'ffffffffffffffff')
         req.user = decoded;
         next();
     } catch (err) {
