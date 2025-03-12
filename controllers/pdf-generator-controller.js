@@ -373,7 +373,6 @@ export const generatePdfReport = async (req, res) => {
     SELECT id 
     FROM user_subscription 
     WHERE user_id = ? 
-    AND expiry_date > NOW() 
     ORDER BY id DESC 
     LIMIT 1;
     `;
