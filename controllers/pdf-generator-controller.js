@@ -377,7 +377,7 @@ WHERE id = (
     FROM user_subscription 
     WHERE user_id = ? 
       AND expiry_date > NOW() 
-    ORDER BY created_at DESC, expiry_date DESC 
+    ORDER BY created_at DESC, id DESC 
     LIMIT 1
 );
   `;
