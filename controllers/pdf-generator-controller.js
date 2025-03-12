@@ -383,8 +383,8 @@ export const generatePdfReport = async (req, res) => {
         resolve(results[0]);
       });
     });
-    console.log(latestSubscription.id, "subscripton id ");
-    
+
+    console.log("Latest Subscription ID:", latestSubscription?.id);
 
     // Step 2: Update only the subscription with this specific ID
     if (latestSubscription && latestSubscription.id) {
@@ -400,6 +400,10 @@ export const generatePdfReport = async (req, res) => {
           resolve(results);
         });
       });
+
+      console.log("Subscription updated successfully");
+    } else {
+      console.log("No subscription found to update");
     }
 
     const pdfPath = await generatePDF(data, branchId);
