@@ -112,7 +112,13 @@ export const purchaseSubscription = async (req, res) => {
         {
           price_data: {
             currency: "gbp",
-            product_data: { name: subscription.name },
+            product_data: { 
+              name: subscription.name,
+              metadata: { // Add useful metadata
+                subscription_id: subscriptionId,
+                user_id: userId
+              }
+            },
             unit_amount: unitAmount,
           },
           quantity: 1,
@@ -121,7 +127,11 @@ export const purchaseSubscription = async (req, res) => {
       mode: "payment",
       success_url: `${getFrontendUrl()}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${getFrontendUrl()}/cancel`,
-      client_reference_id: subscriptionId,
+      client_reference_id: userId, // Better to use user ID here
+      metadata: {
+        subscription_id: subscriptionId,
+        internal_user_id: userId
+      }
     });
 
     console.log('Session has been created', session.id)
@@ -160,17 +170,26 @@ export const purchaseSubscription = async (req, res) => {
         );
     }
   } catch (error) {
-    console.error("Error creating checkout session:", error);
-    return res
-      .status(500)
-      .json(
-        failureResponse(
-          { error: "Internal Server Error" },
-          "Failed to Checkout"
-        )
-      );
+    console.error("Error creating checkout session:", {
+      error: error.message,
+      stack: error.stack,
+      userId,
+      subscriptionId,
+      timestamp: new Date().toISOString()
+    });
+    
+    return res.status(500).json(
+      failureResponse(
+        { 
+          error: "Internal Server Error",
+          userMessage: "We couldn't process your payment at this time"
+        },
+        "Failed to Checkout"
+      )
+    );
   }
-};
+}
+
 export const getSubscription = async (req, res) => {
   try {
     const query =
