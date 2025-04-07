@@ -226,108 +226,121 @@ export const confirmSubscription = async (req, res) => {
     const { sessionId } = req.body;
 
     if (!sessionId) {
-      return res
-        .status(422)
-        .json(
-          failureResponse(
-            { error: "Session ID is required" },
-            "Failed to confirm Subscription"
-          )
-        );
-    }
-
-    // Retrieve the session from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-    if (!session) {
-      return res
-        .status(404)
-        .json(
-          failureResponse(
-            { error: "Session not found" },
-            "Failed to confirm Subscription"
-          )
-        );
-    }
-
-    // Check if the session status is 'paid'
-    if (session.payment_status !== "paid") {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "Payment not completed" },
-            "Failed to confirm Subscription"
-          )
-        );
-    }
-
-    const paymentIntentId = session.payment_intent;
-
-    const subscriptionId = session.client_reference_id;
-
-    if (!subscriptionId) {
-      return res
-        .status(400)
-        .json(
-          failureResponse(
-            { error: "Subscription ID missing" },
-            "Failed to confirm Subscription"
-          )
-        );
-    }
-
-    const getSubscription = () => {
-      return new Promise((resolve, reject) => {
-        const getSubscriptionQuery =
-          "SELECT valid_till FROM subscriptions WHERE id = ?";
-        pool.query(getSubscriptionQuery, [subscriptionId], (err, result) => {
-          if (err) return reject(err);
-          if (result.length === 0)
-            return reject(new Error("Subscription not found"));
-          resolve(result[0]);
-        });
-      });
-    };
-
-    const subscription = await getSubscription();
-
-    const expiryDate = moment()
-      .add(subscription.valid_till, "days")
-      .tz("Asia/Karachi") // Set timezone to Asia/Karachi
-      .format("YYYY-MM-DD HH:mm:ss"); // Format for MySQL
-
-    const saveUserSubscription = () => {
-      return new Promise((resolve, reject) => {
-        const insertUserSubscriptionQuery = `
-                    INSERT INTO user_subscription (subscription_id, user_id, expiry_date, payment_id, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, NOW(), NOW())
-                `;
-        pool.query(
-          insertUserSubscriptionQuery,
-          [subscriptionId, req.user.userId, expiryDate, paymentIntentId],
-          (err, result) => {
-            if (err) return reject(err);
-            resolve(result);
-          }
-        );
-      });
-    };
-
-    await saveUserSubscription();
-    return res
-      .status(200)
-      .json({ success: true, message: "Subscription confirmed successfully" });
-  } catch (error) {
-    console.error("Error confirming subscription:", error);
-    return res
-      .status(500)
-      .json(
+      return res.status(422).json(
         failureResponse(
-          { error: "Internal Server Error" },
+          { error: "Session ID is required" },
           "Failed to confirm Subscription"
         )
       );
+    }
+
+    // Retrieve the session from Stripe with expanded payment intent
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['payment_intent']
+    });
+
+    if (!session) {
+      return res.status(404).json(
+        failureResponse(
+          { error: "Session not found" },
+          "Failed to confirm Subscription"
+        )
+      );
+    }
+
+    if (session.payment_status !== "paid") {
+      return res.status(400).json(
+        failureResponse(
+          { error: "Payment not completed" },
+          "Failed to confirm Subscription"
+        )
+      );
+    }
+
+    // Get subscription ID from metadata (more reliable than client_reference_id)
+    const subscriptionId = session.metadata?.subscription_id;
+    const userId = session.metadata?.internal_user_id || session.client_reference_id;
+
+    if (!subscriptionId || !userId) {
+      return res.status(400).json(
+        failureResponse(
+          { error: "Missing subscription or user information" },
+          "Failed to confirm Subscription"
+        )
+      );
+    }
+
+    const subscription = await new Promise((resolve, reject) => {
+      const query = "SELECT id, name, price, valid_till FROM subscriptions WHERE id = ?";
+      pool.query(query, [subscriptionId], (err, result) => {
+        if (err) return reject(err);
+        if (result.length === 0) return reject(new Error("Subscription not found"));
+        resolve(result[0]);
+      });
+    });
+
+    const expiryDate = moment()
+      .add(subscription.valid_till, "days")
+      .tz("Asia/Karachi")
+      .format("YYYY-MM-DD HH:mm:ss");
+
+    await new Promise((resolve, reject) => {
+      const query = `
+        INSERT INTO user_subscription 
+        (subscription_id, user_id, expiry_date, payment_id, created_at, updated_at)
+        VALUES (?, ?, ?, ?, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+        expiry_date = VALUES(expiry_date),
+        payment_id = VALUES(payment_id),
+        updated_at = NOW()
+      `;
+      pool.query(
+        query,
+        [subscriptionId, userId, expiryDate, session.payment_intent.id],
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        }
+      );
+    });
+
+    // Log the activity
+    await new Promise((resolve, reject) => {
+      const query = "INSERT INTO activity_logs (name, user_id) VALUES (?, ?)";
+      pool.query(
+        query,
+        [`Purchased subscription: ${subscription.name}`, userId],
+        (err) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
+
+    return res.status(200).json(
+      successResponse(
+        { subscriptionId, expiryDate },
+        "Subscription confirmed successfully"
+      )
+    );
+
+  } catch (error) {
+    console.error("Error confirming subscription:", {
+      error: error.message,
+      stack: error.stack,
+      sessionId: req.body.sessionId,
+      timestamp: new Date().toISOString()
+    });
+    
+    return res.status(500).json(
+      failureResponse(
+        { 
+          error: "Internal Server Error",
+          details: error.message
+        },
+        "Failed to confirm Subscription"
+      )
+    );
   }
 };
 
