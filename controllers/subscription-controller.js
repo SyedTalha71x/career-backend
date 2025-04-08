@@ -189,7 +189,6 @@ export const purchaseSubscription = async (req, res) => {
     );
   }
 }
-
 export const getSubscription = async (req, res) => {
   try {
     const query =
@@ -220,7 +219,6 @@ export const getSubscription = async (req, res) => {
       );
   }
 };
-
 export const confirmSubscription = async (req, res) => {
   try {
     const { sessionId } = req.body;
@@ -289,10 +287,6 @@ export const confirmSubscription = async (req, res) => {
         INSERT INTO user_subscription 
         (subscription_id, user_id, expiry_date, payment_id, created_at, updated_at)
         VALUES (?, ?, ?, ?, NOW(), NOW())
-        ON DUPLICATE KEY UPDATE
-        expiry_date = VALUES(expiry_date),
-        payment_id = VALUES(payment_id),
-        updated_at = NOW()
       `;
       pool.query(
         query,
